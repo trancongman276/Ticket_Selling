@@ -1,0 +1,128 @@
+import 'package:flutter/material.dart';
+
+class LoginPage extends StatefulWidget {
+  static String tag = 'login-page';
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  @override
+  Widget build(BuildContext context) {
+    final logo = Hero(
+      tag: 'hero',
+      child: CircleAvatar(
+        backgroundColor: Colors.transparent,
+        radius: 48.0,
+        child: Image.asset('assets/logo.png'),
+      ),
+    );
+
+    final email = TextFormField(
+      keyboardType: TextInputType.emailAddress,
+      autofocus: false,
+      decoration: InputDecoration(
+        hintText: 'Example: abc@abc.com',
+        contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(32.0)
+        )
+      ),
+    );
+
+    final  username = Padding(
+      padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
+      child: Container(
+        height: 60,
+        width: MediaQuery.of(context).size.width,
+        child: TextField(
+          style: TextStyle(color:  Colors.white),
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            fillColor: Colors.lightBlueAccent,
+            labelText: 'Name',
+            labelStyle: TextStyle(color: Colors.white70),
+          ),
+        ),
+
+      ),
+    );
+
+    final password = TextFormField(
+      autofocus: false,
+      obscureText: true,
+      decoration: InputDecoration(
+          hintText: 'Password',
+          contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(32.0)
+          )
+      ),
+    );
+
+    // final loginButton = Padding(
+    //   padding: EdgeInsets.symmetric(vertical: 16),
+    //   child: Material(
+    //     borderRadius: BorderRadius.circular(30.0),
+    //     color: Colors.transparent,
+    //     shadowColor: Colors.lightBlueAccent.shade100,
+    //     elevation: 5.0,
+    //     child: MaterialButton(
+    //       minWidth: 200.0,
+    //       height: 42.0,
+    //       onPressed: (){
+    //
+    //       },
+    //       color: Colors.lightBlueAccent,
+    //       child: Text('Login', style: TextStyle(color: Colors.white),)
+    //     )
+    //   ),
+    // );
+
+    final loginButton = RaisedButton(
+      child: Text('Login', style: TextStyle(color: Colors.white),),
+      color: Colors.lightBlueAccent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30.0)
+      ),
+      onPressed: (){},
+    );
+
+    final forgotLabel = FlatButton(
+      child: Text('Forgot password?', style: TextStyle(color: Colors.black54),),
+      onPressed: (){
+
+      },
+    );
+
+    return Scaffold(
+        body: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
+                  colors: [Colors.blueGrey, Colors.lightBlueAccent]),
+            ),
+          child: ListView(
+            // shrinkWrap: true,
+            padding: EdgeInsets.only(left: 24.0, right: 24.0),
+            children: <Widget>[
+              // logo,
+              Column(
+                children: <Widget>[
+                  SizedBox(height: 48.0,),
+                  username,
+                  SizedBox(height: 8.0,),
+                  password,
+                  SizedBox(height: 24.0,),
+                  loginButton,
+                  forgotLabel,
+                ],
+              ),
+
+            ]
+          )
+      ),
+    );
+  }
+}
