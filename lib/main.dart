@@ -15,7 +15,12 @@ Widget build(BuildContext context) {
     ),
     debugShowCheckedModeBanner: false,
     title: "Welcome",
-    home: loginPage(),
+    home: Scaffold(
+      resizeToAvoidBottomPadding: false,
+      body: Container(
+        child: loginPage(),
+      ),
+    ),
     // home: Scaffold(
     //   body: RandomWords(),
     // ),

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'Module/FirstPage/inputTb.dart';
@@ -9,8 +8,26 @@ class loginPage extends StatefulWidget {
 }
 
 class _loginPageState extends State<loginPage> {
+  var formState = 0;
+  double formOfSet = 0.0;
+  //Color: 0xff27ae60
   @override
   Widget build(BuildContext context) {
+
+    switch(formState){
+      case 0:
+        print('State 0');
+        formOfSet = 800.0;
+        break;
+      case 1:
+        print('State 1');
+        formOfSet = 0.0;
+        break;
+      case 2:
+        print('State 2');
+        formOfSet = 800.0;
+        break;
+    }
 
     var creator = borderLessInputTb();
 
@@ -33,6 +50,7 @@ class _loginPageState extends State<loginPage> {
         color: Color(0xff2ecc71),
       ),
     ];
+
     final loginForm = Container(
       decoration: BoxDecoration(
         image: DecorationImage(
@@ -95,7 +113,9 @@ class _loginPageState extends State<loginPage> {
                         ),
                         // SizedBox(height: 10,),
                         RaisedButton(
-                            onPressed: () => print("Button Pressed") ,
+                            onPressed: () {
+                              print('Logined');
+                            },
                             color: Color(0xff27ae60),
                             child: Text('LOG IN',
                               style: TextStyle( color: Colors.white),),
@@ -127,7 +147,12 @@ class _loginPageState extends State<loginPage> {
                 Text("Don't have account?",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black),),
                 FlatButton(
-                  onPressed: () { print('Sign Up bt pressed!'); },
+                  onPressed: () {
+                      print('Sign Up bt pressed!');
+                      setState(() {
+                        formState = 1;
+                      });
+                    },
                   child: Text('Sign Up',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color(0xff2ecc71)),),
                 ),
@@ -138,11 +163,68 @@ class _loginPageState extends State<loginPage> {
       )
     );
 
-    return Scaffold(
-      resizeToAvoidBottomPadding: false,
-      body: Container(
-        child: loginForm
+    final registerForm = Container(
+      padding: EdgeInsets.symmetric(vertical: 210, horizontal: 40),
+      child: Container(
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              decoration: BoxDecoration(
+                  boxShadow:[
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 5,
+                      blurRadius: 7,
+                      offset: Offset(0,3),
+                    ),
+                  ],
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(30.0)
+              ),
+              child: Column(
+                children: [
+                  SizedBox(height: 20),
+                  Text('Register Account', style: TextStyle(fontSize: 20),),
+                  SizedBox(height: 20),
+                  creator.textbox('Username', null, false, Colors.green, 1.5),
+                  SizedBox(height: 10),
+                  creator.textbox('Password', null, true, Colors.green, 1.5),
+                  SizedBox(height: 10),
+                  creator.textbox('Email', null, false, Colors.green, 1.5),
+                  SizedBox(height: 20),
+                  RaisedButton(
+                      onPressed: (){
+                        print('Submited');
+                        setState(() {
+                          formState = 2;
+                      });},
+                      color: Color(0xff27ae60),
+                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 80),
+                      child: Text('SUBMIT', style: TextStyle(color: Colors.white),),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      )
+                  ),
+
+                ],
+              ),
       ),
+    );
+
+    return Stack(
+      children: [
+        AnimatedContainer(
+          duration: Duration(seconds: 1),
+          curve: Curves.fastLinearToSlowEaseIn,
+            child: loginForm,
+        ),
+
+        AnimatedContainer(
+          color: Colors.black12,
+          duration: Duration(milliseconds: 1000),
+          curve: Curves.fastLinearToSlowEaseIn,
+          transform: Matrix4.translationValues(0, formOfSet, 1),
+          child: registerForm,
+        ),
+      ],
     );
   }
 }
