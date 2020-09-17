@@ -1,29 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:english_words/english_words.dart';
-import 'package:flutter_app/loginPage.dart';
+import 'package:flutter_app/MainPage/mainPage.dart';
 
 void main() => runApp(MyApp());
 
-class MyApp extends StatelessWidget{
-@override
-Widget build(BuildContext context) {
-  // final wordpair = WordPair.random();
-  return MaterialApp(
-    theme: ThemeData(
-      fontFamily: 'Nunito',
-
-    ),
-    debugShowCheckedModeBanner: false,
-    title: "Welcome",
-    home: Scaffold(
-      resizeToAvoidBottomPadding: false,
-      body: Container(
-        child: loginPage(),
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+        fontFamily: 'Nunito',
       ),
-    ),
-    // home: Scaffold(
-    //   body: RandomWords(),
-    // ),
-  );
-}
+      debugShowCheckedModeBanner: false,
+      title: "Welcome",
+      home: Scaffold(
+        resizeToAvoidBottomPadding: false,
+        body: Container(
+          child: mainPage(),
+        ),
+      ),
+    );
+  }
 }
