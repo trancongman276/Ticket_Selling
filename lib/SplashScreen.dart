@@ -106,6 +106,7 @@ class _splashScreenState extends State<splashScreen> {
         break;
       default:
         print('Passed');
+        this.dispose();
         return loginPage();
         break;
     }
