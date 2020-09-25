@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/login_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'Module/FirstPage/inputTb.dart';
 
@@ -15,15 +14,13 @@ class _loginPageState extends State<loginPage> {
   //Color: 0xff27ae60
   @override
   Widget build(BuildContext context) {
-    var mediaQuery = MediaQuery.of(context);
     // double width = MediaQuery.of(context).size.width;
     // double height = MediaQuery.of(context).size.height;
 
     switch (formState) {
       case 0:
         print('State 0');
-        formOfSet = mediaQuery.size.height;
-        print(mediaQuery.size.height);
+        formOfSet = 800.0;
         break;
       case 1:
         print('State 1');
@@ -31,7 +28,7 @@ class _loginPageState extends State<loginPage> {
         break;
       case 2:
         print('State 2');
-        formOfSet = mediaQuery.size.height;
+        formOfSet = 800.0;
         break;
     }
 
@@ -64,115 +61,154 @@ class _loginPageState extends State<loginPage> {
       ),
     ];
 
-    Widget BodyView = Column(
-        children: <Widget>[
-          //TOP
-          SizedBox(
-            height: 200,
-          ),
-          Container(
-              margin: EdgeInsets.all(40),
-              padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 20),
-              decoration: BoxDecoration(
-                  boxShadow: [
+    final loginForm = Container(
+        decoration: BoxDecoration(
+            image: DecorationImage(
+          image: AssetImage('assets/images/loginBG.png'),
+          fit: BoxFit.fill,
+        )),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+                //TOP
+                child: Column(
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.only(),
+                  decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
+                      color: Colors.black.withOpacity(0.2),
                       spreadRadius: 5,
                       blurRadius: 7,
                       offset: Offset(0, 3),
+                    )
+                  ]),
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white,
+                    radius: 40.0,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 5.0),
+                      child: Image.asset('assets/images/logo.png'),
+                    ),
+                  ),
+                ),
+                Text(
+                  'The Car',
+                  style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  'Fill the information bellow to login',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ],
+            )),
+            Container(
+              //BODY
+              child: Container(
+                margin: EdgeInsets.all(40),
+                padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 20),
+                decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(30.0)),
+                child: Center(
+                    child: Column(
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Text(
+                        'Login Account',
+                        style: TextStyle(fontSize: 20, color: Colors.black),
+                      ),
+                    ),
+                    username,
+                    SizedBox(
+                      height: 20,
+                    ),
+                    password,
+                    Container(
+                      alignment: Alignment.topRight,
+                      child: FlatButton(
+                        onPressed: () {
+                          print('Forgot bt pressed!');
+                        },
+                        child: Text(
+                          'Forgot?',
+                          style: TextStyle(color: Colors.green),
+                        ),
+                      ),
+                    ),
+                    // SizedBox(height: 10,),
+                    RaisedButton(
+                        onPressed: () {
+                          print('Logined');
+                        },
+                        color: Color(0xff27ae60),
+                        child: Text(
+                          'LOG IN',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 80),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0))),
+                    Container(
+                      child: Text('Or'),
+                      padding: EdgeInsets.only(top: 20, bottom: 5),
+                    ),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: otherLoginMethod,
                     ),
                   ],
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(30.0)),
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Text(
-                      'Login Account',
-                      style: TextStyle(fontSize: 20, color: Colors.black),
-                    ),
-                  ),
-                  username,
-                  SizedBox(
-                    height: 20,
-                  ),
-                  password,
-                  Container(
-                    alignment: Alignment.topRight,
-                    child: FlatButton(
-                      onPressed: () {
-                        print('Forgot bt pressed!');
-                      },
-                      child: Text(
-                        'Forgot?',
-                        style: TextStyle(color: Colors.green),
-                      ),
-                    ),
-                  ),
-                  // SizedBox(height: 10,),
-                  RaisedButton(
-                      onPressed: () {
-                        print('Logined');
-                      },
-                      color: Color(0xff27ae60),
-                      child: Text(
-                        'LOG IN',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      padding: EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 80),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0))),
-                  Container(
-                    child: Text('Or'),
-                    padding: EdgeInsets.only(top: 20, bottom: 5),
-                  ),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: otherLoginMethod,
-                  ),
-                ],
-              )),
-          Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    "Don't have account?",
+                )),
+              ),
+            ),
+            Container(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  "Don't have account?",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Colors.black),
+                ),
+                FlatButton(
+                  onPressed: () {
+                    print('Sign Up bt pressed!');
+                    setState(() {
+                      formState = 1;
+                    });
+                  },
+                  child: Text(
+                    'Sign Up',
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
-                        color: Colors.black),
+                        color: Color(0xff2ecc71)),
                   ),
-                  FlatButton(
-                    onPressed: () {
-                      print('Sign Up bt pressed!');
-                      setState(() {
-                        formState = 1;
-                      });
-                    },
-                    child: Text(
-                      'Sign Up',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: Color(0xff2ecc71)),
-                    ),
-                  ),
-                ],
-              )),
-        ],
-    );
-
-    final loginForm = Stack(
-      children: <Widget>[
-        LoginView(),
-        // BodyView,
-        mediaQuery.size.height > 720 ? BodyView : SingleChildScrollView(child:BodyView),
-      ],
-    );
+                ),
+              ],
+            )),
+          ],
+        ));
 
     Widget registerForm() {
       return Container(
