@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/login_view.dart';
-
-import 'SplashScreen.dart';
-import 'loginPage.dart';
+import 'LoginPage/loginPage.dart';
 
 void main() => runApp(MyApp());
 
@@ -18,7 +15,7 @@ class MyApp extends StatelessWidget {
       home: Scaffold(
         resizeToAvoidBottomPadding: false,
         body: Container(
-          child: splashScreen(),
+          child: LoginPage(),
         ),
       ),
     );
