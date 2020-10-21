@@ -1,8 +1,24 @@
+import 'package:CoachTicketSelling/LoginPage/forgetView.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class BodyView extends StatelessWidget {
+class BodyView extends StatefulWidget {
+  final GlobalKey<FormState> formkey;
+
+  const BodyView({Key key, @required this.formkey}) : super(key: key);
+
+  @override
+  _BodyViewState createState() => _BodyViewState(formkey);
+}
+
+class _BodyViewState extends State<BodyView> {
+  final GlobalKey<FormState> _formkey;
+  bool isSuccess = true;
+  String errorMessage;
+
+  _BodyViewState(this._formkey);
+
   @override
   Widget build(BuildContext context) {
     final TextEditingController _emailController = TextEditingController();
@@ -11,6 +27,7 @@ class BodyView extends StatelessWidget {
     final emailTb = Container(
       padding: EdgeInsets.all(0),
       child: TextFormField(
+        textInputAction: TextInputAction.next,
         controller: _emailController,
         validator: Utils.validateEmail,
         decoration: InputDecoration(
@@ -28,6 +45,7 @@ class BodyView extends StatelessWidget {
     final passwordTB = Container(
       padding: EdgeInsets.all(0),
       child: TextFormField(
+        textInputAction: TextInputAction.done,
         controller: _passwordController,
         validator: Utils.validatePassword,
         decoration: InputDecoration(
@@ -66,6 +84,35 @@ class BodyView extends StatelessWidget {
       ), // Google
     ];
 
+    void login() async {
+      //Todo: Login
+      try {
+        await Utils.firebaseAuth.signInWithEmailAndPassword(
+            email: _emailController.text, password: _passwordController.text);
+      } catch (error) {
+        print(error.code);
+        setState(() {
+          isSuccess = false;
+          switch (error.code) {
+            case "wrong-password":
+              errorMessage = "Your password is wrong.";
+              break;
+            case "user-not-found":
+              errorMessage = "User with this email doesn't exist.";
+              break;
+            case "user-disabled":
+              errorMessage = "User with this email has been disabled.";
+              break;
+            case "too-many-request":
+              errorMessage = "Too many requests. Try again later.";
+              break;
+            default:
+              errorMessage = "An undefined Error happened.";
+          }
+        });
+      }
+    }
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -96,7 +143,15 @@ class BodyView extends StatelessWidget {
                   alignment: Alignment.topRight,
                   child: FlatButton(
                     onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ForgetPasswordView()));
                       print('Forgot bt pressed!');
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text('Please check your email'),
+                        duration: Duration(seconds: 3),
+                      ));
                     },
                     child: Text(
                       'Forgot?',
@@ -106,7 +161,8 @@ class BodyView extends StatelessWidget {
                 ),
                 // SizedBox(height: 10,),
                 RaisedButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      if (_formkey.currentState.validate()) login();
                       print('Logined');
                     },
                     color: Utils.primaryColor,
@@ -117,6 +173,12 @@ class BodyView extends StatelessWidget {
                     padding: EdgeInsets.symmetric(vertical: 10, horizontal: 80),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30.0))),
+                Container(
+                  child: Text(
+                    isSuccess ? '' : errorMessage,
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
                 Container(
                   child: Text('Or'),
                   padding: EdgeInsets.symmetric(vertical: 5),

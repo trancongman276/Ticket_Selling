@@ -1,3 +1,4 @@
+import 'package:CoachTicketSelling/LoginPage/registerView.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:flutter/material.dart';
 
@@ -21,7 +22,8 @@ class BottomView extends StatelessWidget {
           FlatButton(
             onPressed: () {
               print('Sign Up bt pressed!');
-              // TODO: Add PageRoute
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => RegisterView()));
             },
             child: Text(
               'Sign Up',
