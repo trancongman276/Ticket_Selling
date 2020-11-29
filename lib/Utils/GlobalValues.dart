@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class Utils {
   // Variables
@@ -13,6 +16,11 @@ class Utils {
   // FireBase
   static final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   static final FirebaseFirestore _firebase = FirebaseFirestore.instance;
+  static final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  // Data
+  static final FlutterSecureStorage _storage = FlutterSecureStorage();
+
   // Styles
   static final Map<String, TextStyle> styles = {
     'NormalText': TextStyle(),
@@ -21,6 +29,7 @@ class Utils {
 
   // Func
   static String validateEmail(String value) {
+    value = value.trim();
     Pattern pattern =
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regex = new RegExp(pattern);
@@ -37,8 +46,15 @@ class Utils {
     return null;
   }
 
-  static String validateEmpty(String value){
-    if (value.isEmpty || value == 'yyyy-mm-dd'){
+  static String validateRetypePassword(String value, String password) {
+    if (value != password) {
+      return "Wrong password confirmation";
+    }
+    return null;
+  }
+
+  static String validateEmpty(String value) {
+    if (value.isEmpty || value == 'yyyy-mm-dd') {
       return 'Please fill the empty';
     }
     return null;
@@ -55,6 +71,11 @@ class Utils {
     return null;
   }
 
+  static void logout() {
+    storage.delete(key: 'e');
+    storage.delete(key: 'p');
+  }
+
   // Getter
   static AssetImage get loginBackground => _loginBackground;
 
@@ -65,6 +86,10 @@ class Utils {
   static FirebaseAuth get firebaseAuth => _firebaseAuth;
 
   static FirebaseFirestore get firebase => _firebase;
+
+  static GoogleSignIn get googleSignIn => _googleSignIn;
+
+  static FlutterSecureStorage get storage => _storage;
 
   static Color get primaryColor => _primaryColor;
 }

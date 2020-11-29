@@ -12,8 +12,7 @@ class _RegisterViewState extends State<RegisterView> {
   final GlobalKey<FormState> _key = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _retypepasswordController =
-      TextEditingController();
+  final TextEditingController _retypepasswordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
@@ -66,13 +65,15 @@ class _RegisterViewState extends State<RegisterView> {
       ),
     );
 
+
+
     Widget _password(String hint) {
       return TextFormField(
         textInputAction: TextInputAction.next,
         controller:
             hint[0] == 'P' ? _passwordController : _retypepasswordController,
         obscureText: true,
-        validator: Utils.validatePassword,
+        validator: hint[0] == 'P' ? Utils.validatePassword: (value) => Utils.validateRetypePassword(value, _passwordController.text),
         decoration: InputDecoration(
           labelText: hint[0] == 'P' ? 'Password' : 'Retype password',
           labelStyle: TextStyle(color: Utils.primaryColor),
@@ -146,6 +147,7 @@ class _RegisterViewState extends State<RegisterView> {
           onPressed: () async {
             date = await showRoundedDatePicker(
                 context: context,
+                firstDate: DateTime(DateTime.now().year - 100),
                 borderRadius: 16,
                 theme: ThemeData(primarySwatch: Colors.green));
             date != null
@@ -186,26 +188,28 @@ class _RegisterViewState extends State<RegisterView> {
       try {
         final UserCredential user = await Utils.firebaseAuth
             .createUserWithEmailAndPassword(
-                email: _emailController.text,
+                email: _emailController.text.trim(),
                 password: _passwordController.text);
 
         print(user.user);
         user.user.updateProfile(displayName: _nameController.text);
+        user.user.reload();
         Utils.firebase.collection('User').doc(user.user.uid).set({
           'Email': user.user.email,
-          'Name': user.user.displayName,
+          'Name': _nameController.text,
           'Phone': _phoneController.text,
           'DoB': date.microsecondsSinceEpoch,
           'Gender': dropDownValue,
           'Role': 'user'
         });
+        Navigator.pop(context);
+        await user.user.sendEmailVerification();
       } catch (e) {
         setState(() {
           ex = e;
           isSuccess = false;
         });
       }
-      Navigator.pop(context);
     }
 
     Widget _body = Container(

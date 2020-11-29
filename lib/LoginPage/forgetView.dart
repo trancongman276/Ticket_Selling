@@ -29,7 +29,7 @@ class ForgetPasswordView extends StatelessWidget {
 
     void request() {
       Utils.firebaseAuth.sendPasswordResetEmail(email: _emailController.text);
-      Navigator.pop(context);
+      Navigator.pop(context, true);
     }
 
     Widget _body = Container(
