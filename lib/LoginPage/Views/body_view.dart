@@ -1,3 +1,4 @@
+import 'package:CoachTicketSelling/MainPage/UserUI.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:CoachTicketSelling/Utils/Route.dart';
 import 'package:CoachTicketSelling/Utils/Timing.dart';
@@ -94,6 +95,7 @@ class _BodyViewState extends State<BodyView>
                 email: _emailController.text.trim(),
                 password: _passwordController.text.trim());
         _user = user.user;
+        /*
         print("[DEBUG] Email verified: " +
             Utils.firebaseAuth.currentUser.emailVerified.toString());
         if (user.user.emailVerified == false) {
@@ -113,6 +115,7 @@ class _BodyViewState extends State<BodyView>
           //     MaterialPageRoute(
           //         builder: (context) => UserMainView(id: user.user.uid)));
         }
+        */
       } catch (error) {
         print('[DEBUG] ' + error.code);
         setState(() {
@@ -195,6 +198,9 @@ class _BodyViewState extends State<BodyView>
                   RaisedButton(
                       onPressed: () async {
                         if (_formkey.currentState.validate()) login();
+                        if (isSuccess) {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => UserUI()));
+                        }
                       },
                       color: Utils.primaryColor,
                       child: Text(
