@@ -26,11 +26,11 @@ dependencies:
 
   #Server
   firebase_auth:
+  firebase_auth_web:
   google_sign_in:
   cloud_firestore:
   firebase_storage:
   firebase_core:
-
   # Data saving
   flutter_secure_storage:
 
