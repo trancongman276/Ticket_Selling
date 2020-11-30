@@ -107,7 +107,7 @@ class _BodyViewState extends State<BodyView>
               .write(key: 'e', value: _emailController.text.trim());
           await Utils.storage
               .write(key: 'p', value: _passwordController.text.trim());
-          Navigator.pushNamed(context, UserViewRoute, arguments: user.user.uid);
+          Navigator.pushNamed(context, UserViewRoute);
           // Navigator.push(
           //     context,
           //     MaterialPageRoute(

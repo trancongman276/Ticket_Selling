@@ -6,17 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class UserMainView extends StatefulWidget {
-  final String id;
-
-  const UserMainView({Key key, @required this.id}) : super(key: key);
+  const UserMainView({Key key}) : super(key: key);
   @override
-  _UserMainViewState createState() => _UserMainViewState(this.id);
+  _UserMainViewState createState() => _UserMainViewState();
 }
 
 class _UserMainViewState extends State<UserMainView> {
-  final uid;
-  _UserMainViewState(this.uid);
-
   @override
   Widget build(BuildContext context) {
     final User user = Utils.firebaseAuth.currentUser;
@@ -57,8 +52,7 @@ class _UserMainViewState extends State<UserMainView> {
                     icon: FaIcon(FontAwesomeIcons.userCircle),
                     onPressed: () =>
                         {Utils.logout(), Navigator.of(context).pop()},
-                        // TODO: 
-                        
+                    // TODO:
                   ),
                 ],
               ),

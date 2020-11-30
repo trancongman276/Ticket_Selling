@@ -12,14 +12,15 @@ class _RegisterViewState extends State<RegisterView> {
   final GlobalKey<FormState> _key = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _retypepasswordController = TextEditingController();
+  final TextEditingController _retypepasswordController =
+      TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   String dropDownValue = 'Male';
   DateTime date;
   bool isSuccess = true;
-  Exception ex;
+  String ex;
 
   @override
   void initState() {
@@ -65,15 +66,16 @@ class _RegisterViewState extends State<RegisterView> {
       ),
     );
 
-
-
     Widget _password(String hint) {
       return TextFormField(
         textInputAction: TextInputAction.next,
         controller:
             hint[0] == 'P' ? _passwordController : _retypepasswordController,
         obscureText: true,
-        validator: hint[0] == 'P' ? Utils.validatePassword: (value) => Utils.validateRetypePassword(value, _passwordController.text),
+        validator: hint[0] == 'P'
+            ? Utils.validatePassword
+            : (value) =>
+                Utils.validateRetypePassword(value, _passwordController.text),
         decoration: InputDecoration(
           labelText: hint[0] == 'P' ? 'Password' : 'Retype password',
           labelStyle: TextStyle(color: Utils.primaryColor),
@@ -206,8 +208,10 @@ class _RegisterViewState extends State<RegisterView> {
         await user.user.sendEmailVerification();
       } catch (e) {
         setState(() {
-          ex = e;
-          isSuccess = false;
+          if (e.code == 'email-already-in-use') {
+            ex = e.message;
+            isSuccess = false;
+          }
         });
       }
     }

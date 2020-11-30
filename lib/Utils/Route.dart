@@ -12,7 +12,6 @@ const String ForgetViewRoute = '/forget';
 const String UserViewRoute = '/user';
 const String ManagerViewRoute = '/manager';
 
-
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
     case LoginViewRoute:
@@ -24,8 +23,10 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case ManagerViewRoute:
       return MaterialPageRoute(builder: (context) => ManagerMainView());
     case UserViewRoute:
-      var _id = settings.arguments;
-      return MaterialPageRoute(builder: (context) => UserMainView(id: _id));
+      return MaterialPageRoute(builder: (context) => UserMainView());
+    // case UserViewRoute:
+    //   var _id = settings.arguments;
+    //   return MaterialPageRoute(builder: (context) => UserMainView(id: _id));
     default:
       return null;
   }
