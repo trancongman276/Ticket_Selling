@@ -1,6 +1,7 @@
 import 'package:CoachTicketSelling/LoginPage/forgetView.dart';
 import 'package:CoachTicketSelling/LoginPage/loginView.dart';
 import 'package:CoachTicketSelling/LoginPage/registerView.dart';
+import 'package:CoachTicketSelling/MainPage/Manager/Charts/IncomeChart.dart';
 import 'package:CoachTicketSelling/MainPage/Manager/MainView.dart';
 import 'package:CoachTicketSelling/MainPage/UserMainView.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
@@ -11,6 +12,7 @@ const String RegisterViewRoute = '/register';
 const String ForgetViewRoute = '/forget';
 const String UserViewRoute = '/user';
 const String ManagerViewRoute = '/manager';
+const String DetailIncomeChartViewRoute = '/manager/income';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -24,6 +26,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => ManagerMainView());
     case UserViewRoute:
       return MaterialPageRoute(builder: (context) => UserMainView());
+    case DetailIncomeChartViewRoute:
+      return MaterialPageRoute(builder: (context) => IncomeChart());
     // case UserViewRoute:
     //   var _id = settings.arguments;
     //   return MaterialPageRoute(builder: (context) => UserMainView(id: _id));
