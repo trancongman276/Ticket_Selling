@@ -1,10 +1,11 @@
+import 'package:CoachTicketSelling/MainPage/Manager/Charts/DetailChart.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:CoachTicketSelling/Utils/Route.dart';
+import 'package:CoachTicketSelling/Utils/enum.dart';
 
 class ManagerMainView extends StatefulWidget {
   @override
@@ -13,34 +14,23 @@ class ManagerMainView extends StatefulWidget {
 
 class _ManagerMainViewState extends State<ManagerMainView>
     with AutomaticKeepAliveClientMixin {
-  int year = 2000;
-  final monthObjectSize = 76.0;
-  List<String> monthLs = <String>[
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec'
-  ];
-
   List<Icon> iconLs = <Icon>[
     Icon(Icons.show_chart),
     Icon(Icons.add),
     Icon(Icons.list_alt),
   ];
 
+  Map<ChartQuery, Color> colorLs = <ChartQuery, Color>{
+    ChartQuery.Income: Utils.primaryColor,
+    ChartQuery.KPIs: Colors.redAccent,
+    ChartQuery.MostVisited: Colors.purple,
+    ChartQuery.Rating: Colors.blueAccent,
+  };
+
   List<bool> monthState = List<bool>.generate(12, (index) => false);
   List<bool> bottomAppState = List<bool>.generate(3, (index) => false);
   int currentMonthState = -1;
   int currentBABState = -1;
-  ScrollController _scrollController = ScrollController();
 
   double avgIncome = 2884.3;
 
@@ -56,29 +46,8 @@ class _ManagerMainViewState extends State<ManagerMainView>
 
   List<int> listShowSpot = [3];
 
-  void refactorYear(int dif) {
-    setState(() {
-      year = year + dif;
-    });
-  }
-
-  void monthAnimate(int index) {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      double pos = 0;
-      if (index <= 2) {
-        pos = 0;
-      } else {
-        pos = (index - 2) * monthObjectSize;
-      }
-      _scrollController.animateTo(pos,
-          curve: Curves.easeIn, duration: Duration(milliseconds: 500));
-      currentMonthState = index;
-    });
-  }
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     currentDayOnClick();
     bottomAppBarOnClick(0);
@@ -88,38 +57,7 @@ class _ManagerMainViewState extends State<ManagerMainView>
     // TODO: Create Route
   }
 
-  void currentDayOnClick() {
-    // TODO: Create Animation
-    DateTime now = DateTime.now();
-    print("Now time: Month: ${now.month} | Year: ${now.year}");
-    if ((year == now.year) && (currentMonthState == now.month)) {
-      return;
-    }
-    print("Current month $currentMonthState");
-    print("Current month $monthState");
-    setState(() {
-      // refactorYear(now.year - yearLs[1]);
-      year = now.year;
-      monthOnClick(now.month - 1);
-    });
-  }
-
-  void monthOnClick(int month) {
-    // TODO: Action OnClick
-    if (currentMonthState == -1) {
-      currentMonthState = month;
-    } else {
-      if (currentMonthState == month) {
-        return;
-      } else {
-        monthState[currentMonthState] = false;
-      }
-    }
-    setState(() {
-      monthState[month] = true;
-      monthAnimate(month);
-    });
-  }
+  void currentDayOnClick() {}
 
   void bottomAppBarOnClick(int index) {
     //TODO: func
@@ -136,23 +74,6 @@ class _ManagerMainViewState extends State<ManagerMainView>
     setState(() {
       bottomAppState[index] = true;
     });
-  }
-
-  List<Widget> buildMonth() {
-    List<Widget> _monthLs = List<Widget>();
-    for (int i = 0; i < monthLs.length; i++) {
-      _monthLs.add(Container(
-        padding: EdgeInsets.symmetric(horizontal: 10.0),
-        child: FlatButton(
-            minWidth: 30.0,
-            shape: StadiumBorder(),
-            color: monthState[i] ? Utils.primaryColor : null,
-            textColor: monthState[i] ? Colors.white : Colors.black,
-            onPressed: () => monthOnClick(i),
-            child: Text(monthLs[i])),
-      ));
-    }
-    return _monthLs;
   }
 
   List<Widget> buildBottomAppBar() {
@@ -237,8 +158,12 @@ class _ManagerMainViewState extends State<ManagerMainView>
       GestureDetector(
         // Income Chart
         onTap: () {
-          //Todo: add func to change view/animation
-          Navigator.pushNamed(context, DetailIncomeChartViewRoute);
+          Navigator.pushNamed(
+            context,
+            DetailIncomeChartViewRoute,
+            arguments: detailedChartArgs(
+                ChartQuery.Income, colorLs[ChartQuery.Income]),
+          );
         },
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 15, horizontal: 12),
@@ -307,7 +232,12 @@ class _ManagerMainViewState extends State<ManagerMainView>
       GestureDetector(
         // KPIs chart
         onTap: () {
-          //Todo: add func to change view/animation
+          Navigator.pushNamed(
+            context,
+            DetailIncomeChartViewRoute,
+            arguments:
+                detailedChartArgs(ChartQuery.KPIs, colorLs[ChartQuery.KPIs]),
+          );
         },
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 15, horizontal: 12),
@@ -318,7 +248,7 @@ class _ManagerMainViewState extends State<ManagerMainView>
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10.0),
-                    color: Colors.redAccent,
+                    color: colorLs[ChartQuery.KPIs],
                   ),
                   child: LineChart(mainData()),
                 ),
@@ -376,7 +306,12 @@ class _ManagerMainViewState extends State<ManagerMainView>
       GestureDetector(
         //Most visited
         onTap: () {
-          //Todo: add func to change view/animation
+          Navigator.pushNamed(
+            context,
+            DetailIncomeChartViewRoute,
+            arguments: detailedChartArgs(
+                ChartQuery.MostVisited, colorLs[ChartQuery.MostVisited]),
+          );
         },
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 15, horizontal: 12),
@@ -387,7 +322,7 @@ class _ManagerMainViewState extends State<ManagerMainView>
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10.0),
-                    color: Colors.blueAccent,
+                    color: colorLs[ChartQuery.MostVisited],
                   ),
                   child: LineChart(mainData()),
                 ),
@@ -438,7 +373,12 @@ class _ManagerMainViewState extends State<ManagerMainView>
       GestureDetector(
         // User Rating
         onTap: () {
-          //Todo: add func to change view/animation
+          Navigator.pushNamed(
+            context,
+            DetailIncomeChartViewRoute,
+            arguments: detailedChartArgs(
+                ChartQuery.Rating, colorLs[ChartQuery.Rating]),
+          );
         },
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 15, horizontal: 12),
@@ -449,7 +389,7 @@ class _ManagerMainViewState extends State<ManagerMainView>
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10.0),
-                    color: Colors.amberAccent.shade400,
+                    color: colorLs[ChartQuery.Rating],
                   ),
                   child: LineChart(mainData()),
                 ),
@@ -508,25 +448,36 @@ class _ManagerMainViewState extends State<ManagerMainView>
               padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
               child: Stack(
                 children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      GestureDetector(
-                        // Notification
-                        onTap: notificationOnClick,
-                        child: Icon(
-                          Icons.notifications,
-                          color: Colors.black,
-                        ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: <Widget>[
+                  //     GestureDetector(
+                  //       // Notification
+                  //       onTap: notificationOnClick,
+                  //       child: Icon(
+                  //         Icons.notifications,
+                  //         color: Colors.black,
+                  //       ),
+                  //     ),
+                  // GestureDetector(
+                  //   onTap: currentDayOnClick,
+                  //   child: Text(
+                  //     "Today",
+                  //     style: TextStyle(color: Utils.primaryColor),
+                  //   ),
+                  // ),
+                  // ],
+                  // ),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: GestureDetector(
+                      // Notification
+                      onTap: notificationOnClick,
+                      child: Icon(
+                        Icons.notifications,
+                        color: Colors.yellowAccent.shade700,
                       ),
-                      GestureDetector(
-                        onTap: currentDayOnClick,
-                        child: Text(
-                          "Today",
-                          style: TextStyle(color: Utils.primaryColor),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                   Center(
                     child: Text("Data Report", style: TextStyle(fontSize: 20)),
@@ -534,43 +485,6 @@ class _ManagerMainViewState extends State<ManagerMainView>
                 ],
               ),
             ), // Title
-            // Container(
-            //   // Appbar
-            //   padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 20.0),
-            //   child: Row(
-            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //     children: <Widget>[
-            //       FlatButton(
-            //           minWidth: 10.0,
-            //           shape: StadiumBorder(),
-            //           onPressed: () => refactorYear(-1),
-            //           child: Text(
-            //             (year - 1).toString(),
-            //             style: TextStyle(color: Colors.black38),
-            //           )),
-            //       Text(
-            //         year.toString(),
-            //         style: TextStyle(color: Utils.primaryColor),
-            //       ),
-            //       FlatButton(
-            //           minWidth: 10.0,
-            //           shape: StadiumBorder(),
-            //           onPressed: () => refactorYear(1),
-            //           child: Text(
-            //             (year + 1).toString(),
-            //             style: TextStyle(color: Colors.black38),
-            //           )),
-            //     ],
-            //   ),
-            // ), // Year
-            // SingleChildScrollView(
-            //   scrollDirection: Axis.horizontal,
-            //   controller: _scrollController,
-            //   padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
-            //   child: Row(
-            //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            //       children: buildMonth()),
-            // ), // Month
             Divider(
               color: Colors.black38,
             ),

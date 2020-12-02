@@ -4,6 +4,7 @@ import 'package:CoachTicketSelling/Utils/Timing.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:CoachTicketSelling/classes/account.dart';
 
 class BodyView extends StatefulWidget {
   const BodyView({Key key}) : super(key: key);
@@ -103,6 +104,8 @@ class _BodyViewState extends State<BodyView>
             errorMessage = "Email is not verified";
           });
         } else {
+          Account account = Account.instance;
+          account.load(_user.uid);
           await Utils.storage
               .write(key: 'e', value: _emailController.text.trim());
           await Utils.storage

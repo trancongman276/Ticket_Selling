@@ -2,6 +2,7 @@ import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rounded_date_picker/rounded_picker.dart';
+import 'package:CoachTicketSelling/classes/account.dart';
 
 class RegisterView extends StatefulWidget {
   @override
@@ -191,19 +192,22 @@ class _RegisterViewState extends State<RegisterView> {
         final UserCredential user = await Utils.firebaseAuth
             .createUserWithEmailAndPassword(
                 email: _emailController.text.trim(),
-                password: _passwordController.text);
+                password: _passwordController.text.trim());
 
         print(user.user);
         user.user.updateProfile(displayName: _nameController.text);
         user.user.reload();
-        Utils.firebase.collection('User').doc(user.user.uid).set({
-          'Email': user.user.email,
-          'Name': _nameController.text,
-          'Phone': _phoneController.text,
-          'DoB': date.microsecondsSinceEpoch,
-          'Gender': dropDownValue,
-          'Role': 'user'
-        });
+        Account account = Account.instance;
+        account.update(user.user.email, _nameController.text,
+            _phoneController.text, date, dropDownValue, 'user');
+        // Utils.firebase.collection('User').doc(user.user.uid).set({
+        //   'Email': user.user.email,
+        //   'Name': _nameController.text,
+        //   'Phone': _phoneController.text,
+        //   'DoB': date.microsecondsSinceEpoch,
+        //   'Gender': dropDownValue,
+        //   'Role': 'user'
+        // });
         Navigator.pop(context);
         await user.user.sendEmailVerification();
       } catch (e) {
