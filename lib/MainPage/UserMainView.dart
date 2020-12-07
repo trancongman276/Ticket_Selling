@@ -52,7 +52,6 @@ class _UserMainViewState extends State<UserMainView> {
                     icon: FaIcon(FontAwesomeIcons.userCircle),
                     onPressed: () =>
                         {Utils.logout(), Navigator.of(context).pop()},
-                    // TODO:
                   ),
                 ],
               ),

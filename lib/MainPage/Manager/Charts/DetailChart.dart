@@ -188,6 +188,7 @@ class _DetailChartState extends State<DetailChart> {
                       return '';
                   }
                 }
+                return '';
               },
               margin: 8.0),
           leftTitles: SideTitles(

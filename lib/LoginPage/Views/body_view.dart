@@ -1,14 +1,10 @@
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:CoachTicketSelling/Utils/Route.dart';
-import 'package:CoachTicketSelling/Utils/Timing.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:CoachTicketSelling/classes/account.dart';
 
 class BodyView extends StatefulWidget {
-  const BodyView({Key key}) : super(key: key);
-
   @override
   _BodyViewState createState() => _BodyViewState();
 }
@@ -16,16 +12,13 @@ class BodyView extends StatefulWidget {
 class _BodyViewState extends State<BodyView>
     with AutomaticKeepAliveClientMixin {
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
-  bool isSuccess = true;
-  String errorMessage;
-  User _user;
-  bool resendVerification = false;
+  String errorMessage = '';
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final TextEditingController _emailController = TextEditingController();
-    final TextEditingController _passwordController = TextEditingController();
 
     final emailTb = Container(
       padding: EdgeInsets.all(0),
@@ -94,18 +87,16 @@ class _BodyViewState extends State<BodyView>
             .signInWithEmailAndPassword(
                 email: _emailController.text.trim(),
                 password: _passwordController.text.trim());
-        _user = user.user;
         print("[DEBUG] Email verified: " +
             Utils.firebaseAuth.currentUser.emailVerified.toString());
         if (user.user.emailVerified == false) {
           setState(() {
-            isSuccess = false;
-            resendVerification = true;
             errorMessage = "Email is not verified";
           });
         } else {
-          Account account = Account.instance;
-          account.load(_user.uid);
+          // Account account = Account.instance;
+          //Todo: FIX ACCOUNT
+          // account.get(_user.uid);
           await Utils.storage
               .write(key: 'e', value: _emailController.text.trim());
           await Utils.storage
@@ -119,13 +110,12 @@ class _BodyViewState extends State<BodyView>
       } catch (error) {
         print('[DEBUG] ' + error.code);
         setState(() {
-          isSuccess = false;
           switch (error.code) {
             case "wrong-password":
-              errorMessage = "Your password is wrong.";
+              errorMessage = "Your email or password is wrong.";
               break;
             case "user-not-found":
-              errorMessage = "User with this email doesn't exist.";
+              errorMessage = "Your email or password is wrong.";
               break;
             case "user-disabled":
               errorMessage = "User with this email has been disabled.";
@@ -180,13 +170,19 @@ class _BodyViewState extends State<BodyView>
                         //     context,
                         //     MaterialPageRoute(
                         //         builder: (context) => ForgetPasswordView()));
-                        var result =
-                            await Navigator.pushNamed(context, ForgetViewRoute);
-                        if (result != null)
-                          Scaffold.of(context).showSnackBar(SnackBar(
-                            content: Text(result),
-                            duration: Duration(seconds: 3),
-                          ));
+                        // var result =
+                        //     await Navigator.pushNamed(context, ForgetViewRoute);
+                        // if (result != null)
+                        //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        //     content: Text(result),
+                        //     duration: Duration(seconds: 3),
+                        //   ));
+                        Navigator.pushNamed(context, ForgetViewRoute).then(
+                            (value) => ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                  content: Text("Check your mail"),
+                                  duration: Duration(seconds: 3),
+                                )));
                       },
                       child: Text(
                         'Forgot?',
@@ -208,32 +204,11 @@ class _BodyViewState extends State<BodyView>
                           EdgeInsets.symmetric(vertical: 10, horizontal: 80),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0))),
-                  Container(
-                    child: Column(
-                      children: <Widget>[
-                        Text(
-                          isSuccess ? '' : errorMessage,
-                          style: TextStyle(color: Colors.red),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            if (resendVerification) {
-                              _user.sendEmailVerification();
-                              Scaffold.of(context).showSnackBar(SnackBar(
-                                content: Text("Check your mail"),
-                                duration: Duration(seconds: 3),
-                              ));
-                            }
-                          },
-                          child: resendVerification
-                              ? Timing(
-                                  duration: 60,
-                                )
-                              : Text(resendVerification.toString()),
-                        ),
-                      ],
-                    ),
+                  Text(
+                    errorMessage,
+                    style: TextStyle(color: Colors.red),
                   ),
+
                   Container(
                     child: Text('Or'),
                     padding: EdgeInsets.symmetric(vertical: 5),

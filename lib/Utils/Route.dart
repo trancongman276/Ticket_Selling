@@ -6,11 +6,9 @@ import 'package:CoachTicketSelling/MainPage/Manager/MainView.dart';
 import 'package:CoachTicketSelling/MainPage/UserMainView.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:CoachTicketSelling/Utils/enum.dart';
-import 'package:CoachTicketSelling/classes/account.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-const String LoginViewRoute = '/';
+const String LoginViewRoute = '/login';
 const String RegisterViewRoute = '/register';
 const String ForgetViewRoute = '/forget';
 const String UserViewRoute = '/user';
@@ -30,16 +28,13 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case UserViewRoute:
       return MaterialPageRoute(builder: (context) => UserMainView());
     case DetailIncomeChartViewRoute:
-      detailedChartArgs arg = settings.arguments;
+      DetailedChartArgs arg = settings.arguments;
       return MaterialPageRoute(
           settings: settings,
           builder: (context) => DetailChart(
                 chart: arg.chart,
                 primaryColor: arg.primaryColor,
               ));
-    // case UserViewRoute:
-    //   var _id = settings.arguments;
-    //   return MaterialPageRoute(builder: (context) => UserMainView(id: _id));
     default:
       return null;
   }
@@ -50,17 +45,19 @@ Future<bool> checkLogined() async {
   String pass = await Utils.storage.read(key: 'p');
   print("[DEBUG] Email: $mail | Pass: $pass");
   if (mail != null && pass != null) {
-    Utils.firebaseAuth
-        .signInWithEmailAndPassword(email: mail, password: pass)
-        .then((user) => Account.instance.load(user.user.uid));
+    // Utils.firebaseAuth
+    //     .signInWithEmailAndPassword(email: mail, password: pass)
+    //     .then((user) => Account.instance.get(user.user.uid));
+
+    //TODO: FIX ACCOUNT
     return true;
   } else {
     return false;
   }
 }
 
-class detailedChartArgs {
+class DetailedChartArgs {
   ChartQuery chart;
   Color primaryColor;
-  detailedChartArgs(this.chart, this.primaryColor);
+  DetailedChartArgs(this.chart, this.primaryColor);
 }

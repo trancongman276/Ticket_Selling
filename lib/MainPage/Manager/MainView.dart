@@ -1,11 +1,8 @@
-import 'package:CoachTicketSelling/MainPage/Manager/Charts/DetailChart.dart';
+import 'package:CoachTicketSelling/MainPage/Manager/Charts/ChartOveral.dart';
+import 'package:CoachTicketSelling/MainPage/Manager/Add/OveralAddView.dart';
+import 'package:CoachTicketSelling/MainPage/Manager/Manage/OveralManageView.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:CoachTicketSelling/Utils/Route.dart';
-import 'package:CoachTicketSelling/Utils/enum.dart';
 
 class ManagerMainView extends StatefulWidget {
   @override
@@ -20,494 +17,82 @@ class _ManagerMainViewState extends State<ManagerMainView>
     Icon(Icons.list_alt),
   ];
 
-  Map<ChartQuery, Color> colorLs = <ChartQuery, Color>{
-    ChartQuery.Income: Utils.primaryColor,
-    ChartQuery.KPIs: Colors.redAccent,
-    ChartQuery.MostVisited: Colors.purple,
-    ChartQuery.Rating: Colors.blueAccent,
-  };
-
-  List<bool> monthState = List<bool>.generate(12, (index) => false);
+  List<String> title = ['Report', 'Add', 'Manage'];
   List<bool> bottomAppState = List<bool>.generate(3, (index) => false);
-  int currentMonthState = -1;
-  int currentBABState = -1;
-
-  double avgIncome = 2884.3;
-
-  List<FlSpot> listSpot = [
-    FlSpot(0, 3),
-    FlSpot(2.6, 2),
-    FlSpot(4.9, 5),
-    FlSpot(6.2, 4),
-    FlSpot(7.2, 5),
-    FlSpot(8.9, 5),
-    FlSpot(13, 5),
-  ];
-
-  List<int> listShowSpot = [3];
+  int currentBABState = 0;
 
   @override
   void initState() {
     super.initState();
-    currentDayOnClick();
-    bottomAppBarOnClick(0);
   }
 
   void notificationOnClick() {
     // TODO: Create Route
   }
 
-  void currentDayOnClick() {}
-
   void bottomAppBarOnClick(int index) {
-    //TODO: func
-    if (currentBABState == -1) {
-      currentBABState = index;
+    if (currentBABState == index) {
+      return;
     } else {
-      if (currentBABState == index) {
-        return;
-      } else {
-        bottomAppState[currentBABState] = false;
-        currentBABState = index;
-      }
+      bottomAppState[currentBABState] = false;
+      currentBABState = index;
     }
     setState(() {
       bottomAppState[index] = true;
     });
   }
 
-  List<Widget> buildBottomAppBar() {
-    List<Widget> _buttonLs = List<Widget>();
-    for (int i = 0; i < iconLs.length; i++) {
-      _buttonLs.add(Container(
-        padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0),
-        child: FlatButton(
-          minWidth: 30.0,
-          shape: CircleBorder(),
-          color: bottomAppState[i]
-              ? Utils.primaryColor
-              : Utils.primaryColor.withOpacity(0.5),
-          textColor: Colors.white,
-          child: iconLs[i],
-          onPressed: () => bottomAppBarOnClick(i),
-        ),
-      ));
-    }
-    return _buttonLs;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final _lineBarsData = [
-      LineChartBarData(
-        spots: listSpot,
-        dotData: FlDotData(
-            show: true,
-            checkToShowDot: (FlSpot spot, LineChartBarData barData) {
-              return spot == listSpot[listShowSpot[0]] ?? true;
-            }),
-        isCurved: true,
-        colors: [Colors.white],
-        barWidth: 2.0,
-        isStrokeCapRound: true,
-        belowBarData: BarAreaData(
-          show: true,
-          colors: [Colors.white.withOpacity(0.2)],
-        ),
-      ),
+    super.build(context);
+
+    List<Widget> page = [
+      OveralChartView(),
+      OveralAddView(),
+      OveralManageView(),
     ];
 
-    final LineChartBarData chart1 = _lineBarsData[0];
-    LineChartData mainData() {
-      return LineChartData(
-        minX: 0,
-        maxX: 10,
-        minY: 0,
-        maxY: 10,
-        gridData: FlGridData(show: false),
-        titlesData: FlTitlesData(show: false),
-        borderData: FlBorderData(show: false),
-        showingTooltipIndicators: listShowSpot.map((index) {
-          return ShowingTooltipIndicators(index, [
-            LineBarSpot(
-                chart1, _lineBarsData.indexOf(chart1), chart1.spots[index]),
-          ]);
-        }).toList(),
-        lineTouchData: LineTouchData(
-          enabled: false,
-          touchTooltipData: LineTouchTooltipData(
-            tooltipPadding: EdgeInsets.all(5.0),
-            tooltipBgColor: Colors.white,
-            tooltipRoundedRadius: 8.0,
-            getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
-              return lineBarsSpot.map((lineBarSpot) {
-                return LineTooltipItem(
-                  lineBarSpot.y.toString(),
-                  const TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
-                );
-              }).toList();
-            },
+    Widget appbar = AppBar(
+      elevation: currentBABState != 0 ? 0 : null,
+      automaticallyImplyLeading: false,
+      backgroundColor: currentBABState == 0 ? Colors.white : Utils.primaryColor,
+      centerTitle: true,
+      title: Text(title[currentBABState],
+          style: TextStyle(
+              fontSize: 20,
+              color: currentBABState == 0 ? Colors.black : Colors.white)),
+      actions: <Widget>[
+        Padding(
+          padding: EdgeInsets.all(10.0),
+          child: GestureDetector(
+            // Notification
+            onTap: notificationOnClick,
+            child: Icon(
+              Icons.notifications,
+              color: Colors.yellowAccent.shade700,
+            ),
           ),
         ),
-        lineBarsData: _lineBarsData,
-      );
-    }
-
-    var chartLs = <Widget>[
-      GestureDetector(
-        // Income Chart
-        onTap: () {
-          Navigator.pushNamed(
-            context,
-            DetailIncomeChartViewRoute,
-            arguments: detailedChartArgs(
-                ChartQuery.Income, colorLs[ChartQuery.Income]),
-          );
-        },
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 12),
-          child: Stack(
-            children: <Widget>[
-              AspectRatio(
-                aspectRatio: 1.7,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.0),
-                    color: Utils.primaryColor,
-                  ),
-                  child: LineChart(mainData()),
-                ),
-              ),
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.all(13),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            "Income",
-                            style: TextStyle(
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                          Text(
-                            "Average: \$$avgIncome.",
-                            style: GoogleFonts.nunito(
-                                textStyle: TextStyle(color: Colors.white),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14.0),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 12.0),
-                      child: Container(
-                        child: FaIcon(
-                          FontAwesomeIcons.dollarSign,
-                          color: Colors.white,
-                          size: 17.0,
-                        ),
-                        padding: EdgeInsets.all(10.0),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.5),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      GestureDetector(
-        // KPIs chart
-        onTap: () {
-          Navigator.pushNamed(
-            context,
-            DetailIncomeChartViewRoute,
-            arguments:
-                detailedChartArgs(ChartQuery.KPIs, colorLs[ChartQuery.KPIs]),
-          );
-        },
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 12),
-          child: Stack(
-            children: <Widget>[
-              AspectRatio(
-                aspectRatio: 1.7,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.0),
-                    color: colorLs[ChartQuery.KPIs],
-                  ),
-                  child: LineChart(mainData()),
-                ),
-              ),
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.all(13),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            "KPIs",
-                            style: TextStyle(
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                          Text(
-                            "Average: \$$avgIncome.",
-                            style: GoogleFonts.nunito(
-                                textStyle: TextStyle(color: Colors.white),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14.0),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 12.0),
-                      child: Container(
-                        child: FaIcon(
-                          FontAwesomeIcons.chartLine,
-                          color: Colors.white,
-                          size: 17.0,
-                        ),
-                        padding: EdgeInsets.all(10.0),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.5),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      GestureDetector(
-        //Most visited
-        onTap: () {
-          Navigator.pushNamed(
-            context,
-            DetailIncomeChartViewRoute,
-            arguments: detailedChartArgs(
-                ChartQuery.MostVisited, colorLs[ChartQuery.MostVisited]),
-          );
-        },
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 12),
-          child: Stack(
-            children: <Widget>[
-              AspectRatio(
-                aspectRatio: 1.7,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.0),
-                    color: colorLs[ChartQuery.MostVisited],
-                  ),
-                  child: LineChart(mainData()),
-                ),
-              ),
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.all(13),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            "Most Visited",
-                            style: TextStyle(
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 12.0),
-                      child: Container(
-                        child: FaIcon(
-                          FontAwesomeIcons.landmark,
-                          color: Colors.white,
-                          size: 17.0,
-                        ),
-                        padding: EdgeInsets.all(10.0),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.5),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      GestureDetector(
-        // User Rating
-        onTap: () {
-          Navigator.pushNamed(
-            context,
-            DetailIncomeChartViewRoute,
-            arguments: detailedChartArgs(
-                ChartQuery.Rating, colorLs[ChartQuery.Rating]),
-          );
-        },
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 12),
-          child: Stack(
-            children: <Widget>[
-              AspectRatio(
-                aspectRatio: 1.7,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.0),
-                    color: colorLs[ChartQuery.Rating],
-                  ),
-                  child: LineChart(mainData()),
-                ),
-              ),
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.all(13),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            "User rating",
-                            style: TextStyle(
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 12.0),
-                      child: Container(
-                        child: Icon(
-                          Icons.star,
-                          color: Colors.white,
-                          size: 22.0,
-                        ),
-                        padding: EdgeInsets.all(5.0),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.5),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    ];
+      ],
+    );
 
     return Scaffold(
+      appBar: appbar,
       body: SafeArea(
-        child: Column(
-          children: <Widget>[
-            Container(
-              // Header
-              padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
-              child: Stack(
-                children: <Widget>[
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //   children: <Widget>[
-                  //     GestureDetector(
-                  //       // Notification
-                  //       onTap: notificationOnClick,
-                  //       child: Icon(
-                  //         Icons.notifications,
-                  //         color: Colors.black,
-                  //       ),
-                  //     ),
-                  // GestureDetector(
-                  //   onTap: currentDayOnClick,
-                  //   child: Text(
-                  //     "Today",
-                  //     style: TextStyle(color: Utils.primaryColor),
-                  //   ),
-                  // ),
-                  // ],
-                  // ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: GestureDetector(
-                      // Notification
-                      onTap: notificationOnClick,
-                      child: Icon(
-                        Icons.notifications,
-                        color: Colors.yellowAccent.shade700,
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: Text("Data Report", style: TextStyle(fontSize: 20)),
-                  )
-                ],
-              ),
-            ), // Title
-            Divider(
-              color: Colors.black38,
-            ),
-            Expanded(
-              //Chart view
-              child: SingleChildScrollView(
-                child: Column(
-                  children: chartLs,
-                ),
-              ),
-            ),
-            Align(
-              // bottom app bar
-              alignment: Alignment.bottomCenter,
-              child: BottomAppBar(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: buildBottomAppBar(),
-                ),
-              ),
-            ),
-          ],
+        child: IndexedStack(
+          children: page,
+          index: currentBABState,
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Utils.primaryColor,
+        currentIndex: currentBABState,
+        onTap: (index) => bottomAppBarOnClick(index),
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: iconLs[0], label: 'Report'),
+          BottomNavigationBarItem(icon: iconLs[1], label: 'Add'),
+          BottomNavigationBarItem(icon: iconLs[2], label: 'Manage'),
+        ],
       ),
     );
   }

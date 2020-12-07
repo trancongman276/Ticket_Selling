@@ -33,6 +33,7 @@ dependencies:
   firebase_core:
   # Data saving
   flutter_secure_storage:
+  image_picker:
 
   # Chart
   fl_chart: ^0.12.0
