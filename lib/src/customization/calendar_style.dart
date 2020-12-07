@@ -102,7 +102,8 @@ class CalendarStyle {
     this.weekendStyle = const TextStyle(color: const Color(0xFFF44336)), // Material red[500]
     this.holidayStyle = const TextStyle(color: const Color(0xFFF44336)), // Material red[500]
     this.selectedStyle = const TextStyle(color: const Color(0xFFFAFAFA), fontSize: 16.0), // Material grey[50]
-    this.todayStyle = const TextStyle(color: const Color(0xFFFAFAFA), fontSize: 16.0), // Material grey[50]
+    this.todayStyle = const TextStyle(color: const Color(0xFF9FA8DA), fontSize: 16.0), // Material grey[50]
+    // this.todayStyle=LightColors.kLightGreen,
     this.outsideStyle = const TextStyle(color: const Color(0xFF9E9E9E)), // Material grey[500]
     this.outsideWeekendStyle = const TextStyle(color: const Color(0xFFEF9A9A)), // Material red[200]
     this.outsideHolidayStyle = const TextStyle(color: const Color(0xFFEF9A9A)), // Material red[200]

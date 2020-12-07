@@ -25,11 +25,11 @@
 //   }
 // }
 
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_app/table_calendar.dart';
-
+import 'package:intl/date_symbol_data_local.dart';
 
 // Example holidays
 final Map<DateTime, List> _holidays = {
@@ -40,6 +40,7 @@ final Map<DateTime, List> _holidays = {
   DateTime(2019, 4, 22): ['Easter Monday'],
 };
 
+
 void main() {
   initializeDateFormatting().then((_) => runApp(MyApp()));
 }
@@ -48,14 +49,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Table Calendar PerWeek',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Table Calendar PerWeek'),
+      // theme: ThemeData(
+      //   primarySwatch: Colors.,
+      //   // accentColor: Colors.tealAccent[200],
+      // ),
+      home: MyHomePage(title: "Calendar for Driver"),
+      // home:new CrudSample(),
     );
   }
 }
+
+FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -75,25 +81,64 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    Firebase.initializeApp().whenComplete(() {
+      print("completed");
+      setState(() {});
+    });
     final _selectedDay = DateTime.now();
 
+
     _events = {
-      _selectedDay.subtract(Duration(days: 30)): ['From: Ha Noi \nTo: Ho Chi Minh City \nDuration: 9h-12h30',
-        'From: Ha Noi \nTo: Ho Chi Minh City \nDuration: 9h-12h30'],
+      _selectedDay.subtract(Duration(days: 30)): [
+        'From: Ha Noi \nTo: Ho Chi Minh City \nDuration: 9h-12h30',
+        'From: Ha Noi \nTo: Ho Chi Minh City \nDuration: 9h-12h30'
+      ],
       _selectedDay.subtract(Duration(days: 27)): ['Event A1'],
-      _selectedDay.subtract(Duration(days: 20)): ['Event A2', 'Event B2', 'Event C2', 'Event D2'],
+      _selectedDay.subtract(Duration(days: 20)): [
+        'Event A2',
+        'Event B2',
+        'Event C2',
+        'Event D2'
+      ],
       _selectedDay.subtract(Duration(days: 16)): ['Event A3', 'Event B3'],
-      _selectedDay.subtract(Duration(days: 10)): ['Event A4', 'Event B4', 'Event C4'],
-      _selectedDay.subtract(Duration(days: 4)): ['Event A5', 'Event B5', 'Event C5'],
+      _selectedDay.subtract(Duration(days: 10)): [
+        'Event A4',
+        'Event B4',
+        'Event C4'
+      ],
+      _selectedDay.subtract(Duration(days: 4)): [
+        'Event A5',
+        'Event B5',
+        'Event C5'
+      ],
       _selectedDay.subtract(Duration(days: 2)): ['Event A6', 'Event B6'],
       _selectedDay: ['Event A7', 'Event B7', 'Event C7', 'Event D7'],
-      _selectedDay.add(Duration(days: 1)): ['Event A8', 'Event B8', 'Event C8', 'Event D8'],
-      _selectedDay.add(Duration(days: 3)): Set.from(['Event A9', 'Event A9', 'Event B9']).toList(),
-      _selectedDay.add(Duration(days: 7)): ['Event A10', 'Event B10', 'Event C10'],
+      _selectedDay.add(Duration(days: 1)): [
+        'Event A8',
+        'Event B8',
+        'Event C8',
+        'Event D8'
+      ],
+      _selectedDay.add(Duration(days: 3)): Set.from(
+          ['Event A9', 'Event A9', 'Event B9']).toList(),
+      _selectedDay.add(Duration(days: 7)): [
+        'Event A10',
+        'Event B10',
+        'Event C10'
+      ],
       _selectedDay.add(Duration(days: 11)): ['Event A11', 'Event B11'],
-      _selectedDay.add(Duration(days: 17)): ['Event A12', 'Event B12', 'Event C12', 'Event D12'],
+      _selectedDay.add(Duration(days: 17)): [
+        'Event A12',
+        'Event B12',
+        'Event C12',
+        'Event D12'
+      ],
       _selectedDay.add(Duration(days: 22)): ['Event A13', 'Event B13'],
-      _selectedDay.add(Duration(days: 26)): ['Event A14', 'Event B14', 'Event C14'],
+      _selectedDay.add(Duration(days: 26)): [
+        'Event A14',
+        'Event B14',
+        'Event C14'
+      ],
     };
 
     _selectedEvents = _events[_selectedDay] ?? [];
@@ -133,6 +178,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xff2ecc71),
         title: Text(widget.title),
       ),
       body: Column(
@@ -165,7 +211,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         outsideDaysVisible: false,
       ),
       headerStyle: HeaderStyle(
-        formatButtonTextStyle: TextStyle().copyWith(color: Colors.white, fontSize: 15.0),
+        formatButtonTextStyle: TextStyle().copyWith(
+            color: Colors.lightGreenAccent, fontSize: 15.0),
         formatButtonDecoration: BoxDecoration(
           color: Colors.deepOrange[400],
           borderRadius: BorderRadius.circular(16.0),
@@ -284,7 +331,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         child: Text(
           '${events.length}',
           style: TextStyle().copyWith(
-            color: Colors.white,
+            color: LightColors.kLightGreen,
             fontSize: 12.0,
           ),
         ),
@@ -326,12 +373,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             //   },
             // ),
             RaisedButton(
-              child: Text('Week'),
-              onPressed: () {
-                setState(() {
-                  _calendarController.setCalendarFormat(CalendarFormat.week);
-                });
-              },
+              onPressed: addTrip,
+              child: Text('Add Trip'),
+              // setState(() {
+              //   _calendarController.setCalendarFormat(CalendarFormat.week);
+              // });
+
             ),
           ],
         ),
@@ -349,20 +396,80 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     );
   }
 
+  // void addTrip() {
+  //   final firestoreInstance = FirebaseFirestore.instance;
+  //
+  //   // CollectionReference Trip = FirebaseFirestore.instance.collection('Trip1');
+  //
+  //   firestoreInstance.collection("users").add(
+  //       {
+  //         "name" : "john",
+  //         "age" : 50,
+  //         "email" : "example@example.com",
+  //         "address" : {
+  //           "street" : "street 24",
+  //           "city" : "new york"
+  //         }
+  //       }).then((value){
+  //     print(value.id);
+  //   });
+  // }
+  // void addTrip() {
+  //   final firestoreInstance = FirebaseFirestore.instance;
+  //
+  //   // CollectionReference Trip = FirebaseFirestore.instance.collection('Trip1');
+  //
+  //   firestoreInstance.collection("Trip").add(
+  //       {
+  //         "Total Seat" : "25",
+  //         "Detail" : "Visit",
+  //         "Source" : "Hà Nội",
+  //         "Destination": "Đồng Nai",
+  //         "Price":250000,
+  //         "Company ID": firestoreInstance.collection("Trip").doc('Trip'+"C1"),
+  //         "Seat" : {
+  //           "Seat ID" : "1",
+  //           "Seat Num" : "15",
+  //         },
+  //       })
+  //       .then((value){
+  //     print(value.id);
+  //   });
+  // }
+  void addTrip() {
+    final firestoreInstance = FirebaseFirestore.instance;
+    firestoreInstance.collection("Company").add({
+      "Cost": 1000000,
+      "Ticket": "Thành Bưởi",
+      "Time": Timestamp.now(),
+
+    }).then((value) {
+      print(value.id);
+      ;
+      firestoreInstance.collection('Company').doc(value.id).collection('Ticket').add({
+        "Seat Num": 25,
+        "Trip ID":1,
+        "Rating": "Good",
+      });
+
+    });
+  }
+
   Widget _buildEventList() {
     return ListView(
       children: _selectedEvents
-          .map((event) => Container(
-        decoration: BoxDecoration(
-          border: Border.all(width: 0.8),
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-        child: ListTile(
-          title: Text(event.toString()),
-          onTap: () => print('$event tapped!'),
-        ),
-      ))
+          .map((event) =>
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(width: 0.8),
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            child: ListTile(
+              title: Text(event.toString()),
+              onTap: () => print('$event tapped!'),
+            ),
+          ))
           .toList(),
     );
   }
