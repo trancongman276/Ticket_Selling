@@ -47,7 +47,7 @@ void addCompany() {
 
 void addBill() {
   final firestoreInstance = FirebaseFirestore.instance;
-  firestoreInstance.collection("Company").add({
+  firestoreInstance.collection("Bill").add({
     "Cost": 1000000,
     "Ticket": "Thành Bưởi",
     "Time": Timestamp.now(),
@@ -55,7 +55,7 @@ void addBill() {
   }).then((value) {
     print(value.id);
   ;
-  firestoreInstance.collection('Company').doc(value.id).collection('Ticket').add({
+  firestoreInstance.collection('Bill').doc(value.id).collection('Ticket').add({
     "Seat Num": 25,
     "Trip ID":1,
     "Rating": "Good",
@@ -72,6 +72,7 @@ void addUser(){
     "Phone":"01238794564",
     "Dob":"1606150800000000",
     "Gender":"Male",
+    "Image":"https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png",
     "Mail":"NVS@gmail.com",
     "Company ID":"C1",
     "Detail":"Vist",
@@ -82,3 +83,59 @@ void addUser(){
     print(value.id);
   });
 }
+
+void getAllTrip() {
+  final firestoreInstance = FirebaseFirestore.instance;
+  firestoreInstance.collection("Trip").get().then((querySnapshot) {
+    querySnapshot.docs.forEach((result) {
+      print(result.data());
+    });
+  });
+}
+
+void getCompany() {
+  final firestoreInstance = FirebaseFirestore.instance;
+  firestoreInstance.collection("Company").get().then((querySnapshot) {
+    querySnapshot.docs.forEach((result) {
+      print(result.data());
+    });
+  });
+}
+void getAllUser() {
+  final firestoreInstance = FirebaseFirestore.instance;
+  firestoreInstance.collection("User").get().then((querySnapshot) {
+    querySnapshot.docs.forEach((result) {
+      print(result.data());
+    });
+  });
+}
+void getAllBill() {
+  final firestoreInstance = FirebaseFirestore.instance;
+  firestoreInstance.collection("Bill").get().then((querySnapshot) {
+    querySnapshot.docs.forEach((result) {
+      print(result.data());
+    });
+  });
+}
+
+
+void getTicket() {
+  final firestoreInstance = FirebaseFirestore.instance;
+  firestoreInstance.collection("Company").get().then((querySnapshot) {
+    querySnapshot.docs.forEach((result) {
+      firestoreInstance
+          .collection("Company")
+          .doc(result.id)
+          .collection("Ticket")
+          .get()
+          .then((querySnapshot) {
+        querySnapshot.docs.forEach((result) {
+          print(result.data());
+        });
+      });
+    });
+  });
+}
+
+
+

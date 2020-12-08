@@ -436,22 +436,23 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   //     print(value.id);
   //   });
   // }
+  //
   void addTrip() {
     final firestoreInstance = FirebaseFirestore.instance;
-    firestoreInstance.collection("Company").add({
-      "Cost": 1000000,
-      "Ticket": "Thành Bưởi",
-      "Time": Timestamp.now(),
 
-    }).then((value) {
-      print(value.id);
-      ;
-      firestoreInstance.collection('Company').doc(value.id).collection('Ticket').add({
-        "Seat Num": 25,
-        "Trip ID":1,
-        "Rating": "Good",
+    firestoreInstance.collection("Company").get().then((querySnapshot) {
+      querySnapshot.docs.forEach((result) {
+        firestoreInstance
+            .collection("Company")
+            .doc(result.id)
+            .collection("Ticket")
+            .get()
+            .then((querySnapshot) {
+          querySnapshot.docs.forEach((result) {
+            print(result.data());
+          });
+        });
       });
-
     });
   }
 
