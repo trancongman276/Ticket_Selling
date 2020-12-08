@@ -1,3 +1,4 @@
+import 'package:CoachTicketSelling/MainPage/ListTicket.dart';
 import 'package:CoachTicketSelling/MainPage/RecommendationItem.dart';
 import 'package:CoachTicketSelling/MainPage/UserMainView.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
@@ -320,6 +321,9 @@ class _UserUIState extends State<UserUI> {
             currentIndex = index;
             if (currentIndex == 0) {
               Navigator.push(context, MaterialPageRoute (builder: (context) => Profile()));
+            }
+            if (currentIndex == 2) {
+              Navigator.push(context, MaterialPageRoute (builder: (context) => ListTicket()));
             }
             currentIndex = 1;
           });

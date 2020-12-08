@@ -1,18 +1,19 @@
-
-import 'package:flutter/cupertino.dart';
+import 'package:CoachTicketSelling/MainPage/Profile.dart';
+import 'package:CoachTicketSelling/MainPage/ViewTicketUI.dart';
+import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
+import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:smooth_star_rating/smooth_star_rating.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'ChooseSeat.dart';
+import 'UserUI.dart';
 
-
-class BookingUI extends StatefulWidget {
+class ListTicket extends StatefulWidget {
   @override
-  _BookingUIState createState() => _BookingUIState();
+  _ListTicketState createState() => _ListTicketState();
 }
 
-class _BookingUIState extends State<BookingUI> {
-
+class _ListTicketState extends State<ListTicket> {
+  int currentIndex = 2;
 
   String source = 'Ho Chi Minh';
   String destination = 'Da Nang';
@@ -20,17 +21,16 @@ class _BookingUIState extends State<BookingUI> {
   String timeStart = "14:00";
   String timeEnd = "20:00";
   String company = "Phuong Trang";
-  double rate = 3;
+  int rate = 0;
   int result = 15;
   int price = 150000;
   String imageLink = 'assets/images/logo.png'; //Create class to set link image corresponding to Company logo
 
-
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      child: SingleChildScrollView(
+    return Scaffold (
+      backgroundColor: Color(0xFFE8F5E9),
+      body: SingleChildScrollView(
         child: SafeArea(
           child: Stack(
             children: <Widget>[
@@ -45,41 +45,13 @@ class _BookingUIState extends State<BookingUI> {
                     .of(context)
                     .size
                     .height,
-                child: Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(left: 15),
-                      child: Row(
-                        children: <Widget>[
-                          Text(
-                            source,
-                            style: TextStyle(fontSize: 30,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(width: 10,),
-                          Icon(
-                            Icons.arrow_forward, size: 32, color: Colors.white,
-                          ),
-                          SizedBox(width: 10,),
-                          Text(
-                            destination,
-                            style: TextStyle(fontSize: 30,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 10,),
-                    Text(
-                      date,
-                      style: TextStyle(fontSize: 25,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    )
-                  ],
-                ),
+                child: Padding (
+                  padding: EdgeInsets.only(left: 50),
+                  child: Text (
+                    "BASKET TICKETS",
+                    style: TextStyle (fontWeight: FontWeight.bold, fontSize: 30, color: Colors.white),
+                  ),
+                )
               ),
               Positioned(
                 bottom: 0,
@@ -99,7 +71,7 @@ class _BookingUIState extends State<BookingUI> {
                   height: MediaQuery
                       .of(context)
                       .size
-                      .height * 0.82,
+                      .height * 0.87,
                   child: Column(
                     //tris that contain free seat
                     children: <Widget>[
@@ -107,10 +79,10 @@ class _BookingUIState extends State<BookingUI> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Text(
-                            "$result Search Results",
+                            "$result Tickets",
                             style: TextStyle(fontSize: 25),
                           ),
-                          Icon(Icons.filter_list, color: Colors.black,
+                          Icon(FontAwesomeIcons.list, color: Colors.black,
                             size: 25,)
                         ],
                       ),
@@ -123,7 +95,7 @@ class _BookingUIState extends State<BookingUI> {
                             itemBuilder: (context, index) {
                               return Column (
                                 children: <Widget>[
-                                  _bookingItem(index, source, destination,rate, timeStart, timeEnd, company, price, imageLink, context),
+                                  _bookingItem(index, source, destination, rate, timeStart, timeEnd, company, price, imageLink, context, date),
                                   //Create a class that use ID to query this information : db.string(id)
                                   SizedBox (height: 20,)
                                 ],
@@ -139,15 +111,57 @@ class _BookingUIState extends State<BookingUI> {
           ),
         ),
       ),
+      bottomNavigationBar: BottomNavyBar (
+        selectedIndex: currentIndex,
+        onItemSelected: (index) {
+          setState(() {
+            currentIndex = index;
+            if (currentIndex == 1) {
+              Navigator.push(context, MaterialPageRoute (builder: (context) => UserUI()));
+            }
+            if (currentIndex == 0) {
+              Navigator.push (context, MaterialPageRoute(builder: (context) => Profile()));
+            }
+            currentIndex = 2;
+          });
+        },
+        items: <BottomNavyBarItem>[
+          BottomNavyBarItem (
+            icon: Icon (Icons.person, size: 30,),
+            title: Text ('Profile',style: TextStyle (fontSize: 18),),
+            activeColor: Utils.primaryColor,
+            inactiveColor: Colors.black,
+          ),
+          BottomNavyBarItem (
+            icon: Icon (Icons.search, size: 30,),
+            title: Text ('Search',style: TextStyle (fontSize: 18),),
+            activeColor: Utils.primaryColor,
+            inactiveColor: Colors.black,
+          ),
+          BottomNavyBarItem (
+            icon: Icon (FontAwesomeIcons.ticketAlt, size: 27,),
+            title: Text (' Ticket',style: TextStyle (fontSize: 18),),
+            activeColor: Utils.primaryColor,
+            inactiveColor: Colors.black,
+          ),
+          BottomNavyBarItem (
+            icon: Icon (Icons.settings, size: 30,),
+            title: Text ('Setting',style: TextStyle (fontSize: 18),),
+            activeColor: Utils.primaryColor,
+            inactiveColor: Colors.black,
+          ),
+        ],
+      ),
     );
   }
 }
-Widget _bookingItem (int index, String source, String destination, double rate, String timeStart, String timeEnd, String company, int price, String imageLink, BuildContext context) {
-
+Widget _bookingItem (int index, String source, String destination, int rate, String timeStart, String timeEnd,
+    String company, int price, String imageLink, BuildContext context, String date)
+{
   return GestureDetector(
     onTap: () {
       print(index);
-      Navigator.push(context, MaterialPageRoute (builder: (context) => ChooseSeat()));
+      Navigator.push(context, MaterialPageRoute (builder: (context) => ViewTicketUI()));
     },
     child: Container (
       width: 500,
@@ -173,7 +187,7 @@ Widget _bookingItem (int index, String source, String destination, double rate, 
               Text (
                 company,
                 style: TextStyle (
-                  fontSize: 20, fontWeight: FontWeight.bold),
+                    fontSize: 20, fontWeight: FontWeight.bold),
               ),
               SizedBox (width: 25,),
               //Icon (FontAwesomeIcons.coins, size: 20,),
@@ -186,7 +200,11 @@ Widget _bookingItem (int index, String source, String destination, double rate, 
           ),
 
           SizedBox (height: 5,),
-
+          Text (
+            date,
+            style: TextStyle (fontSize: 18,),
+          ),
+          SizedBox (height: 5,),
           Row (
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -194,15 +212,15 @@ Widget _bookingItem (int index, String source, String destination, double rate, 
                 source,
                 style: TextStyle (fontSize: 20, fontWeight: FontWeight.bold),
               ),
-           Column(
-             children: [
-               _iconDestination(),
-             ],
-           ),
-           Text (
-            destination,
-            style: TextStyle (fontSize: 20, fontWeight: FontWeight.bold),
-          ),
+              Column(
+                children: [
+                  _iconDestination(),
+                ],
+              ),
+              Text (
+                destination,
+                style: TextStyle (fontSize: 20, fontWeight: FontWeight.bold),
+              ),
             ],
           ),
           Row (
@@ -218,6 +236,7 @@ Widget _bookingItem (int index, String source, String destination, double rate, 
               ),
             ],
           ),
+          SizedBox (height: 5,),
           _rating(rate)
         ],
       ),
@@ -245,7 +264,7 @@ Widget _iconDestination () {
           color: Colors.green,
           size: 9,),
 
-       Icon (Icons.fiber_manual_record,
+        Icon (Icons.fiber_manual_record,
           color: Color(0xFFFf89380),
           size: 9,),
 
@@ -264,16 +283,42 @@ Widget _iconDestination () {
     ),
   );
 }
-Widget _rating (double a) {
+Widget _rating (int a) {
+  int b = 5-a;
+  if (a == 0) return Text (
+    "Rating.....",
+    style: TextStyle (fontSize: 20),
+  );
+  return Container(
+    height: 20,
+    child: Row(
+      children: [
+        ListView.builder (
+            shrinkWrap: true,
+            itemCount: a,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) {
+              return Row (
+                children: <Widget>[
+                  Icon (Icons.star, color: Colors.yellow,size: 30,)
+                ],
+              );
+            }
+        ),
+        ListView.builder(
+          shrinkWrap: true,
+          itemCount: b,
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (context, index) {
+            return Row (
+              children: <Widget>[
+                Icon (Icons.star_border,color: Colors.yellow,size: 30,)
+              ],
+            );
+          },
 
-  return SmoothStarRating (
-    isReadOnly: true,
-    starCount: 5,
-    rating: a,
-    spacing: 3,
-    size: 30,
-    allowHalfRating: false,
-    color: Colors.yellow,
-    borderColor: Colors.yellow,
+        )
+      ],
+    ),
   );
 }

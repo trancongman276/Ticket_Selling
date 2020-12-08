@@ -1,3 +1,4 @@
+import 'package:CoachTicketSelling/MainPage/ListTicket.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/cupertino.dart';
@@ -218,6 +219,9 @@ class _ProfileState extends State<Profile> {
               currentIndex = index;
               if (currentIndex == 1) {
                 Navigator.push(context, MaterialPageRoute (builder: (context) => UserUI()));
+              }
+              if (currentIndex == 2) {
+                Navigator.push(context, MaterialPageRoute (builder: (context) => ListTicket()));
               }
               currentIndex = 0;
             });
