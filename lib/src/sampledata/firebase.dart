@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 /**before you use these functions dont forget to add
     Firebase.initializeApp().whenComplete(() {
@@ -135,6 +137,12 @@ void getTicket() {
       });
     });
   });
+}
+
+Future<void> updatePassword(String password) async {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  var firebaseUser = await _auth.currentUser;
+  firebaseUser.updatePassword(password);
 }
 
 
