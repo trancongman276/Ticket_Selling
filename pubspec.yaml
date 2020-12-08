@@ -44,6 +44,8 @@ dependencies:
   font_awesome_flutter: ^8.10.0
   flutter_rounded_date_picker: 1.0.5
   google_fonts: ^0.1.0
+  flutter_ticket_widget:
+  qr_flutter: ^3.1.0
 
 
 
@@ -65,7 +67,17 @@ flutter:
     - assets/images/logo.png
     - assets/images/Login/registerBG.jpg
     - assets/images/profile.png
+    - assets/images/seat.png
+    - assets/images/seatSelect.png
+    - assets/images/seatChoose.png
+    - assets/images/amex.png
+    - assets/images/discover.png
+    - assets/images/mastercard.png
+    - assets/images/visa.png
   fonts:
+    - family: halter
+      fonts:
+        - asset: assets/fonts/halter.ttf
     - family: Sans
       fonts:
         - asset: assets/fonts/SourceSansPro-Regular.ttf

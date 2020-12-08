@@ -1,7 +1,11 @@
+
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import 'ChooseSeat.dart';
+
 
 class BookingUI extends StatefulWidget {
   @override
@@ -9,6 +13,7 @@ class BookingUI extends StatefulWidget {
 }
 
 class _BookingUIState extends State<BookingUI> {
+
 
   String source = 'Ho Chi Minh';
   String destination = 'Da Nang';
@@ -97,6 +102,7 @@ class _BookingUIState extends State<BookingUI> {
                       .size
                       .height * 0.82,
                   child: Column(
+                    //tris that contain free seat
                     children: <Widget>[
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -118,7 +124,7 @@ class _BookingUIState extends State<BookingUI> {
                             itemBuilder: (context, index) {
                               return Column (
                                 children: <Widget>[
-                                  _bookingItem(index, source, destination,rate, timeStart, timeEnd, company, price, imageLink),
+                                  _bookingItem(index, source, destination,rate, timeStart, timeEnd, company, price, imageLink, context),
                                   //Create a class that use ID to query this information : db.string(id)
                                   SizedBox (height: 20,)
                                 ],
@@ -137,11 +143,12 @@ class _BookingUIState extends State<BookingUI> {
     );
   }
 }
-Widget _bookingItem (int index, String source, String destination, int rate, String timeStart, String timeEnd, String company, int price, String imageLink) {
+Widget _bookingItem (int index, String source, String destination, int rate, String timeStart, String timeEnd, String company, int price, String imageLink, BuildContext context) {
 
   return GestureDetector(
     onTap: () {
       print(index);
+      Navigator.push(context, MaterialPageRoute (builder: (context) => ChooseSeat()));
     },
     child: Container (
       width: 500,
@@ -180,20 +187,7 @@ Widget _bookingItem (int index, String source, String destination, int rate, Str
           ),
 
           SizedBox (height: 5,),
-      //     Row (
-      //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //       children: <Widget>[
-      //         Text (
-      //           "Source",
-      //           style: TextStyle (fontSize: 19, color: Colors.grey, fontWeight: FontWeight.bold),
-      //         ),
-      //         SizedBox (width: 150,),
-      //         Text (
-      //           "Destination",
-      //           style: TextStyle (fontSize: 19, color: Colors.grey, fontWeight: FontWeight.bold),
-      //         )
-      //       ],
-      //     ),
+
           Row (
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
