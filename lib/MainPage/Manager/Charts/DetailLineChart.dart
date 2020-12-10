@@ -1,3 +1,4 @@
+import 'package:CoachTicketSelling/classes/Implement/BillImpl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,7 +19,13 @@ class _DetailChartState extends State<DetailChart> {
   final ChartQuery chart;
   final Color primaryColor;
   String name;
-  _DetailChartState(this.chart, this.primaryColor);
+  bool showSwitchView = false;
+  List<dynamic> _dataList;
+  List<FlSpot> _splotList = [];
+  BillImplement _billImplement = BillImplement.instance;
+  _DetailChartState(this.chart, this.primaryColor) {
+    _refresh();
+  }
 
   ChartView currentView = ChartView.Monthly;
 
@@ -36,108 +43,84 @@ class _DetailChartState extends State<DetailChart> {
     'November',
     'December'
   ];
-  int currentMonth = 10;
-  Map<ChartView, List<FlSpot>> listSpot = {
-    ChartView.Monthly: [
-      FlSpot(0, 20),
-      FlSpot(1, 20),
-      FlSpot(2, 50),
-      FlSpot(3, 40),
-      FlSpot(4, 50),
-      FlSpot(5, 50),
-      FlSpot(6, 50),
-      FlSpot(7, 30),
-      FlSpot(8, 20),
-      FlSpot(9, 50),
-      FlSpot(10, 40),
-      FlSpot(11, 50),
-      FlSpot(12, 50),
-      FlSpot(13, 50),
-      FlSpot(14, 40),
-      FlSpot(15, 50),
-      FlSpot(16, 50),
-      FlSpot(17, 50),
-      FlSpot(18, 40),
-      FlSpot(19, 50),
-      FlSpot(20, 50),
-      FlSpot(21, 50),
-      FlSpot(22, 40),
-      FlSpot(23, 50),
-      FlSpot(24, 50),
-      FlSpot(25, 50),
-      FlSpot(26, 40),
-      FlSpot(27, 50),
-      FlSpot(28, 50),
-      FlSpot(29, 50),
-      FlSpot(30, 40),
-    ],
-    ChartView.Yearly: [
-      FlSpot(0, 30),
-      FlSpot(1, 70),
-      FlSpot(2, 20),
-      FlSpot(3, 100),
-      FlSpot(4, 50),
-      FlSpot(5, 170),
-      FlSpot(6, 150),
-      FlSpot(7, 70),
-      FlSpot(8, 90),
-      FlSpot(9, 50),
-      FlSpot(10, 190),
-      FlSpot(11, 170),
-    ],
-  };
+  int currentMonth = DateTime.now().month;
+
   Map<ChartView, int> max = {
     ChartView.Monthly: -1,
     ChartView.Yearly: -1,
   };
-  // List<int> listShowSpot = [3];
 
-  @override
-  void initState() {
-    super.initState();
-    getName();
-  }
-
-  void getName() {
+  bool _getData() {
     switch (chart) {
       case ChartQuery.Income:
         name = 'Income';
+        showSwitchView = true;
+        _dataList = currentView == ChartView.Monthly
+            ? _billImplement.getAllDailyIncome(currentMonth - 1)
+            : _billImplement.getAllMonthlyIncome();
         break;
       case ChartQuery.KPIs:
         name = 'KPIs';
+        currentView = ChartView.Yearly;
+        showSwitchView = false;
+        _dataList = _billImplement.getKpis();
         break;
-      case ChartQuery.MostVisited:
-        name = 'Most Visited';
-        break;
-      case ChartQuery.Rating:
-        name = 'Rating';
+      default:
         break;
     }
+    return true;
+  }
+
+  bool _dataToSplot() {
+    if (_dataList.length != 0)
+      for (int index = 0; index < _dataList.length; index++) {
+        var value = _dataList[index].toDouble();
+
+        if (value.isNaN || !value.isFinite || value == 0.0)
+          _splotList.add(FlSpot(index.toDouble(), 0));
+        else {
+          print(value);
+          _splotList.add(FlSpot(index.toDouble(), value));
+        }
+      }
+    else
+      _splotList.add(FlSpot(0, 0));
+
+    return true;
+  }
+
+  bool _refresh() {
+    _getData();
+    _splotList = [];
+    _dataToSplot();
+    return true;
   }
 
   void backBt() {
-    //Todo: Action on back button
     Navigator.pop(context);
   }
 
   void sidebarBt(String choice) {
-    //Todo: Action on back button
     setState(() {
       currentMonth = monthLS.indexOf(choice) + 1;
+      _refresh();
+    });
+  }
+
+  void getMax() {
+    _splotList.forEach((element) {
+      if (element.isNotNull() &&
+          element.y != double.nan &&
+          element.y != double.infinity) if (element.y > max[currentView])
+        max[currentView] = element.y.toInt();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    void getMax() {
-      listSpot[currentView].forEach((element) {
-        if (element.y > max[currentView]) max[currentView] = element.y.toInt();
-      });
-    }
-
     final _lineBarsData = [
       LineChartBarData(
-        spots: listSpot[currentView],
+        spots: _splotList,
         isCurved: true,
         colors: [Colors.white],
         barWidth: 2.0,
@@ -175,7 +158,7 @@ class _DetailChartState extends State<DetailChart> {
                     return (value.toInt() + 1).toString() +
                         '/' +
                         currentMonth.toString() +
-                        '/2020';
+                        '/${DateTime.now().year}';
                   } else
                     return '';
                 } else {
@@ -183,7 +166,8 @@ class _DetailChartState extends State<DetailChart> {
                     if (value.toInt() + 1 == 1 ||
                         value.toInt() + 1 == 6 ||
                         value.toInt() + 1 == 12) {
-                      return (value.toInt() + 1).toString() + '/2020';
+                      return (value.toInt() + 1).toString() +
+                          '/${DateTime.now().year}';
                     } else
                       return '';
                   }
@@ -223,8 +207,10 @@ class _DetailChartState extends State<DetailChart> {
                 return LineTooltipItem(
                   (lineBarSpot.x.toInt() + 1).toString() +
                       (currentView == ChartView.Monthly
-                          ? '/' + currentMonth.toString() + '/2020\n'
-                          : '/2020\n') +
+                          ? '/' +
+                              currentMonth.toString() +
+                              '/${DateTime.now().year}\n'
+                          : '/${DateTime.now().year}\n') +
                       '\$' +
                       lineBarSpot.y.toString(),
                   const TextStyle(
@@ -272,76 +258,74 @@ class _DetailChartState extends State<DetailChart> {
                     ],
                   ),
                 ),
-                Padding(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
-                  child: Container(
-                    // child: FaIcon(
-                    //   FontAwesomeIcons.dollarSign,
-                    //   color: Colors.white,
-                    //   size: 17.0,
-                    // ),
-                    child: Row(
-                      children: <Widget>[
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 5.0, horizontal: 10.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                currentView = ChartView.Monthly;
-                              });
-                            },
-                            child: Text(
-                              "Monthly",
-                              style: TextStyle(
-                                  color: currentView == ChartView.Monthly
-                                      ? primaryColor
-                                      : Colors.white),
+                if (showSwitchView)
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+                    child: Container(
+                      child: Row(
+                        children: <Widget>[
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5.0, horizontal: 10.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  currentView = ChartView.Monthly;
+                                  _refresh();
+                                });
+                              },
+                              child: Text(
+                                "Monthly",
+                                style: TextStyle(
+                                    color: currentView == ChartView.Monthly
+                                        ? primaryColor
+                                        : Colors.white),
+                              ),
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20.0)),
+                              color: currentView == ChartView.Monthly
+                                  ? Colors.white
+                                  : null,
                             ),
                           ),
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20.0)),
-                            color: currentView == ChartView.Monthly
-                                ? Colors.white
-                                : null,
-                          ),
-                        ),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 5.0, horizontal: 10.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                currentView = ChartView.Yearly;
-                              });
-                            },
-                            child: Text(
-                              "Yearly",
-                              style: TextStyle(
-                                  color: currentView == ChartView.Yearly
-                                      ? primaryColor
-                                      : Colors.white),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5.0, horizontal: 10.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  currentView = ChartView.Yearly;
+                                  _refresh();
+                                });
+                              },
+                              child: Text(
+                                "Yearly",
+                                style: TextStyle(
+                                    color: currentView == ChartView.Yearly
+                                        ? primaryColor
+                                        : Colors.white),
+                              ),
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20.0)),
+                              color: currentView == ChartView.Yearly
+                                  ? Colors.white
+                                  : null,
                             ),
                           ),
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20.0)),
-                            color: currentView == ChartView.Yearly
-                                ? Colors.white
-                                : null,
-                          ),
-                        ),
-                      ],
-                    ),
-                    // padding: EdgeInsets.all(5.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                      color: Colors.white.withOpacity(0.3),
+                        ],
+                      ),
+                      // padding: EdgeInsets.all(5.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                        color: Colors.white.withOpacity(0.3),
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
           ),
@@ -361,27 +345,28 @@ class _DetailChartState extends State<DetailChart> {
 
     Widget buildDetail() {
       var detail = <Widget>[];
-      for (var spot in listSpot[currentView]) {
-        detail.add(Container(
-          color: primaryColor,
-          padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.5),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                (spot.x.toInt() + 1).toString() +
-                    '/' +
-                    currentMonth.toString() +
-                    '/2020',
-                style: TextStyle(color: Colors.white),
-              ),
-              Text(
-                '\$' + spot.y.toString(),
-                style: TextStyle(color: Colors.white),
-              ),
-            ],
-          ),
-        ));
+      for (var spot in _splotList) {
+        if (spot.isNotNull())
+          detail.add(Container(
+            color: primaryColor,
+            padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  (spot.x.toInt() + 1).toString() +
+                      '/' +
+                      currentMonth.toString() +
+                      '/${DateTime.now().year}',
+                  style: TextStyle(color: Colors.white),
+                ),
+                Text(
+                  '\$' + spot.y.toString(),
+                  style: TextStyle(color: Colors.white),
+                ),
+              ],
+            ),
+          ));
       }
       return Column(
         children: detail,
@@ -415,27 +400,30 @@ class _DetailChartState extends State<DetailChart> {
                       style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: PopupMenuButton<String>(
-                      onSelected: sidebarBt,
-                      itemBuilder: (BuildContext context) {
-                        return monthLS.map((String month) {
-                          bool en = true;
-                          if (month == monthLS[currentMonth - 1]) en = false;
-                          return PopupMenuItem<String>(
-                            value: month,
-                            child: Text(month),
-                            enabled: en,
-                          );
-                        }).toList();
-                      },
-                      child: Icon(
-                        Icons.menu,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+                  showSwitchView
+                      ? Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: PopupMenuButton<String>(
+                            onSelected: sidebarBt,
+                            itemBuilder: (BuildContext context) {
+                              return monthLS.map((String month) {
+                                bool en = true;
+                                if (month == monthLS[currentMonth - 1])
+                                  en = false;
+                                return PopupMenuItem<String>(
+                                  value: month,
+                                  child: Text(month),
+                                  enabled: en,
+                                );
+                              }).toList();
+                            },
+                            child: Icon(
+                              Icons.menu,
+                              color: Colors.white,
+                            ),
+                          ),
+                        )
+                      : SizedBox(width: 50.0)
                 ],
               ),
             ),

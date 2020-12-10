@@ -1,38 +1,135 @@
 import 'dart:io';
 
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
+import 'package:CoachTicketSelling/classes/Implement/DriverImpl.dart';
+import 'package:CoachTicketSelling/classes/Implement/TripImpl.dart';
+import 'package:CoachTicketSelling/classes/actor/Driver.dart';
+import 'package:CoachTicketSelling/classes/actor/Manager.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rounded_date_picker/rounded_picker.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddDriverView extends StatefulWidget {
+  final String driverID;
+
+  const AddDriverView({Key key, this.driverID}) : super(key: key);
   @override
-  _AddDriverViewState createState() => _AddDriverViewState();
+  _AddDriverViewState createState() => _AddDriverViewState(driverID);
 }
 
 class _AddDriverViewState extends State<AddDriverView> {
+  final String driverID;
+  DriverImpl driverImpl = DriverImpl.instance;
+  Driver driver;
+  _AddDriverViewState(this.driverID) {
+    if (driverID != null) {
+      driver = driverImpl.driverList[driverID];
+      name.text = driver.name;
+      phone.text = driver.phone;
+      email.text = driver.email;
+      note.text = driver.note;
+      dob.text = '${driver.doB.year}-${driver.doB.month}-${driver.doB.day}';
+      imageUrl = driver.imageUrl;
+      dropDownValue = driver.gender;
+    }
+  }
+
   GlobalKey<FormState> _key = GlobalKey<FormState>();
-  final TextEditingController source = TextEditingController();
-  final TextEditingController dest = TextEditingController();
-  final TextEditingController price = TextEditingController();
-  final TextEditingController seat = TextEditingController();
-  final TextEditingController detail = TextEditingController();
+  final TextEditingController name = TextEditingController();
+  final TextEditingController phone = TextEditingController();
+  final TextEditingController email = TextEditingController();
+  final TextEditingController note = TextEditingController();
   final TextEditingController dob = TextEditingController();
   DateTime date;
-  File _image;
+  File _imageFile;
+  String imageUrl;
   Color borderColor = Colors.grey;
   final picker = ImagePicker();
   String dropDownValue = 'Male';
 
-  void save_driver(
-      // TODO: Save to db
-      ) {}
+  void reset() {
+    name.text = '';
+    phone.text = '';
+    email.text = '';
+    note.text = '';
+    dob.text = '';
+    _imageFile = null;
+    borderColor = Colors.grey;
+    setState(() {});
+  }
+
+  Future<bool> _showDialog() async {
+    return showDialog<bool>(
+        context: context,
+        barrierDismissible: false, // user must tap button!
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Delete this driver'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text('Are you sure you want to delete this driver?'),
+                  Text('By approving this, this driver will be fired.'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Yes'),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+              ),
+              TextButton(
+                child: Text('No'),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  void deleteDriver() {
+    _showDialog().then((value) {
+      if (value == true) {
+        driverImpl.delete(driverID);
+        Navigator.pop(context);
+      }
+    });
+  }
+
+  void saveDriver() {
+    if (driverID != null) {
+      driverImpl.update(
+        id: driverID,
+        email: email.text,
+        phone: phone.text,
+        name: name.text,
+        gender: dropDownValue,
+        note: note.text,
+        // doB: DateTime.tryParse(dob.text),
+      );
+      Navigator.pop(context);
+    } else {
+      driverImpl.add(email.text.trim(), name.text.trim(), phone.text,
+          DateTime.parse(dob.text), dropDownValue, _imageFile,
+          // company: Manager.instance.company,
+          company: null,
+          note: note.text);
+      _key.currentState.reset();
+      reset();
+    }
+  }
 
   Future _getImg() async {
+    imageUrl = null;
     final image = await picker.getImage(source: ImageSource.gallery);
     if (image != null) {
       setState(() {
-        _image = File(image.path);
+        _imageFile = File(image.path);
       });
     }
   }
@@ -43,7 +140,7 @@ class _AddDriverViewState extends State<AddDriverView> {
       children: <Widget>[
         TextFormField(
           validator: Utils.validateEmpty,
-          controller: price,
+          controller: name,
           textInputAction: TextInputAction.next,
           keyboardType: TextInputType.name,
           decoration: InputDecoration(
@@ -119,7 +216,7 @@ class _AddDriverViewState extends State<AddDriverView> {
         TextFormField(
           cursorColor: Utils.primaryColor,
           validator: (value) => Utils.validateNumber(value, 9, 12),
-          controller: seat,
+          controller: phone,
           textInputAction: TextInputAction.next,
           keyboardType: TextInputType.phone,
           decoration: InputDecoration(
@@ -136,7 +233,7 @@ class _AddDriverViewState extends State<AddDriverView> {
           child: TextFormField(
             cursorColor: Utils.primaryColor,
             validator: Utils.validateEmail,
-            controller: seat,
+            controller: email,
             textInputAction: TextInputAction.next,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
@@ -152,7 +249,7 @@ class _AddDriverViewState extends State<AddDriverView> {
         TextFormField(
           minLines: 4,
           maxLines: 10,
-          controller: detail,
+          controller: note,
           validator: Utils.validateEmpty,
           textInputAction: TextInputAction.done,
           decoration: InputDecoration(
@@ -168,25 +265,41 @@ class _AddDriverViewState extends State<AddDriverView> {
         ),
         Padding(
           padding: EdgeInsets.all(5.0),
-          child: Center(
-            child: RaisedButton(
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+            RaisedButton(
               color: Utils.primaryColor,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30.0)),
               onPressed: () {
-                if (_key.currentState.validate() && _image != null)
-                  save_driver();
-                else
-                  setState(() {
-                    borderColor = Colors.red;
-                  });
+                if (_key.currentState.validate()) {
+                  if (_imageFile != null || imageUrl != null)
+                    saveDriver();
+                  else
+                    setState(() {
+                      borderColor = Colors.red;
+                    });
+                }
               },
               child: Text(
                 'Save',
                 style: TextStyle(color: Colors.white),
               ),
             ),
-          ),
+            if (driverID != null)
+              RaisedButton(
+                color: Utils.primaryColor,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0)),
+                onPressed: () {
+                  deleteDriver();
+                },
+                child: Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+          ]),
         ),
       ],
     );
@@ -205,12 +318,18 @@ class _AddDriverViewState extends State<AddDriverView> {
               backgroundColor: Colors.transparent,
               child: GestureDetector(
                 onTap: _getImg,
-                child: _image == null
-                    ? Icon(Icons.add)
+                child: _imageFile == null
+                    ? (imageUrl == null
+                        ? Icon(Icons.add)
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(100.0),
+                            child: Image.network(imageUrl,
+                                fit: BoxFit.fitHeight, height: 200),
+                          ))
                     : ClipRRect(
                         borderRadius: BorderRadius.circular(100.0),
                         child: Image.file(
-                          _image,
+                          _imageFile,
                           height: 200,
                           fit: BoxFit.fitHeight,
                         ),

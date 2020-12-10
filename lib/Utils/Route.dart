@@ -1,9 +1,11 @@
 import 'package:CoachTicketSelling/LoginPage/forgetView.dart';
 import 'package:CoachTicketSelling/LoginPage/loginView.dart';
 import 'package:CoachTicketSelling/LoginPage/registerView.dart';
-import 'package:CoachTicketSelling/MainPage/Manager/Charts/DetailChart.dart';
-import 'package:CoachTicketSelling/MainPage/Manager/MainView.dart';
-import 'package:CoachTicketSelling/MainPage/UserMainView.dart';
+import 'package:CoachTicketSelling/MainPage/Manager/Charts/DetailBarChart.dart';
+import 'package:CoachTicketSelling/MainPage/Manager/Charts/DetailLineChart.dart';
+import 'package:CoachTicketSelling/MainPage/Manager/ManagerMainView.dart';
+import 'package:CoachTicketSelling/MainPage/Manager/Manage/EditDriverView.dart';
+import 'package:CoachTicketSelling/MainPage/Manager/Manage/EditTripView.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:CoachTicketSelling/Utils/enum.dart';
 import 'package:flutter/material.dart';
@@ -11,9 +13,11 @@ import 'package:flutter/material.dart';
 const String LoginViewRoute = '/login';
 const String RegisterViewRoute = '/register';
 const String ForgetViewRoute = '/forget';
-const String UserViewRoute = '/user';
 const String ManagerViewRoute = '/manager';
 const String DetailIncomeChartViewRoute = '/manager/detailChart';
+const String EditTripViewRoute = '/manager/edit/trip';
+const String EditDriverViewRoute = '/manager/edit/driver';
+const String DetailBarChartViewRoute = '/manager/charts/barchart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -25,8 +29,14 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => ForgetPasswordView());
     case ManagerViewRoute:
       return MaterialPageRoute(builder: (context) => ManagerMainView());
-    case UserViewRoute:
-      return MaterialPageRoute(builder: (context) => UserMainView());
+    case DetailBarChartViewRoute:
+      DetailedChartArgs arg = settings.arguments;
+      return MaterialPageRoute(
+          settings: settings,
+          builder: (context) => BarChartView(
+                chart: arg.chart,
+                primaryColor: arg.primaryColor,
+              ));
     case DetailIncomeChartViewRoute:
       DetailedChartArgs arg = settings.arguments;
       return MaterialPageRoute(
@@ -34,6 +44,18 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           builder: (context) => DetailChart(
                 chart: arg.chart,
                 primaryColor: arg.primaryColor,
+              ));
+    case EditTripViewRoute:
+      var arg = settings.arguments;
+      return MaterialPageRoute(
+          builder: (context) => EditTripView(
+                tripID: arg,
+              ));
+    case EditDriverViewRoute:
+      var arg = settings.arguments;
+      return MaterialPageRoute(
+          builder: (context) => EditDriverView(
+                driverID: arg,
               ));
     default:
       return null;
