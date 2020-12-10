@@ -78,8 +78,8 @@ void addUser(){
     "Mail":"NVS@gmail.com",
     "Company ID":"C1",
     "Detail":"Vist",
-    "Bill": firestoreInstance.collection("User").doc('User' + "B1"),
-    "Trip": firestoreInstance.collection("Trip").doc('Trip' + "T1"),
+    "Bill": firestoreInstance.collection("User").doc("Bill"+"B1"),
+    "Trip": firestoreInstance.collection("User").doc('Trip' + "T1"),
 
   }).then((value) {
     print(value.id);
@@ -91,6 +91,16 @@ void getAllTrip() {
   firestoreInstance.collection("Trip").get().then((querySnapshot) {
     querySnapshot.docs.forEach((result) {
       print(result.data());
+    });
+  });
+}
+
+void getAllCost(){
+  final firestoreInstance = FirebaseFirestore.instance;
+  firestoreInstance.collection("Bill").get().then((querySnapshot) {
+    querySnapshot.docs.forEach((result) {
+      print(result.data()["Cost"]);
+
     });
   });
 }
@@ -138,6 +148,17 @@ void getTicket() {
     });
   });
 }
+
+void getBillfromUser(){
+  final firestoreInstance = FirebaseFirestore.instance;
+  firestoreInstance.collection("User").get().then((querySnapshot) {
+    querySnapshot.docs.forEach((result) {
+      print(result.data()["Bill"]);
+    });
+  });
+}
+
+
 
 Future<void> updatePassword(String password) async {
   final FirebaseAuth _auth = FirebaseAuth.instance;

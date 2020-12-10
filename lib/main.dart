@@ -26,6 +26,7 @@
 // }
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/table_calendar.dart';
@@ -437,24 +438,18 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   //   });
   // }
   //
-  void addTrip() {
-    final firestoreInstance = FirebaseFirestore.instance;
 
-    firestoreInstance.collection("Company").get().then((querySnapshot) {
+  void addTrip(){
+    final firestoreInstance = FirebaseFirestore.instance;
+    firestoreInstance.collection("User").get().then((querySnapshot) {
       querySnapshot.docs.forEach((result) {
-        firestoreInstance
-            .collection("Company")
-            .doc(result.id)
-            .collection("Ticket")
-            .get()
-            .then((querySnapshot) {
-          querySnapshot.docs.forEach((result) {
-            print(result.data());
-          });
-        });
+        print(result.data()["Bill"]);
       });
     });
   }
+
+
+
 
   Widget _buildEventList() {
     return ListView(
