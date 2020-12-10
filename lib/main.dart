@@ -19,22 +19,23 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: ThemeData(
-          textTheme: GoogleFonts.nunitoTextTheme(Theme.of(context).textTheme),
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
-        debugShowCheckedModeBanner: false,
-        title: "Welcome",
-        // home: Scaffold(
-        //   resizeToAvoidBottomPadding: false,
-        //   body: Container(
-        //     child: LoginView(),
-        //   ),
-        // ),
-        onGenerateRoute: route.generateRoute,
-        // initialRoute: logined ? route.UserViewRoute : route.LoginViewRoute,
-        initialRoute: route.ManagerViewRoute
-        // initialRoute: route.LoginViewRoute,
-        );
+
+      theme: ThemeData(
+        textTheme: GoogleFonts.nunitoTextTheme(Theme.of(context).textTheme),
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      debugShowCheckedModeBanner: false,
+      title: "Welcome",
+      // home: Scaffold(
+      //   resizeToAvoidBottomPadding: false,
+      //   body: Container(
+      //     child: LoginView(),
+      //   ),
+      // ),
+      onGenerateRoute: route.generateRoute,
+      // initialRoute: logined ? route.UserViewRoute : route.LoginViewRoute,
+      initialRoute: route.DriverViewRoute,
+    );
+
   }
 }
