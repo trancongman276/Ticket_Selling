@@ -1,6 +1,4 @@
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
-import 'package:CoachTicketSelling/classes/Implement/TripImpl.dart';
-import 'package:CoachTicketSelling/classes/actor/Trip.dart';
 import 'package:flutter/material.dart';
 import 'package:CoachTicketSelling/MainPage/Manager/Add/AddTripView.dart';
 

@@ -2,10 +2,7 @@ import 'dart:io';
 
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:CoachTicketSelling/classes/Implement/DriverImpl.dart';
-import 'package:CoachTicketSelling/classes/Implement/TripImpl.dart';
 import 'package:CoachTicketSelling/classes/actor/Driver.dart';
-import 'package:CoachTicketSelling/classes/actor/Manager.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rounded_date_picker/rounded_picker.dart';
 import 'package:image_picker/image_picker.dart';
@@ -331,7 +328,8 @@ class _AddDriverViewState extends State<AddDriverView> {
                         child: Image.file(
                           _imageFile,
                           height: 200,
-                          fit: BoxFit.fitHeight,
+                          width: 200,
+                          fit: BoxFit.fitWidth,
                         ),
                       ),
               ),

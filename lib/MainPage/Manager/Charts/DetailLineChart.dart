@@ -346,6 +346,9 @@ class _DetailChartState extends State<DetailChart> {
     Widget buildDetail() {
       var detail = <Widget>[];
       for (var spot in _splotList) {
+        String dayMonth = currentView == ChartView.Monthly
+            ? ((spot.x.toInt() + 1).toString() + '/') + currentMonth.toString()
+            : (spot.x.toInt() + 1).toString();
         if (spot.isNotNull())
           detail.add(Container(
             color: primaryColor,
@@ -354,10 +357,7 @@ class _DetailChartState extends State<DetailChart> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  (spot.x.toInt() + 1).toString() +
-                      '/' +
-                      currentMonth.toString() +
-                      '/${DateTime.now().year}',
+                  dayMonth + '/${DateTime.now().year}',
                   style: TextStyle(color: Colors.white),
                 ),
                 Text(
@@ -400,7 +400,7 @@ class _DetailChartState extends State<DetailChart> {
                       style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
                   ),
-                  showSwitchView
+                  currentView == ChartView.Monthly
                       ? Padding(
                           padding: EdgeInsets.all(10.0),
                           child: PopupMenuButton<String>(
