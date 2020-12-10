@@ -15,6 +15,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0-nullsafety.3"
+
   bottom_navy_bar:
     dependency: "direct main"
     description:
@@ -22,6 +23,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.6.0"
+
   characters:
     dependency: transitive
     description:
@@ -71,6 +73,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.15.0-nullsafety.5"
+
   convert:
     dependency: transitive
     description:
@@ -85,6 +88,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.5"
+
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -135,7 +139,7 @@ packages:
     source: hosted
     version: "2.1.4"
   firebase_auth_web:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: firebase_auth_web
       url: "https://pub.dartlang.org"
@@ -195,6 +199,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_plugin_android_lifecycle:
+    dependency: transitive
+    description:
+      name: flutter_plugin_android_lifecycle
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.11"
   flutter_rounded_date_picker:
     dependency: "direct main"
     description:
@@ -275,6 +286,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.4"
+  image_picker:
+    dependency: "direct main"
+    description:
+      name: image_picker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.7+14"
+  image_picker_platform_interface:
+    dependency: transitive
+    description:
+      name: image_picker_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.1"
   intl:
     dependency: "direct main"
     description:
@@ -455,6 +480,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0-nullsafety.3"
+
   table_calendar:
     dependency: "direct main"
     description:
@@ -462,6 +488,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.3.2"
+
   term_glyph:
     dependency: transitive
     description:

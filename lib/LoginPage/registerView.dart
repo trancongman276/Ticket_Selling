@@ -20,7 +20,7 @@ class _RegisterViewState extends State<RegisterView> {
   String dropDownValue = 'Male';
   DateTime date;
   bool isSuccess = true;
-  Exception ex;
+  String ex;
 
   @override
   void initState() {
@@ -165,7 +165,6 @@ class _RegisterViewState extends State<RegisterView> {
 
     Widget _gender() {
       return DropdownButton<String>(
-        // style: TextStyle(color: Colors.deepPurple),
         underline: Container(
           height: 1,
           color: Colors.grey,
@@ -191,25 +190,23 @@ class _RegisterViewState extends State<RegisterView> {
         final UserCredential user = await Utils.firebaseAuth
             .createUserWithEmailAndPassword(
                 email: _emailController.text.trim(),
-                password: _passwordController.text);
+                password: _passwordController.text.trim());
 
         print(user.user);
         user.user.updateProfile(displayName: _nameController.text);
         user.user.reload();
-        Utils.firebase.collection('User').doc(user.user.uid).set({
-          'Email': user.user.email,
-          'Name': _nameController.text,
-          'Phone': _phoneController.text,
-          'DoB': date.microsecondsSinceEpoch,
-          'Gender': dropDownValue,
-          'Role': 'user'
-        });
+        // TODO: FIX ACCOUNT
+        // Account account = Account.instance;
+        // account.update(user.user.email, _nameController.text,
+        //     _phoneController.text, date, dropDownValue, 'user');
         Navigator.pop(context);
         await user.user.sendEmailVerification();
       } catch (e) {
         setState(() {
-          ex = e;
-          isSuccess = false;
+          if (e.code == 'email-already-in-use') {
+            ex = e.message;
+            isSuccess = false;
+          }
         });
       }
     }
