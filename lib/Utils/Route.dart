@@ -14,7 +14,6 @@ import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:CoachTicketSelling/Utils/enum.dart';
 import 'package:flutter/material.dart';
 
-
 import 'package:CoachTicketSelling/MainPage/User/UserUI.dart';
 
 const String LoginViewRoute = '/';
@@ -22,14 +21,12 @@ const String LoginViewRoute = '/';
 const String RegisterViewRoute = '/register';
 const String ForgetViewRoute = '/forget';
 const String ManagerViewRoute = '/manager';
-
+const String UserViewRoute = '/user';
 const String DetailIncomeChartViewRoute = '/manager/detailChart';
 const String EditTripViewRoute = '/manager/edit/trip';
 const String EditDriverViewRoute = '/manager/edit/driver';
 const String DetailBarChartViewRoute = '/manager/charts/barchart';
-
 const String DriverViewRoute = '/driver';
-
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -69,14 +66,13 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(
           builder: (context) => EditDriverView(
                 driverID: arg,
-
+              ));
     case UserViewRoute:
       return MaterialPageRoute(builder: (context) => UserUI());
     case DriverViewRoute:
       return MaterialPageRoute(
           builder: (context) => DriverView(
                 title: 'Driver view',
-
               ));
     default:
       return null;
