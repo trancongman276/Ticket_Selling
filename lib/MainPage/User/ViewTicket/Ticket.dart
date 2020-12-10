@@ -4,7 +4,7 @@ import 'package:flutter_ticket_widget/flutter_ticket_widget.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import '../../Utils/GlobalValues.dart';
+import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 
 // ignore: must_be_immutable
 class Ticket extends StatelessWidget {

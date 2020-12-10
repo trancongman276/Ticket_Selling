@@ -1,8 +1,8 @@
-import 'package:CoachTicketSelling/MainPage/ViewTicket/TicketUI.dart';
+import 'package:CoachTicketSelling/MainPage/User/ViewTicket/TicketUI.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../Utils/GlobalValues.dart';
+import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 
 // ignore: must_be_immutable
 class ChooseSeat extends StatefulWidget {

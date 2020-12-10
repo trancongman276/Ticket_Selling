@@ -1,11 +1,9 @@
-import 'package:CoachTicketSelling/Dialog/loading.dart';
-import 'package:CoachTicketSelling/MainPage/Payment/credit_card_form.dart';
-import 'package:CoachTicketSelling/MainPage/Payment/credit_card_model.dart';
-import 'package:CoachTicketSelling/MainPage/Payment/credit_card_widget.dart';
+import 'package:CoachTicketSelling/MainPage/User/Dialog/loading.dart';
+import 'package:CoachTicketSelling/MainPage/User/Payment/credit_card_form.dart';
+import 'package:CoachTicketSelling/MainPage/User/Payment/credit_card_model.dart';
+import 'package:CoachTicketSelling/MainPage/User/Payment/credit_card_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import '../../Utils/GlobalValues.dart';
 
 class PaymentUI extends StatefulWidget {
   @override

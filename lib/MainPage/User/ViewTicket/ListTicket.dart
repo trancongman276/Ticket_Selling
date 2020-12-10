@@ -1,5 +1,5 @@
-import 'package:CoachTicketSelling/MainPage/Profile.dart';
-import 'package:CoachTicketSelling/MainPage/ViewTicket/ViewTicketUI.dart';
+import 'package:CoachTicketSelling/MainPage/User/Profile.dart';
+import 'package:CoachTicketSelling/MainPage/User/ViewTicket/ViewTicketUI.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';

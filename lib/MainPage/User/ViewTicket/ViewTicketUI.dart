@@ -1,9 +1,9 @@
-import 'package:CoachTicketSelling/MainPage/ViewTicket/ListTicket.dart';
-import 'package:CoachTicketSelling/MainPage/ViewTicket/Ticket.dart';
+import 'package:CoachTicketSelling/MainPage/User/ViewTicket/ListTicket.dart';
+import 'package:CoachTicketSelling/MainPage/User/ViewTicket/Ticket.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 
-import '../../Utils/GlobalValues.dart';
+import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 
 class ViewTicketUI extends StatefulWidget {
   @override

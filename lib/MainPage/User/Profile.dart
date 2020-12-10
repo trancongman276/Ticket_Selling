@@ -1,4 +1,4 @@
-import 'package:CoachTicketSelling/MainPage/ViewTicket/ListTicket.dart';
+import 'package:CoachTicketSelling/MainPage/User/ViewTicket/ListTicket.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/cupertino.dart';

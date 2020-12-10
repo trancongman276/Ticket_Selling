@@ -1,5 +1,5 @@
-import 'package:CoachTicketSelling/MainPage/ViewTicket/ListTicket.dart';
-import 'package:CoachTicketSelling/MainPage/BookTrip/RecommendationItem.dart';
+import 'package:CoachTicketSelling/MainPage/USer/ViewTicket/ListTicket.dart';
+import 'package:CoachTicketSelling/MainPage/User/BookTrip/RecommendationItem.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
