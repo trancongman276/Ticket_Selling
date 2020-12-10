@@ -157,6 +157,14 @@ void getBillfromUser(){
     });
   });
 }
+void getTripfromUser(){
+  final firestoreInstance = FirebaseFirestore.instance;
+  firestoreInstance.collection("User").get().then((querySnapshot) {
+    querySnapshot.docs.forEach((result) {
+      print(result.data()["Trip"]);
+    });
+  });
+}
 
 
 
