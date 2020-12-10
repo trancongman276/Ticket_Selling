@@ -1,13 +1,11 @@
-import 'dart:io';
-
 import 'package:CoachTicketSelling/Dialog/loading.dart';
-import 'package:CoachTicketSelling/Dialog/msg.dart';
+import 'package:CoachTicketSelling/MainPage/Payment/credit_card_form.dart';
+import 'package:CoachTicketSelling/MainPage/Payment/credit_card_model.dart';
+import 'package:CoachTicketSelling/MainPage/Payment/credit_card_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'UserUI.dart';
-import 'credit_card_form.dart';
-import 'credit_card_model.dart';
-import 'credit_card_widget.dart';
+
+import '../../Utils/GlobalValues.dart';
 
 class PaymentUI extends StatefulWidget {
   @override
@@ -15,7 +13,6 @@ class PaymentUI extends StatefulWidget {
 }
 
 class _PaymentUIState extends State<PaymentUI> {
-
   String cardNumber = '';
   String expiryDate = '';
   String cardHolderName = '';
@@ -62,15 +59,15 @@ class _PaymentUIState extends State<PaymentUI> {
                         print("Payment");
                         LoadingDialog.showLoadingDialog(context, 'Loading...');
                       },
-                      color: Colors.blue[700],
+                      color: Color(0xff1b447b),
                       textColor: Colors.white,
                       child: Text(
                         "PAYMENT",
-                        style: TextStyle(color: Colors.white,
+                        style: TextStyle(
+                            color: Colors.white,
                             fontSize: 22,
                             fontWeight: FontWeight.bold),
-                      )
-                  ),
+                      )),
                 ),
               ),
             )

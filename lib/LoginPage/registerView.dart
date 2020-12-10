@@ -12,7 +12,8 @@ class _RegisterViewState extends State<RegisterView> {
   final GlobalKey<FormState> _key = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _retypepasswordController = TextEditingController();
+  final TextEditingController _retypepasswordController =
+      TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
@@ -65,15 +66,16 @@ class _RegisterViewState extends State<RegisterView> {
       ),
     );
 
-
-
     Widget _password(String hint) {
       return TextFormField(
         textInputAction: TextInputAction.next,
         controller:
             hint[0] == 'P' ? _passwordController : _retypepasswordController,
         obscureText: true,
-        validator: hint[0] == 'P' ? Utils.validatePassword: (value) => Utils.validateRetypePassword(value, _passwordController.text),
+        validator: hint[0] == 'P'
+            ? Utils.validatePassword
+            : (value) =>
+                Utils.validateRetypePassword(value, _passwordController.text),
         decoration: InputDecoration(
           labelText: hint[0] == 'P' ? 'Password' : 'Retype password',
           labelStyle: TextStyle(color: Utils.primaryColor),
@@ -149,7 +151,7 @@ class _RegisterViewState extends State<RegisterView> {
                 context: context,
                 firstDate: DateTime(DateTime.now().year - 100),
                 borderRadius: 16,
-                theme: ThemeData(primarySwatch: Colors.green));
+                theme: ThemeData(primarySwatch: Utils.primaryColor));
             date != null
                 ? _dateController.text = date.toString().substring(0, 10)
                 // ignore: unnecessary_statements

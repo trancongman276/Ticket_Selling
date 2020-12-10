@@ -207,7 +207,9 @@ class _CreditCardWidgetState extends State<CreditCardWidget>
                         padding: const EdgeInsets.all(5),
                         child: Text(
                           widget.cvvCode.isEmpty
-                              ? isAmex ? 'XXXX' : widget.localizedText.cvvHint
+                              ? isAmex
+                                  ? 'XXXX'
+                                  : widget.localizedText.cvvHint
                               : widget.cvvCode,
                           maxLines: 1,
                           style: widget.textStyle ?? defaultTextStyle,

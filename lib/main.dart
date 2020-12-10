@@ -31,8 +31,8 @@ class MyApp extends StatelessWidget {
       //   ),
       // ),
       onGenerateRoute: route.generateRoute,
-      initialRoute: logined ? route.UserViewRoute : route.LoginViewRoute,
-      // initialRoute: route.ManagerViewRoute,
+      // initialRoute: logined ? route.UserViewRoute : route.LoginViewRoute,
+      initialRoute: route.UserViewRoute,
     );
   }
 }

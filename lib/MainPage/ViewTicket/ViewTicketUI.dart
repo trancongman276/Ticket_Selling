@@ -1,7 +1,10 @@
-import 'package:CoachTicketSelling/MainPage/ListTicket.dart';
-import 'package:CoachTicketSelling/MainPage/Ticket.dart';
+import 'package:CoachTicketSelling/MainPage/ViewTicket/ListTicket.dart';
+import 'package:CoachTicketSelling/MainPage/ViewTicket/Ticket.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
+
+import '../../Utils/GlobalValues.dart';
+
 class ViewTicketUI extends StatefulWidget {
   @override
   _ViewTicketUIState createState() => _ViewTicketUIState();
@@ -14,25 +17,25 @@ class _ViewTicketUIState extends State<ViewTicketUI> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[300],
-      appBar: AppBar (
-        title: Text (
-            "TICKET DETAIL",
-            style: TextStyle (fontSize: 30, fontWeight: FontWeight.bold),
+      appBar: AppBar(
+        title: Text(
+          "TICKET DETAIL",
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        backgroundColor: Colors.green,
+        backgroundColor: Utils.primaryColor,
       ),
-      body: SingleChildScrollView (
-        child: SafeArea (
+      body: SingleChildScrollView(
+        child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.only(top: 20),
             child: Column(
               children: <Widget>[
-                Center(
-                    child: Ticket()
+                Center(child: Ticket()),
+                SizedBox(
+                  height: 5,
                 ),
-                SizedBox (height: 5,),
-                SmoothStarRating (
+                SmoothStarRating(
                   starCount: 5,
                   isReadOnly: false,
                   spacing: 3,
@@ -47,23 +50,28 @@ class _ViewTicketUIState extends State<ViewTicketUI> {
                     });
                   },
                 ),
-                SizedBox (height: 5,),
+                SizedBox(
+                  height: 5,
+                ),
                 FlatButton(
                     shape: new RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(30.0)),
                     onPressed: () {
                       print("$rating");
-                      Navigator.push(context, MaterialPageRoute (builder: (context) => ListTicket()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ListTicket()));
                     },
-                    color: Colors.green,
+                    color: Utils.primaryColor,
                     textColor: Colors.white,
                     child: Text(
                       "RATING",
-                      style: TextStyle(color: Colors.white,
+                      style: TextStyle(
+                          color: Colors.white,
                           fontSize: 22,
                           fontWeight: FontWeight.bold),
-                    )
-                ),
+                    )),
               ],
             ),
           ),

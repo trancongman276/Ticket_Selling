@@ -1,6 +1,5 @@
-import 'package:CoachTicketSelling/MainPage/ListTicket.dart';
-import 'package:CoachTicketSelling/MainPage/RecommendationItem.dart';
-import 'package:CoachTicketSelling/MainPage/UserMainView.dart';
+import 'package:CoachTicketSelling/MainPage/ViewTicket/ListTicket.dart';
+import 'package:CoachTicketSelling/MainPage/BookTrip/RecommendationItem.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +7,7 @@ import 'package:flutter_rounded_date_picker/rounded_picker.dart';
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'BookingUI.dart';
+import 'BookTrip/BookingUI.dart';
 import 'Profile.dart';
 
 class UserUI extends StatefulWidget {
@@ -94,7 +93,7 @@ class _UserUIState extends State<UserUI> {
                                     //color: Colors.blue,
                                     child: DropdownButton(
                                       hint: Text("Select Source"),
-                                      dropdownColor: Colors.green[200],
+                                      dropdownColor: Utils.primaryColor,
                                       isExpanded: true,
                                       icon: Icon(Icons.arrow_drop_down),
                                       iconSize: 30,
@@ -129,7 +128,7 @@ class _UserUIState extends State<UserUI> {
                                     width: 250,
                                     child: DropdownButton(
                                       hint: Text("Select Destination"),
-                                      dropdownColor: Colors.green[200],
+                                      dropdownColor: Utils.primaryColor,
                                       isExpanded: true,
                                       icon: Icon(Icons.arrow_drop_down),
                                       iconSize: 30,
@@ -182,7 +181,7 @@ class _UserUIState extends State<UserUI> {
                                           DateTime(DateTime.now().year - 100),
                                       borderRadius: 16,
                                       theme: ThemeData(
-                                          primarySwatch: Colors.green));
+                                          primarySwatch: Utils.primaryColor));
                                   date != null
                                       ? _dateController.text =
                                           date.toString().substring(0, 10)
@@ -288,7 +287,7 @@ class _UserUIState extends State<UserUI> {
                             origin: 'Ha Noi',
                             destination: 'Ho Chi Minh',
                             price: '200000',
-                            color: Colors.green,
+                            color: Utils.primaryColor,
                             date: '2020-10-20',
                           ),
                           RecommendationItem(
@@ -409,32 +408,32 @@ Widget _iconDestination() {
       children: <Widget>[
         Icon(
           Icons.directions_car,
-          color: Colors.green,
+          color: Utils.primaryColor,
           size: 30,
         ),
         Icon(
           Icons.fiber_manual_record,
-          color: Colors.green,
+          color: Utils.primaryColor,
           size: 12,
         ),
         Icon(
           Icons.fiber_manual_record,
-          color: Colors.green,
+          color: Utils.primaryColor,
           size: 12,
         ),
         Icon(
           Icons.fiber_manual_record,
-          color: Colors.green,
+          color: Utils.primaryColor,
           size: 12,
         ),
         Icon(
           Icons.fiber_manual_record,
-          color: Colors.green,
+          color: Utils.primaryColor,
           size: 12,
         ),
         Icon(
           Icons.fiber_manual_record,
-          color: Colors.green,
+          color: Utils.primaryColor,
           size: 12,
         ),
         Icon(

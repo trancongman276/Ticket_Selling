@@ -1,4 +1,4 @@
-import 'package:CoachTicketSelling/MainPage/ListTicket.dart';
+import 'package:CoachTicketSelling/MainPage/ViewTicket/ListTicket.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,65 +20,70 @@ class _ProfileState extends State<Profile> {
   String phone = '0123456789';
   String gener = 'Female';
 
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold (
+    return Scaffold(
       backgroundColor: Color(0xFFE8F5E9),
       body: SingleChildScrollView(
-        child: SafeArea (
-          child: Container (
+        child: SafeArea(
+          child: Container(
             margin: EdgeInsets.fromLTRB(20, 30, 20, 20),
-            child: Column (
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(90, 10, 0, 20),
-                  child: Text (
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Text(
                     "MY PROFILE",
-                    style: TextStyle ( fontSize: 30, color: Colors.green, fontWeight: FontWeight.bold,),
+                    style: TextStyle(
+                      fontSize: 30,
+                      color: Utils.primaryColor,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-                Center (
-                  child: Stack (
+                Center(
+                  child: Stack(
                     children: <Widget>[
-                      Container (
+                      Container(
                         width: 130,
                         height: 130,
-                        decoration: BoxDecoration (
-                          border: Border.all(
-                            width: 4,
-                            color: Theme.of(context).scaffoldBackgroundColor
-                          ),
-                          boxShadow: [
-                            BoxShadow (
-                              spreadRadius: 2, blurRadius: 10,
-                              color: Colors.black.withOpacity(0.1),
-                              offset: Offset (0,10)
-                            )
-                          ],
-                          shape: BoxShape.circle,
-                          image: DecorationImage (
-                            fit: BoxFit.cover,
-                            image: AssetImage ('assets/images/profile.png'),
-                          )
-                        ),
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                                width: 4,
+                                color:
+                                    Theme.of(context).scaffoldBackgroundColor),
+                            boxShadow: [
+                              BoxShadow(
+                                  spreadRadius: 2,
+                                  blurRadius: 10,
+                                  color: Colors.black.withOpacity(0.1),
+                                  offset: Offset(0, 10))
+                            ],
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: AssetImage('assets/images/profile.png'),
+                            )),
                       ),
-                      Positioned (
+                      Positioned(
                         bottom: 0,
                         right: 0,
-                        child: Container (
+                        child: Container(
                           height: 40,
                           width: 40,
-                          decoration: BoxDecoration (
-                            color: Colors.green,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              width: 4,
-                              color: Theme.of(context).scaffoldBackgroundColor,
-                            )
+                          decoration: BoxDecoration(
+                              color: Utils.primaryColor,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                width: 4,
+                                color:
+                                    Theme.of(context).scaffoldBackgroundColor,
+                              )),
+                          child: Icon(
+                            Icons.edit,
+                            color: Colors.white,
                           ),
-                          child: Icon (Icons.edit, color: Colors.white,),
                         ),
                       )
                     ],
@@ -86,121 +91,141 @@ class _ProfileState extends State<Profile> {
                 ),
                 Container(
                   height: 430,
-                  child: ListView (
+                  child: ListView(
                     scrollDirection: Axis.vertical,
                     children: <Widget>[
-                      SizedBox (height: 20),
-                      Text (
+                      SizedBox(height: 20),
+                      Text(
                         "FULL NAME",
-                        style: TextStyle (
-                          fontSize: 20, color: Colors.black,
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
                         ),
                       ),
-                      SizedBox (height: 10),
-                      Container (
+                      SizedBox(height: 10),
+                      Container(
                         width: double.infinity,
                         height: 50,
-                        decoration: BoxDecoration (
+                        decoration: BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(14)),
-                          color: Colors.lightGreen[600],
+                          color: Utils.primaryColor,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
-                          child: Text (
+                          child: Text(
                             fullName,
-                            style: TextStyle (fontSize: 23, color: Colors.white, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 23,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
-                      SizedBox (height: 20),
-                      Text (
+                      SizedBox(height: 20),
+                      Text(
                         "EMAIL",
-                        style: TextStyle (
-                          fontSize: 20, color: Colors.black,
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
                         ),
                       ),
-                      SizedBox (height: 10),
-                      Container (
+                      SizedBox(height: 10),
+                      Container(
                         width: double.infinity,
                         height: 50,
-                        decoration: BoxDecoration (
+                        decoration: BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(14)),
-                          color: Colors.lightGreen[600],
+                          color: Utils.primaryColor,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
-                          child: Text (
+                          child: Text(
                             email,
-                            style: TextStyle (fontSize: 23, color: Colors.white, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 23,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
-                      SizedBox (height: 20),
-                      Text (
+                      SizedBox(height: 20),
+                      Text(
                         "DATE OF BIRTH",
-                        style: TextStyle (
-                          fontSize: 20, color: Colors.black,
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
                         ),
                       ),
-                      SizedBox (height: 10),
-                      Container (
+                      SizedBox(height: 10),
+                      Container(
                         width: double.infinity,
                         height: 50,
-                        decoration: BoxDecoration (
+                        decoration: BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(14)),
-                          color: Colors.lightGreen[600],
+                          color: Utils.primaryColor,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
-                          child: Text (
+                          child: Text(
                             dob,
-                            style: TextStyle (fontSize: 23, color: Colors.white, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 23,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
-                      SizedBox (height: 20),
-                      Text (
+                      SizedBox(height: 20),
+                      Text(
                         "PHONE",
-                        style: TextStyle (
-                          fontSize: 20, color: Colors.black,
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
                         ),
                       ),
-                      SizedBox (height: 10),
-                      Container (
+                      SizedBox(height: 10),
+                      Container(
                         width: double.infinity,
                         height: 50,
-                        decoration: BoxDecoration (
+                        decoration: BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(14)),
-                          color: Colors.lightGreen[600],
+                          color: Utils.primaryColor,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
-                          child: Text (
+                          child: Text(
                             phone,
-                            style: TextStyle (fontSize: 23, color: Colors.white, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 23,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
-                      SizedBox (height: 20),
-                      Text (
+                      SizedBox(height: 20),
+                      Text(
                         "GENDER",
-                        style: TextStyle (
-                          fontSize: 20, color: Colors.black,
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
                         ),
                       ),
-                      SizedBox (height: 10),
-                      Container (
+                      SizedBox(height: 10),
+                      Container(
                         width: double.infinity,
                         height: 50,
-                        decoration: BoxDecoration (
+                        decoration: BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(14)),
-                          color: Colors.lightGreen[600],
+                          color: Utils.primaryColor,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
-                          child: Text (
+                          child: Text(
                             gener,
-                            style: TextStyle (fontSize: 23, color: Colors.white, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 23,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
                       )
@@ -212,47 +237,73 @@ class _ProfileState extends State<Profile> {
           ),
         ),
       ),
-        bottomNavigationBar: BottomNavyBar (
-          selectedIndex: currentIndex,
-          onItemSelected: (index) {
-            setState(() {
-              currentIndex = index;
-              if (currentIndex == 1) {
-                Navigator.push(context, MaterialPageRoute (builder: (context) => UserUI()));
-              }
-              if (currentIndex == 2) {
-                Navigator.push(context, MaterialPageRoute (builder: (context) => ListTicket()));
-              }
-              currentIndex = 0;
-            });
-          },
-          items: <BottomNavyBarItem>[
-            BottomNavyBarItem (
-              icon: Icon (Icons.person, size: 30,),
-              title: Text ('Profile',style: TextStyle (fontSize: 18),),
-              activeColor: Utils.primaryColor,
-              inactiveColor: Colors.black,
+      bottomNavigationBar: BottomNavyBar(
+        selectedIndex: currentIndex,
+        onItemSelected: (index) {
+          setState(() {
+            currentIndex = index;
+            if (currentIndex == 1) {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => UserUI()));
+            }
+            if (currentIndex == 2) {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ListTicket()));
+            }
+            currentIndex = 0;
+          });
+        },
+        items: <BottomNavyBarItem>[
+          BottomNavyBarItem(
+            icon: Icon(
+              Icons.person,
+              size: 30,
             ),
-            BottomNavyBarItem (
-              icon: Icon (Icons.search, size: 30,),
-              title: Text ('Search',style: TextStyle (fontSize: 18),),
-              activeColor: Utils.primaryColor,
-              inactiveColor: Colors.black,
+            title: Text(
+              'Profile',
+              style: TextStyle(fontSize: 18),
             ),
-            BottomNavyBarItem (
-              icon: Icon (FontAwesomeIcons.ticketAlt, size: 27,),
-              title: Text ('Ticket',style: TextStyle (fontSize: 18),),
-              activeColor: Utils.primaryColor,
-              inactiveColor: Colors.black,
+            activeColor: Utils.primaryColor,
+            inactiveColor: Colors.black,
+          ),
+          BottomNavyBarItem(
+            icon: Icon(
+              Icons.search,
+              size: 30,
             ),
-            BottomNavyBarItem (
-              icon: Icon (Icons.settings, size: 30,),
-              title: Text ('Setting',style: TextStyle (fontSize: 18),),
-              activeColor: Utils.primaryColor,
-              inactiveColor: Colors.black,
+            title: Text(
+              'Search',
+              style: TextStyle(fontSize: 18),
             ),
-          ],
-        ),
+            activeColor: Utils.primaryColor,
+            inactiveColor: Colors.black,
+          ),
+          BottomNavyBarItem(
+            icon: Icon(
+              FontAwesomeIcons.ticketAlt,
+              size: 27,
+            ),
+            title: Text(
+              'Ticket',
+              style: TextStyle(fontSize: 18),
+            ),
+            activeColor: Utils.primaryColor,
+            inactiveColor: Colors.black,
+          ),
+          BottomNavyBarItem(
+            icon: Icon(
+              Icons.settings,
+              size: 30,
+            ),
+            title: Text(
+              'Setting',
+              style: TextStyle(fontSize: 18),
+            ),
+            activeColor: Utils.primaryColor,
+            inactiveColor: Colors.black,
+          ),
+        ],
+      ),
     );
   }
 }
