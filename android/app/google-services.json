@@ -1,34 +1,45 @@
 {
   "project_info": {
-    "project_number": "994829349034",
-    "firebase_url": "https://coach-ticket-selling-45992.firebaseio.com",
-    "project_id": "coach-ticket-selling-45992",
-    "storage_bucket": "coach-ticket-selling-45992.appspot.com"
+
+    "project_number": "303426056625",
+    "firebase_url": "https://coachticketselling.firebaseio.com",
+    "project_id": "coachticketselling",
+    "storage_bucket": "coachticketselling.appspot.com"
+
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:994829349034:android:69e9e20e666f7995a060d3",
+
+
+        "mobilesdk_app_id": "1:303426056625:android:05c7414a26f285bb6d0d90",
         "android_client_info": {
-          "package_name": "com.example.flutter_app"
+          "package_name": "com.IT.HCMIU.CoachTicketSelling"
+
         }
       },
       "oauth_client": [
         {
-          "client_id": "994829349034-d082pl2b49vhfcf43jarnmnihvg6pm01.apps.googleusercontent.com",
+
+          "client_id": "303426056625-ct6rtv3uq08flolgv4ch9p9vsau38s4q.apps.googleusercontent.com",
+
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBLSJnGisQU9Ixyj-2Idzd1N8jqXkCKo_U"
+
+          "current_key": "AIzaSyAPLt1aa5GZ0b-36Mbputqj4PlzYNvrepI"
+
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "994829349034-d082pl2b49vhfcf43jarnmnihvg6pm01.apps.googleusercontent.com",
+
+              "client_id": "303426056625-ct6rtv3uq08flolgv4ch9p9vsau38s4q.apps.googleusercontent.com",
+
               "client_type": 3
             }
           ]

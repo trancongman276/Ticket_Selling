@@ -23,13 +23,14 @@ if (flutterVersionName == null) {
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.android.application'
+
+apply plugin: 'com.google.gms.google-services'
 
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 28
-
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
@@ -40,10 +41,12 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.example.flutter_app"
-        minSdkVersion 16
-        targetSdkVersion 28
+
+        applicationId "com.IT.HCMIU.CoachTicketSelling"
+        minSdkVersion 21
+        targetSdkVersion 30
         multiDexEnabled true
+        
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -67,5 +70,6 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:26.1.1')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.android.support:multidex:1.0.3'
+
 }
 apply plugin: 'com.google.gms.google-services'
