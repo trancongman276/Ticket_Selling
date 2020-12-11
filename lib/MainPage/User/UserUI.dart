@@ -181,7 +181,7 @@ class _UserUIState extends State<UserUI> {
                                           DateTime(DateTime.now().year - 100),
                                       borderRadius: 16,
                                       theme: ThemeData(
-                                          primarySwatch: Utils.primaryColor));
+                                          primarySwatch: Colors.green));
                                   date != null
                                       ? _dateController.text =
                                           date.toString().substring(0, 10)

@@ -1,3 +1,4 @@
+import 'package:CoachTicketSelling/MainPage/User/UserUI.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:CoachTicketSelling/Utils/Route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -89,6 +90,9 @@ class _BodyViewState extends State<BodyView>
                 password: _passwordController.text.trim());
         print("[DEBUG] Email verified: " +
             Utils.firebaseAuth.currentUser.emailVerified.toString());
+        if (user.user.emailVerified) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => UserUI()));
+        }
         if (user.user.emailVerified == false) {
           setState(() {
             errorMessage = "Email is not verified";
