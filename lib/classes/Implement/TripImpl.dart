@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:CoachTicketSelling/classes/Implement/DriverImpl.dart';
+import 'package:CoachTicketSelling/classes/actor/Driver.dart';
 import 'package:CoachTicketSelling/classes/actor/Trip.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -8,32 +10,31 @@ class TripImplement {
 
   static TripImplement _instance = TripImplement._();
   static TripImplement get instance => _instance;
-  TripImplement._() {
-    Trip trip = Trip(
-      // imageUrl:
-      //     'https://pbs.twimg.com/profile_images/640666088271839233/OTKlt5pC.jpg',
-      detail: '',
-      totalSeat: 30,
-      seat: {},
-      source: 'SGN',
-      destination: 'HCM',
-      price: 100,
-      // duration: {
-      //   'Time start': Timestamp.fromDate(DateTime.now()),
-      //   'Time end': Timestamp.fromDate(DateTime.now().add(Duration(hours: 5)))
-      // },
-      duration: {
-        'Time start': DateTime.now(),
-        'Time end': DateTime.now().add(Duration(hours: 5))
-      },
-    );
+  TripImplement._();
 
-    _tripLs['1'] = trip;
-    _tripLs['2'] = trip;
-    _tripLs['3'] = trip;
-    _tripLs['4'] = trip;
-    _tripLs['5'] = trip;
-    _tripLs['6'] = trip;
+  Future<bool> init() async {
+    DriverImpl.instance.init();
+    await FirebaseFirestore.instance.collection('Trip').get().then((query) {
+      query.docs.forEach((doc) {
+        Map<String, dynamic> tempMap = doc.data()['Time'];
+        Map<String, DateTime> time = {};
+        tempMap.forEach((key, value) {
+          time[key] = DateTime.parse(value.toDate().toString());
+        });
+
+        _tripLs[doc.id] = Trip(
+          source: doc.data()['Source'],
+          destination: doc.data()['Destination'],
+          price: doc.data()['Price'],
+          totalSeat: doc.data()['Total Seat'],
+          seat: Map<String, bool>.from(doc.data()['Seat']),
+          detail: doc.data()['Detail'],
+          time: time,
+          driver: doc.data()['Driver'],
+        );
+      });
+    });
+    return Future.value(true);
   }
 
   bool update(String id,
@@ -51,23 +52,41 @@ class TripImplement {
         price: price,
         totalSeat: totalSeat,
         detail: detail,
-        duration: duration,
+        time: duration,
         seat: seat,
         driver: driver);
     return true;
   }
 
-  bool add(String source, String destination, int price, int totalSeat,
-      String detail, DocumentReference company) {
-    _tripLs[Random.secure().nextInt(1000).toString()] = Trip(
-        // imageUrl:
-        //     'https://pbs.twimg.com/profile_images/640666088271839233/OTKlt5pC.jpg',
-        source: source,
-        destination: destination,
-        price: price,
-        totalSeat: totalSeat,
-        detail: detail);
-    return true;
+  Future<bool> add(
+      String source,
+      String destination,
+      int price,
+      int totalSeat,
+      DocumentReference driver,
+      String detail,
+      DocumentReference company) async {
+    String id;
+    await FirebaseFirestore.instance.collection('Trip').add({
+      'Source': source,
+      'Destination': destination,
+      'Price': price,
+      'Total Seat': totalSeat,
+      'Seat': Map<String, bool>.identity(),
+      'Driver': driver,
+      'Company': company,
+      'Detail': detail,
+    }).then((value) => id = value.id);
+    _tripLs[id] = Trip(
+      source: source,
+      destination: destination,
+      price: price,
+      totalSeat: totalSeat,
+      detail: detail,
+      driver: driver,
+      company: company,
+    );
+    return Future.value(true);
   }
 
   bool delete(String tripID) {

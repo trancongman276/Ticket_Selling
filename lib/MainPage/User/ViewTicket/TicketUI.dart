@@ -92,7 +92,6 @@ class _TicketUIState extends State<TicketUI> {
                             shape: new RoundedRectangleBorder(
                                 borderRadius: new BorderRadius.circular(30.0)),
                             onPressed: () {
-                              print("Booking");
                               Navigator.pushNamed(
                                   context, UserPaymentViewRoute);
                             },

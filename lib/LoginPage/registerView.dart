@@ -241,7 +241,6 @@ class _RegisterViewState extends State<RegisterView> {
                 email: _emailController.text.trim(),
                 password: _passwordController.text.trim());
 
-        print(user.user);
         user.user.updateProfile(displayName: _nameController.text);
         user.user.reload();
         AppUser appUser = AppUser.instance;
@@ -304,7 +303,6 @@ class _RegisterViewState extends State<RegisterView> {
                 RaisedButton(
                     onPressed: () {
                       if (_key.currentState.validate()) register();
-                      print('Submitted');
                     },
                     color: Utils.primaryColor,
                     child: Text(

@@ -5,6 +5,7 @@ import 'package:CoachTicketSelling/classes/DAO/accountDAO.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Driver extends AccountDAO {
+  String id;
   bool isAvailable = true;
   String email;
   String name;
@@ -15,13 +16,19 @@ class Driver extends AccountDAO {
   String imageUrl;
   DocumentReference company;
   String note;
+  List<Map<String, DateTime>> _dayWorkLs;
+
   static Driver _currentDriver =
-      Driver.id(FirebaseAuth.instance.currentUser.uid);
+      Driver._id(FirebaseAuth.instance.currentUser.uid);
+
   static Driver get currentDriver => _currentDriver;
 
-  Driver.create(this.phone, this.email, this.name, this.doB, this.gender,
-      this.imageUrl, this.company, this.note);
-  Driver.id(String id) {
+  Driver.create(this.id, this.phone, this.email, this.name, this.doB,
+      this.gender, this.imageUrl, this.company, this.note) {
+    _getDayWork(id).then((dayWork) => _dayWorkLs = dayWork);
+  }
+
+  Driver._id(this.id) {
     Timestamp timestamp;
     FirebaseFirestore.instance
         .collection('User')
@@ -39,8 +46,7 @@ class Driver extends AccountDAO {
       this.note = document.data()['Note'];
       this.imageUrl = document.data()['ImageUrl'];
     });
-    _currentDriver =
-        Driver.create(phone, email, name, doB, gender, imageUrl, company, note);
+    _getDayWork(id).then((dayWork) => _dayWorkLs = dayWork);
   }
 
   _changePassword(String password) {
@@ -96,7 +102,25 @@ class Driver extends AccountDAO {
         'ImageUrl': this.imageUrl,
       });
     }
-
     return true;
   }
+
+  Future<List<Map<String, DateTime>>> _getDayWork(String id) async {
+    List<Map<String, DateTime>> dayWork = [];
+    await FirebaseFirestore.instance
+        .collection('Trip')
+        .where('Driver', isEqualTo: 'User/$id')
+        .get()
+        .then((query) {
+      query.docs.forEach((doc) {
+        Map<String, Timestamp> time = doc.data()['Time'];
+        time.forEach((key, value) {
+          dayWork.add({key: DateTime.parse(value.toDate().toString())});
+        });
+      });
+    });
+    return Future.value(dayWork);
+  }
+
+  List<Map<String, DateTime>> get dayWorkList => _dayWorkLs;
 }

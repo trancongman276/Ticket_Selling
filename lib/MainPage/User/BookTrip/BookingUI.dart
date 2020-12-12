@@ -166,7 +166,6 @@ Widget _bookingItem(
     BuildContext context) {
   return GestureDetector(
     onTap: () {
-      print(index);
       Navigator.pushNamed(context, UserChooseTripViewRoute);
     },
     child: Container(

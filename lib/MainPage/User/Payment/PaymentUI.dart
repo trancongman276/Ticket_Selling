@@ -54,7 +54,6 @@ class _PaymentUIState extends State<PaymentUI> {
                       shape: new RoundedRectangleBorder(
                           borderRadius: new BorderRadius.circular(30.0)),
                       onPressed: () {
-                        print("Payment");
                         LoadingDialog.showLoadingDialog(context, 'Loading...');
                       },
                       color: Color(0xff1b447b),

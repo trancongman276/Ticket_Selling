@@ -144,7 +144,6 @@ class _OveralChartViewState extends State<OveralChartView> {
         if (value.isNaN || !value.isFinite || value == 0.0)
           spotList.add(FlSpot(index.toDouble(), 0));
         else {
-          print(value);
           spotList.add(FlSpot(index.toDouble(), value));
         }
       }
@@ -178,7 +177,7 @@ class _OveralChartViewState extends State<OveralChartView> {
 
     LineChartData mainData(int index) {
       LineChartBarData _lineChartBarData = lineChartBarData(index);
-      print(max[index]);
+
       return LineChartData(
         minX: -1,
         maxX: 31,

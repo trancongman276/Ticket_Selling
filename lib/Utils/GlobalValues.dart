@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:intl/intl.dart';
 
 class Utils {
   // Variables
@@ -78,6 +79,7 @@ class Utils {
     storage.delete(key: 'p');
   }
 
+  static DateFormat _dateFormat = DateFormat('dd/MM/yyyy HH:mm');
   // Getter
   static AssetImage get loginBackground => _loginBackground;
 
@@ -96,4 +98,6 @@ class Utils {
   static Color get primaryColor => _primaryColor;
 
   static String get defaultUrl => _defaultUrl;
+
+  static DateFormat get dateFormat => _dateFormat;
 }

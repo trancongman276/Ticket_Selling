@@ -103,7 +103,6 @@ class _ForgetPasswordViewState extends State<ForgetPasswordView>
                 onPressed: () {
                   if (!wait) {
                     if (_key.currentState.validate()) request();
-                    print('Submitted');
                   }
                 },
                 color: Utils.primaryColor,

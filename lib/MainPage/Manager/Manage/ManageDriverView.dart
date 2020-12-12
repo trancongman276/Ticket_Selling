@@ -12,8 +12,18 @@ class _ManageDriverViewState extends State<ManageDriverView> {
   DriverImpl driverImpl = DriverImpl.instance;
   final GlobalKey<RefreshIndicatorState> _key =
       GlobalKey<RefreshIndicatorState>();
-  _refresh() async {
+  Future _refresh() async {
+    if (driverImpl.len() == 0) {
+      await driverImpl.init();
+      _key.currentState?.show();
+    }
     setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _refresh();
   }
 
   @override
@@ -79,7 +89,6 @@ class _ManageDriverViewState extends State<ManageDriverView> {
               children: List.generate(driverImpl.len(), (index) {
                 return FlatButton(
                   onPressed: () {
-                    print('Touched $index');
                     Navigator.pushNamed(context, EditDriverViewRoute,
                             arguments:
                                 driverImpl.driverList.keys.elementAt(index))

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:CoachTicketSelling/classes/DAO/accountDAO.dart';
 import 'package:CoachTicketSelling/classes/actor/Driver.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,19 +8,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class DriverImpl extends AccountDAO {
-  Map<String, Driver> _driverLs;
+  Map<String, Driver> _driverLs = {};
 
   static final DriverImpl _instance = DriverImpl._();
 
   static DriverImpl get instance => _instance;
 
   DriverImpl._() {
-    _init();
-    print('[DEBUGER] Driver Implement initiated.');
+    // _init();
   }
 
-  Future<bool> _init() async {
-    _driverLs = {};
+  Future<bool> init() async {
     Timestamp timestamp;
     await FirebaseFirestore.instance
         .collection('User')
@@ -31,6 +30,7 @@ class DriverImpl extends AccountDAO {
           timestamp = document.data()['DoB'];
 
           Driver driver = Driver.create(
+              document.id,
               document.data()['Phone'],
               document.data()['Email'],
               document.data()['Name'],
@@ -61,6 +61,7 @@ class DriverImpl extends AccountDAO {
     // _driverLs['6'] = driver;
     // _driverLs['7'] = driver;
     // _driverLs['8'] = driver;
+    print('[DEBUG] Driver Implement initiated.');
 
     return true;
   }
@@ -148,11 +149,11 @@ class DriverImpl extends AccountDAO {
       'Note': note,
       'ImageUrl': imageUrl,
     });
-    Driver driver =
-        Driver.create(phone, email, name, doB, gender, imageUrl, company, note);
+    Driver driver = Driver.create(
+        id, phone, email, name, doB, gender, imageUrl, company, note);
     _driverLs[id] = driver;
 
-    print('[Debug] Created Driver ${driver.toString()}');
+    print('[DEBUG] Created Driver ${driver.toString()}');
     return true;
   }
 
@@ -165,7 +166,36 @@ class DriverImpl extends AccountDAO {
     return true;
   }
 
-  Map get driverList => _driverLs;
+  List<Driver> getFreeDriver(String start, String end) {
+    List<Driver> returnDriver = [];
+    _driverLs.forEach((id, driver) {
+      bool isPassed = true;
+      driver.dayWorkList.every((time) {
+        if ((time['Start Time'].isAfter(Utils.dateFormat.parse(start)) &
+                time['Finish Time'].isBefore(Utils.dateFormat.parse(start))) |
+            (time['Start Time'].isAfter(Utils.dateFormat.parse(end)) &
+                time['Finish Time'].isBefore(Utils.dateFormat.parse(end)))) {
+          isPassed = false;
+          return false;
+        }
+        return true;
+      });
+      if (isPassed) returnDriver.add(driver);
+    });
+    return returnDriver;
+  }
 
+  Driver getDriverAtIndex(int index) {
+    return _driverLs[_driverLs.keys.elementAt(index)];
+  }
+
+  String getDriverID(Driver driver) {
+    _driverLs.forEach((key, value) {
+      if (value == driver) return key;
+    });
+    return null;
+  }
+
+  Map<String, Driver> get driverList => _driverLs;
   int len() => _driverLs.length;
 }

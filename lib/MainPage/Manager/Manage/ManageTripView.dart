@@ -85,6 +85,20 @@ class _ManageTripViewState extends State<ManageTripView> {
     );
   }
 
+  Future _refresh() async {
+    if (tripImplement.tripList.length == 0) {
+      await tripImplement.init();
+      _key.currentState?.show();
+    }
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _refresh();
+  }
+
   Map<String, bool> map;
   TripImplement tripImplement = TripImplement.instance;
   @override
@@ -101,7 +115,6 @@ class _ManageTripViewState extends State<ManageTripView> {
               children: List.generate(tripImplement.tripList.length, (index) {
                 return FlatButton(
                   onPressed: () {
-                    print('Touched $index');
                     Navigator.pushNamed(context, EditTripViewRoute,
                             arguments:
                                 tripImplement.tripList.keys.elementAt(index))
@@ -116,7 +129,7 @@ class _ManageTripViewState extends State<ManageTripView> {
               // (context, index) {
               //   return FlatButton(
               //     onPressed: () {
-              //       print('Touched $index');
+              //
               //       Navigator.pushNamed(context, EditTripViewRoute);
               //     },
               //     child: tripField(trip),

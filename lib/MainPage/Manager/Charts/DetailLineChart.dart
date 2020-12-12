@@ -79,7 +79,6 @@ class _DetailChartState extends State<DetailChart> {
         if (value.isNaN || !value.isFinite || value == 0.0)
           _splotList.add(FlSpot(index.toDouble(), 0));
         else {
-          print(value);
           _splotList.add(FlSpot(index.toDouble(), value));
         }
       }

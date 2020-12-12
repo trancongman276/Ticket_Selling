@@ -3,8 +3,10 @@ import 'package:CoachTicketSelling/classes/Implement/DriverImpl.dart';
 import 'package:CoachTicketSelling/classes/Implement/TripImpl.dart';
 import 'package:CoachTicketSelling/classes/actor/Driver.dart';
 import 'package:CoachTicketSelling/classes/actor/Trip.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_rounded_date_picker/rounded_picker.dart';
 // import 'package:image_picker/image_picker.dart';
 // import 'dart:io';
 
@@ -30,13 +32,24 @@ class _AddTripViewState extends State<AddTripView> {
       price.text = trip.price.toString();
       seat.text = trip.totalSeat.toString();
       detail.text = trip.detail;
+
+      selectedEndDate = selectedStartDate = true;
+
+      dateStart.text = Utils.dateFormat.format(trip.time['Start Time']);
+      dateEnd.text = Utils.dateFormat.format(trip.time['Finish Time']);
+      choosingDriver = driverImpl.driverList[trip.driver.id].name;
+      freeDriverLs = [choosingDriver];
     }
-    driverLs.addAll(List.generate(driverImpl.len(), (index) {
-      Driver driver =
-          driverImpl.driverList[driverImpl.driverList.keys.elementAt(index)];
+  }
+
+  List<String> getDriverLs(String start, String end) {
+    List<String> _freeDriverLs = ['Driver'];
+    driverLs = driverImpl.getFreeDriver(start, end);
+    _freeDriverLs.addAll(List.generate(driverLs.length, (index) {
+      Driver driver = driverLs[index];
       return '$index. ' + driver.name;
     }));
-    choosingDriver = driverLs[0];
+    return _freeDriverLs;
   }
 
   GlobalKey<FormState> _key = GlobalKey<FormState>();
@@ -45,11 +58,47 @@ class _AddTripViewState extends State<AddTripView> {
   final TextEditingController price = TextEditingController();
   final TextEditingController seat = TextEditingController();
   final TextEditingController detail = TextEditingController();
+  final TextEditingController dateStart = TextEditingController();
+  final TextEditingController dateEnd = TextEditingController();
+  String errorMessage = '';
   // File _image;
   // final picker = ImagePicker();
   // Color borderColor = Colors.grey;
   String choosingDriver = 'Driver';
-  List<String> driverLs = ['Driver'];
+  List<Driver> driverLs;
+  List<String> freeDriverLs = ['Driver'];
+  ThemeData themeData = ThemeData(primarySwatch: Colors.green);
+  bool selectedStartDate = false;
+  bool selectedEndDate = false;
+
+  Future<DateTime> dateTimePicker(DateTime initDate, TimeOfDay initTime) async {
+    DateTime date;
+    TimeOfDay time;
+    await showRoundedDatePicker(
+      context: context,
+      theme: themeData,
+      initialDate: initDate,
+      firstDate: initDate,
+    ).then((pickedDate) async {
+      if (pickedDate != null) {
+        date = pickedDate;
+
+        await showRoundedTimePicker(
+          context: context,
+          initialTime: initTime,
+          theme: themeData,
+        ).then((pickedTime) {
+          if (pickedTime != null) {
+            time = pickedTime;
+          } else
+            return null;
+        });
+      } else
+        return null;
+    });
+
+    return DateTime(date.year, date.month, date.day, time.hour, time.minute);
+  }
 
   Future<bool> _showDialog() async {
     return showDialog<bool>(
@@ -108,8 +157,16 @@ class _AddTripViewState extends State<AddTripView> {
           detail: detail.text);
       Navigator.pop(context);
     } else {
-      tripImplement.add(source.text.trim(), dest.text.trim(),
-          int.parse(price.text), int.parse(seat.text), detail.text, null);
+      tripImplement.add(
+          source.text.trim(),
+          dest.text.trim(),
+          int.parse(price.text),
+          int.parse(seat.text),
+          FirebaseFirestore.instance
+              .collection('User')
+              .doc(driverLs[freeDriverLs.indexOf(choosingDriver)].id),
+          detail.text,
+          null);
       // Manager.instance.company);
       _key.currentState.reset();
       source.text = '';
@@ -133,6 +190,57 @@ class _AddTripViewState extends State<AddTripView> {
 
   @override
   Widget build(BuildContext context) {
+    Widget chooseDate(
+      String label,
+      TextEditingController controller,
+      DateTime startDate,
+      TimeOfDay startTime,
+    ) {
+      return Container(
+        child: Row(
+          children: [
+            Container(
+              width: 135,
+              child: TextFormField(
+                validator: Utils.validateEmpty,
+                decoration: InputDecoration(
+                  labelText: label,
+                  labelStyle: TextStyle(
+                      color: Utils.primaryColor, fontWeight: FontWeight.bold),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Utils.primaryColor,
+                    ),
+                  ),
+                ),
+                controller: controller,
+                readOnly: true,
+              ),
+            ),
+            IconButton(
+              onPressed: () async {
+                dateTimePicker(startDate, startTime).then((datetime) {
+                  if (datetime != null) {
+                    controller.text = Utils.dateFormat.format(datetime);
+                    setState(() {
+                      selectedStartDate = true;
+                      if (dateEnd.text.isNotEmpty) {
+                        selectedEndDate = true;
+                        freeDriverLs =
+                            getDriverLs(dateStart.text, dateEnd.text);
+                      }
+                    });
+                  }
+                });
+              },
+              icon: Icon(Icons.calendar_today),
+              color: Utils.primaryColor.withBlue(10),
+            ),
+          ],
+        ),
+      );
+    }
+
     Widget body = Column(
       children: <Widget>[
         Row(
@@ -168,11 +276,34 @@ class _AddTripViewState extends State<AddTripView> {
             ),
           ],
         ),
+        Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              chooseDate(
+                  'Start at',
+                  dateStart,
+                  DateTime(
+                    DateTime.now().year,
+                    DateTime.now().month,
+                    DateTime.now().day + 1,
+                  ),
+                  TimeOfDay.now()),
+              if (dateStart.text.isNotEmpty)
+                chooseDate(
+                    'Finish at',
+                    dateEnd,
+                    Utils.dateFormat.parse(dateStart.text),
+                    TimeOfDay.fromDateTime(
+                        Utils.dateFormat.parse(dateStart.text))),
+            ]),
         TextFormField(
           validator: Utils.validateEmpty,
           controller: price,
           textInputAction: TextInputAction.next,
           keyboardType: TextInputType.phone,
+          inputFormatters: <TextInputFormatter>[
+            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+          ],
           decoration: InputDecoration(
             hintText: 'Input price',
             labelText: 'Price',
@@ -188,6 +319,9 @@ class _AddTripViewState extends State<AddTripView> {
           controller: seat,
           textInputAction: TextInputAction.next,
           keyboardType: TextInputType.phone,
+          inputFormatters: <TextInputFormatter>[
+            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+          ],
           decoration: InputDecoration(
             hintText: 'Input available seat',
             labelText: 'Available Seat',
@@ -206,17 +340,19 @@ class _AddTripViewState extends State<AddTripView> {
               color: Colors.grey,
             ),
             value: choosingDriver,
-            items: driverLs.map<DropdownMenuItem<String>>((String value) {
+            items: freeDriverLs.map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
                 child: Text(value),
               );
             }).toList(),
-            onChanged: (String newValue) {
-              setState(() {
-                choosingDriver = newValue;
-              });
-            },
+            onChanged: !selectedEndDate
+                ? null
+                : (String newValue) {
+                    setState(() {
+                      choosingDriver = newValue;
+                    });
+                  },
           ),
         ),
         TextFormField(
@@ -246,13 +382,19 @@ class _AddTripViewState extends State<AddTripView> {
                   color: Utils.primaryColor,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0)),
-                  onPressed: () {
+                  onPressed: () async {
                     // if (_key.currentState.validate() && _image != null)
-                    if (_key.currentState.validate()) saveTrip();
-                    // else
-                    //   setState(() {
-                    //     borderColor = Colors.red;
-                    //   });
+                    if (_key.currentState.validate()) {
+                      if (tripID != null) {
+                        saveTrip();
+                      } else if (freeDriverLs.indexOf(choosingDriver) == 0) {
+                        setState(() {
+                          errorMessage = 'Bad choosing Driver';
+                          return;
+                        });
+                      } else
+                        saveTrip();
+                    }
                   },
                   child: Text(
                     'Save',
@@ -276,6 +418,11 @@ class _AddTripViewState extends State<AddTripView> {
             ),
           ),
         ),
+        if (errorMessage.isNotEmpty)
+          Text(
+            errorMessage,
+            style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+          ),
       ],
     );
 

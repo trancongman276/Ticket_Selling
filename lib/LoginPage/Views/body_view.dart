@@ -38,7 +38,7 @@ class _BodyViewState extends State<BodyView>
 
   Future<bool> _navigate() async {
     String id = FirebaseAuth.instance.currentUser.uid;
-    print(id);
+
     String role = '';
     await FirebaseFirestore.instance
         .collection('User')

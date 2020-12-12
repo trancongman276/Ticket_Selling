@@ -49,7 +49,7 @@ class BillImplement {
       _kpis[i + 1] =
           (_incomeMonthly[i + 1] - _incomeMonthly[i]) / _incomeMonthly[i];
     }
-    print(_kpis);
+
     return true;
   }
 
@@ -88,7 +88,7 @@ class BillImplement {
       _rate[index] = LinkedHashMap.fromIterable(sortedValue,
           key: (k) => k, value: (v) => _rate[index][v]);
     }
-    print(_rate);
+
     return true;
   }
 

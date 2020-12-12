@@ -223,7 +223,6 @@ Widget _bookingItem(
     String date) {
   return GestureDetector(
     onTap: () {
-      print(index);
       Navigator.popAndPushNamed(context, UserTicketViewRoute);
     },
     child: Container(
