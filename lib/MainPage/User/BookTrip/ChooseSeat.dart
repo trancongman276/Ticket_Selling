@@ -1,4 +1,5 @@
 import 'package:CoachTicketSelling/MainPage/User/ViewTicket/TicketUI.dart';
+import 'package:CoachTicketSelling/Utils/Route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -153,10 +154,8 @@ class _ChooseSeatState extends State<ChooseSeat> {
                                         new BorderRadius.circular(30.0)),
                                 onPressed: () {
                                   print("Choose");
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => TicketUI()));
+                                  Navigator.pushNamed(
+                                      context, UserPreviewTicketViewRoute);
                                 },
                                 color: Utils.primaryColor,
                                 textColor: Colors.white,

@@ -1,11 +1,10 @@
-import 'package:CoachTicketSelling/MainPage/User/Profile.dart';
-import 'package:CoachTicketSelling/MainPage/User/ViewTicket/ViewTicketUI.dart';
+import 'dart:io';
+
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
+import 'package:CoachTicketSelling/Utils/Route.dart';
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
-import '../UserUI.dart';
 
 class ListTicket extends StatefulWidget {
   @override
@@ -26,164 +25,185 @@ class _ListTicketState extends State<ListTicket> {
   int price = 150000;
   String imageLink =
       'assets/images/logo.png'; //Create class to set link image corresponding to Company logo
+  Future<bool> _onWillPop() {
+    return showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text('Exit - Sign Out'),
+              content: Text('Do you want to close app? Or maybe Sign out?'),
+              actions: <Widget>[
+                FlatButton(
+                    onPressed: () {
+                      Utils.logout();
+                      Navigator.pushNamed(context, LoginViewRoute);
+                    },
+                    child: Text('Sign out')),
+                FlatButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: Text('No')),
+                FlatButton(onPressed: () => exit(0), child: Text('Yes')),
+              ],
+            ));
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Utils.primaryColor,
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Stack(
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-                color: Utils.primaryColor,
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: Text(
-                    "BASKET TICKETS",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 30,
-                        color: Colors.white),
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 30),
-                  decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30),
-                      )),
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        backgroundColor: Utils.primaryColor,
+        body: SingleChildScrollView(
+          child: SafeArea(
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                  color: Utils.primaryColor,
                   width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 0.87,
-                  child: Column(
-                    //tris that contain free seat
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(
-                            "$result Tickets",
-                            style: TextStyle(fontSize: 25),
-                          ),
-                          Icon(
-                            FontAwesomeIcons.list,
-                            color: Colors.black,
-                            size: 25,
-                          )
-                        ],
-                      ),
-                      SizedBox(height: 30),
-                      Expanded(
-                        child: Container(
-                            child: ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          itemCount: result,
-                          itemBuilder: (context, index) {
-                            return Column(
-                              children: <Widget>[
-                                _bookingItem(
-                                    index,
-                                    source,
-                                    destination,
-                                    rate,
-                                    timeStart,
-                                    timeEnd,
-                                    company,
-                                    price,
-                                    imageLink,
-                                    context,
-                                    date),
-                                //Create a class that use ID to query this information : db.string(id)
-                                SizedBox(
-                                  height: 20,
-                                )
-                              ],
-                            );
-                          },
-                        )),
-                      )
-                    ],
+                  height: MediaQuery.of(context).size.height,
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: Text(
+                      "BASKET TICKETS",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 30,
+                          color: Colors.white),
+                    ),
                   ),
                 ),
-              )
-            ],
+                Positioned(
+                  bottom: 0,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+                    decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
+                        )),
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height * 0.87,
+                    child: Column(
+                      //tris that contain free seat
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              "$result Tickets",
+                              style: TextStyle(fontSize: 25),
+                            ),
+                            Icon(
+                              FontAwesomeIcons.list,
+                              color: Colors.black,
+                              size: 25,
+                            )
+                          ],
+                        ),
+                        SizedBox(height: 30),
+                        Expanded(
+                          child: Container(
+                              child: ListView.builder(
+                            scrollDirection: Axis.vertical,
+                            itemCount: result,
+                            itemBuilder: (context, index) {
+                              return Column(
+                                children: <Widget>[
+                                  _bookingItem(
+                                      index,
+                                      source,
+                                      destination,
+                                      rate,
+                                      timeStart,
+                                      timeEnd,
+                                      company,
+                                      price,
+                                      imageLink,
+                                      context,
+                                      date),
+                                  //Create a class that use ID to query this information : db.string(id)
+                                  SizedBox(
+                                    height: 20,
+                                  )
+                                ],
+                              );
+                            },
+                          )),
+                        )
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
-      ),
-      bottomNavigationBar: BottomNavyBar(
-        selectedIndex: currentIndex,
-        onItemSelected: (index) {
-          setState(() {
-            currentIndex = index;
-            if (currentIndex == 1) {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => UserUI()));
-            }
-            if (currentIndex == 0) {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Profile()));
-            }
-            currentIndex = 2;
-          });
-        },
-        items: <BottomNavyBarItem>[
-          BottomNavyBarItem(
-            icon: Icon(
-              Icons.person,
-              size: 30,
+        bottomNavigationBar: BottomNavyBar(
+          selectedIndex: currentIndex,
+          onItemSelected: (index) {
+            setState(() {
+              currentIndex = index;
+              if (currentIndex == 1) {
+                Navigator.popAndPushNamed(context, UserViewRoute);
+              }
+              if (currentIndex == 0) {
+                Navigator.popAndPushNamed(context, UserProfileViewRoute);
+              }
+              currentIndex = 2;
+            });
+          },
+          items: <BottomNavyBarItem>[
+            BottomNavyBarItem(
+              icon: Icon(
+                Icons.person,
+                size: 30,
+              ),
+              title: Text(
+                'Profile',
+                style: TextStyle(fontSize: 18),
+              ),
+              activeColor: Utils.primaryColor,
+              inactiveColor: Colors.black,
             ),
-            title: Text(
-              'Profile',
-              style: TextStyle(fontSize: 18),
+            BottomNavyBarItem(
+              icon: Icon(
+                Icons.search,
+                size: 30,
+              ),
+              title: Text(
+                'Search',
+                style: TextStyle(fontSize: 18),
+              ),
+              activeColor: Utils.primaryColor,
+              inactiveColor: Colors.black,
             ),
-            activeColor: Utils.primaryColor,
-            inactiveColor: Colors.black,
-          ),
-          BottomNavyBarItem(
-            icon: Icon(
-              Icons.search,
-              size: 30,
+            BottomNavyBarItem(
+              icon: Icon(
+                FontAwesomeIcons.ticketAlt,
+                size: 27,
+              ),
+              title: Text(
+                ' Ticket',
+                style: TextStyle(fontSize: 18),
+              ),
+              activeColor: Utils.primaryColor,
+              inactiveColor: Colors.black,
             ),
-            title: Text(
-              'Search',
-              style: TextStyle(fontSize: 18),
+            BottomNavyBarItem(
+              icon: Icon(
+                Icons.settings,
+                size: 30,
+              ),
+              title: Text(
+                'Setting',
+                style: TextStyle(fontSize: 18),
+              ),
+              activeColor: Utils.primaryColor,
+              inactiveColor: Colors.black,
             ),
-            activeColor: Utils.primaryColor,
-            inactiveColor: Colors.black,
-          ),
-          BottomNavyBarItem(
-            icon: Icon(
-              FontAwesomeIcons.ticketAlt,
-              size: 27,
-            ),
-            title: Text(
-              ' Ticket',
-              style: TextStyle(fontSize: 18),
-            ),
-            activeColor: Utils.primaryColor,
-            inactiveColor: Colors.black,
-          ),
-          BottomNavyBarItem(
-            icon: Icon(
-              Icons.settings,
-              size: 30,
-            ),
-            title: Text(
-              'Setting',
-              style: TextStyle(fontSize: 18),
-            ),
-            activeColor: Utils.primaryColor,
-            inactiveColor: Colors.black,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -204,8 +224,7 @@ Widget _bookingItem(
   return GestureDetector(
     onTap: () {
       print(index);
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => ViewTicketUI()));
+      Navigator.popAndPushNamed(context, UserTicketViewRoute);
     },
     child: Container(
       width: 500,

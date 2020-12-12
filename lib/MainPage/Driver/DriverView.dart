@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:CoachTicketSelling/MainPage/Driver/table_calendar.dart';
+import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
+import 'package:CoachTicketSelling/classes/actor/Driver.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -124,25 +128,50 @@ class _DriverViewState extends State<DriverView> with TickerProviderStateMixin {
     print('CALLBACK: _onCalendarCreated');
   }
 
+  Future<bool> _onWillPop() {
+    return showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text('Exit - Sign Out'),
+              content: Text('Do you want to close app? Or maybe Sign out?'),
+              actions: <Widget>[
+                FlatButton(
+                    onPressed: () {
+                      Utils.logout();
+                      Navigator.of(context).pop(true);
+                    },
+                    child: Text('Sign out')),
+                FlatButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: Text('No')),
+                FlatButton(onPressed: () => exit(0), child: Text('Yes')),
+              ],
+            ));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xff2ecc71),
-        title: Text(widget.title),
-      ),
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          // Switch out 2 lines below to play with TableCalendar's settings
-          //-----------------------
-          _buildTableCalendar(),
-          // _buildTableCalendarWithBuilders(),
-          const SizedBox(height: 8.0),
-          _buildButtons(),
-          const SizedBox(height: 8.0),
-          Expanded(child: _buildEventList()),
-        ],
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: Color(0xff2ecc71),
+          title: Text('Hi ${Driver.currentDriver.name},'),
+        ),
+        body: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            // Switch out 2 lines below to play with TableCalendar's settings
+            //-----------------------
+            _buildTableCalendar(),
+            // _buildTableCalendarWithBuilders(),
+            const SizedBox(height: 8.0),
+            _buildButtons(),
+            const SizedBox(height: 8.0),
+            Expanded(child: _buildEventList()),
+          ],
+        ),
       ),
     );
   }
@@ -324,13 +353,13 @@ class _DriverViewState extends State<DriverView> with TickerProviderStateMixin {
             //     });
             //   },
             // ),
-            RaisedButton(
-              onPressed: addTrip,
-              child: Text('Add Trip'),
-              // setState(() {
-              //   _calendarController.setCalendarFormat(CalendarFormat.week);
-              // });
-            ),
+            // RaisedButton(
+            //   onPressed: addTrip,
+            //   child: Text('Add Trip'),
+            //   // setState(() {
+            //   //   _calendarController.setCalendarFormat(CalendarFormat.week);
+            //   // });
+            // ),
           ],
         ),
         // const SizedBox(height: 8.0),
@@ -389,14 +418,14 @@ class _DriverViewState extends State<DriverView> with TickerProviderStateMixin {
   // }
   //
 
-  void addTrip() {
-    final firestoreInstance = FirebaseFirestore.instance;
-    firestoreInstance.collection("User").get().then((querySnapshot) {
-      querySnapshot.docs.forEach((result) {
-        print(result.data()["Bill"]);
-      });
-    });
-  }
+  // void addTrip() {
+  // final firestoreInstance = FirebaseFirestore.instance;
+  // firestoreInstance.collection("User").get().then((querySnapshot) {
+  //   querySnapshot.docs.forEach((result) {
+  //     print(result.data()["Bill"]);
+  //   });
+  // });
+  // }
 
   Widget _buildEventList() {
     return ListView(

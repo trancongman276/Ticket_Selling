@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -5,14 +7,26 @@ import 'package:google_fonts/google_fonts.dart';
 import 'Utils/Route.dart' as route;
 
 bool logined = false;
-
+bool connected = false;
+String nextRoute = '';
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  print("[DEBUG]Checking login");
-  if (!kIsWeb) logined = await route.checkLogined();
-  print("[DEBUG]Checked: $logined");
-  runApp(MyApp());
+  try {
+    final result = await InternetAddress.lookup('google.com');
+    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+      print('[DEBUG] Connected');
+      connected = true;
+      WidgetsFlutterBinding.ensureInitialized();
+      await Firebase.initializeApp();
+      print("[DEBUG]Checking login");
+      if (!kIsWeb) logined = await route.checkLogined();
+      print("[DEBUG]Checked: $logined");
+      await route.navigate().then((value) => nextRoute = value);
+      runApp(MyApp());
+    }
+  } on SocketException catch (_) {
+    print('[DEBUG] Not connected');
+    runApp(MyApp());
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -26,7 +40,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "Welcome",
       onGenerateRoute: route.generateRoute,
-      initialRoute: logined ? route.UserViewRoute : route.LoginViewRoute,
+      initialRoute: logined ? nextRoute : route.LoginViewRoute,
     );
   }
 }

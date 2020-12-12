@@ -1,5 +1,6 @@
 import 'package:CoachTicketSelling/MainPage/User/ViewTicket/ListTicket.dart';
 import 'package:CoachTicketSelling/MainPage/User/ViewTicket/Ticket.dart';
+import 'package:CoachTicketSelling/Utils/Route.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 
@@ -58,10 +59,7 @@ class _ViewTicketUIState extends State<ViewTicketUI> {
                         borderRadius: new BorderRadius.circular(30.0)),
                     onPressed: () {
                       print("$rating");
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ListTicket()));
+                      Navigator.popAndPushNamed(context, UserTicketViewRoute);
                     },
                     color: Utils.primaryColor,
                     textColor: Colors.white,

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'Views/top_view.dart';
 
 class LoginView extends StatelessWidget {
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,3 +1,4 @@
+import 'package:CoachTicketSelling/Utils/Route.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
@@ -92,10 +93,8 @@ class _TicketUIState extends State<TicketUI> {
                                 borderRadius: new BorderRadius.circular(30.0)),
                             onPressed: () {
                               print("Booking");
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PaymentUI()));
+                              Navigator.pushNamed(
+                                  context, UserPaymentViewRoute);
                             },
                             color: Utils.primaryColor,
                             textColor: Colors.white,

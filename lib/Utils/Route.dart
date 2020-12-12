@@ -1,31 +1,44 @@
 import 'package:CoachTicketSelling/LoginPage/forgetView.dart';
 import 'package:CoachTicketSelling/LoginPage/loginView.dart';
 import 'package:CoachTicketSelling/LoginPage/registerView.dart';
-
 import 'package:CoachTicketSelling/MainPage/Manager/Charts/DetailBarChart.dart';
 import 'package:CoachTicketSelling/MainPage/Manager/Charts/DetailLineChart.dart';
 import 'package:CoachTicketSelling/MainPage/Manager/ManagerMainView.dart';
 import 'package:CoachTicketSelling/MainPage/Manager/Manage/EditDriverView.dart';
 import 'package:CoachTicketSelling/MainPage/Manager/Manage/EditTripView.dart';
-
 import 'package:CoachTicketSelling/MainPage/Driver/DriverView.dart';
-
+import 'package:CoachTicketSelling/MainPage/User/BookTrip/BookingUI.dart';
+import 'package:CoachTicketSelling/MainPage/User/BookTrip/ChooseSeat.dart';
+import 'package:CoachTicketSelling/MainPage/User/Payment/PaymentUI.dart';
+import 'package:CoachTicketSelling/MainPage/User/Profile.dart';
+import 'package:CoachTicketSelling/MainPage/User/UserUI.dart';
+import 'package:CoachTicketSelling/MainPage/User/ViewTicket/ListTicket.dart';
+import 'package:CoachTicketSelling/MainPage/User/ViewTicket/TicketUI.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:CoachTicketSelling/Utils/enum.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
-import 'package:CoachTicketSelling/MainPage/User/UserUI.dart';
+import 'package:CoachTicketSelling/classes/actor/AppUser.dart';
 
 const String LoginViewRoute = '/';
 
 const String RegisterViewRoute = '/register';
 const String ForgetViewRoute = '/forget';
 const String ManagerViewRoute = '/manager';
-const String UserViewRoute = '/user';
 const String DetailIncomeChartViewRoute = '/manager/detailChart';
 const String EditTripViewRoute = '/manager/edit/trip';
 const String EditDriverViewRoute = '/manager/edit/driver';
 const String DetailBarChartViewRoute = '/manager/charts/barchart';
+const String UserViewRoute = '/user';
+const String UserProfileViewRoute = '/user/profile';
+const String UserTicketViewRoute = '/user/ticket';
+const String UserFindTripViewRoute = '/user/findTrip';
+const String UserChooseTripViewRoute = '/user/findTrip/chooseSeat';
+const String UserPreviewTicketViewRoute =
+    '/user/findTrip/chooseSeat/previewTickets';
+const String UserPaymentViewRoute =
+    '/user/findTrip/chooseSeat/previewTickets/payment';
 const String DriverViewRoute = '/driver';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
@@ -67,8 +80,22 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           builder: (context) => EditDriverView(
                 driverID: arg,
               ));
+
     case UserViewRoute:
       return MaterialPageRoute(builder: (context) => UserUI());
+    case UserProfileViewRoute:
+      return MaterialPageRoute(builder: (context) => Profile());
+    case UserTicketViewRoute:
+      return MaterialPageRoute(builder: (context) => ListTicket());
+    case UserFindTripViewRoute:
+      return MaterialPageRoute(builder: (context) => BookingUI());
+    case UserChooseTripViewRoute:
+      return MaterialPageRoute(builder: (context) => ChooseSeat());
+    case UserPreviewTicketViewRoute:
+      return MaterialPageRoute(builder: (context) => TicketUI());
+    case UserPaymentViewRoute:
+      return MaterialPageRoute(builder: (context) => PaymentUI());
+
     case DriverViewRoute:
       return MaterialPageRoute(
           builder: (context) => DriverView(
@@ -84,15 +111,36 @@ Future<bool> checkLogined() async {
   String pass = await Utils.storage.read(key: 'p');
   print("[DEBUG] Email: $mail | Pass: $pass");
   if (mail != null && pass != null) {
-    // Utils.firebaseAuth
-    //     .signInWithEmailAndPassword(email: mail, password: pass)
-    //     .then((user) => Account.instance.get(user.user.uid));
-
-    //TODO: FIX ACCOUNT
+    await FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: mail, password: pass)
+        .then((user) => AppUser.instance.getUser(user.user.uid));
     return true;
   } else {
     return false;
   }
+}
+
+Future<String> navigate() async {
+  String id = FirebaseAuth.instance.currentUser.uid;
+  String role = '';
+  await FirebaseFirestore.instance
+      .collection('User')
+      .doc(id)
+      .get()
+      .then((doc) => role = doc.data()['Role']);
+  switch (role) {
+    case 'User':
+      AppUser.instance.getUser(FirebaseAuth.instance.currentUser.uid);
+      return Future.value(UserViewRoute);
+      break;
+    case 'Driver':
+      return Future.value(DriverViewRoute);
+      break;
+    case 'Manager':
+      return Future.value(ManagerViewRoute);
+      break;
+  }
+  return Future.value(LoginViewRoute);
 }
 
 class DetailedChartArgs {

@@ -2,7 +2,6 @@ import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:CoachTicketSelling/classes/Implement/DriverImpl.dart';
 import 'package:CoachTicketSelling/classes/Implement/TripImpl.dart';
 import 'package:CoachTicketSelling/classes/actor/Driver.dart';
-import 'package:CoachTicketSelling/classes/actor/Manager.dart';
 import 'package:CoachTicketSelling/classes/actor/Trip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -102,8 +101,11 @@ class _AddTripViewState extends State<AddTripView> {
       // trip.price = int.tryParse(price.text);
       // trip.totalSeat = int.tryParse(seat.text);
       // trip.detail = detail.text;
-      tripImplement.update(source.text.trim(), dest.text.trim(),
-          int.tryParse(price.text), int.tryParse(seat.text), detail.text);
+      tripImplement.update(tripID,
+          source: source.text.trim(),
+          destination: dest.text.trim(),
+          price: int.tryParse(price.text),
+          detail: detail.text);
       Navigator.pop(context);
     } else {
       tripImplement.add(source.text.trim(), dest.text.trim(),

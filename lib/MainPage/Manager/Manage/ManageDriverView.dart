@@ -13,7 +13,7 @@ class _ManageDriverViewState extends State<ManageDriverView> {
   final GlobalKey<RefreshIndicatorState> _key =
       GlobalKey<RefreshIndicatorState>();
   _refresh() async {
-    await setState(() {});
+    setState(() {});
   }
 
   @override
@@ -70,7 +70,7 @@ class _ManageDriverViewState extends State<ManageDriverView> {
     return RefreshIndicator(
       key: _key,
       onRefresh: () async {
-        setState(() {});
+        _refresh();
       },
       child: SingleChildScrollView(
         child: Column(

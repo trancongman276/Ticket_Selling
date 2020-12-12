@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:CoachTicketSelling/classes/DAO/accountDAO.dart';
 import 'package:CoachTicketSelling/classes/actor/Driver.dart';
@@ -21,43 +20,47 @@ class DriverImpl extends AccountDAO {
 
   Future<bool> _init() async {
     _driverLs = {};
-    // Timestamp timestamp;
-    // await FirebaseFirestore.instance
-    //     .collection('User')
-    //     .where('Role', isEqualTo: 'Driver')
-    //     .get()
-    //     .then((querySnap) {
-    //   querySnap.docs.forEach((document) {
-    //     Driver driver;
-    //     driver.company = document.data()['Company'];
-    //     driver.email = document.data()['Email'];
-    //     driver.name = document.data()['Name'];
-    //     driver.gender = document.data()['Gender'];
-    //     timestamp = document.data()['DoB'];
-    //     driver.doB = DateTime.parse(timestamp.toDate().toString());
-    //     driver.phone = document.data()['Phone'];
-    //     driver.note = document.data()['Note'];
-    //     driver.imageUrl = document.data()['ImageUrl'];
-    //     _driverLs[document.id] = driver;
-    //   });
-    // });
+    Timestamp timestamp;
+    await FirebaseFirestore.instance
+        .collection('User')
+        .where('Role', isEqualTo: 'Driver')
+        .get()
+        .then((querySnap) {
+      querySnap.docs.forEach((document) {
+        if (document.data()['isAvailable']) {
+          timestamp = document.data()['DoB'];
 
-    Driver driver = Driver.id('1');
-    driver.imageUrl =
-        'https://static.wikia.nocookie.net/diepio/images/6/6e/Pogchamp.jpg';
-    driver.email = 'abc@abc.com';
-    driver.name = 'I am POG';
-    driver.phone = '0123456789';
-    driver.doB = DateTime.utc(1987, 6, 12);
-    driver.gender = 'Male';
-    _driverLs['1'] = driver;
-    _driverLs['2'] = driver;
-    _driverLs['3'] = driver;
-    _driverLs['4'] = driver;
-    _driverLs['5'] = driver;
-    _driverLs['6'] = driver;
-    _driverLs['7'] = driver;
-    _driverLs['8'] = driver;
+          Driver driver = Driver.create(
+              document.data()['Phone'],
+              document.data()['Email'],
+              document.data()['Name'],
+              DateTime.parse(timestamp.toDate().toString()),
+              document.data()['Gender'],
+              document.data()['ImageUrl'],
+              document.data()['Company'],
+              document.data()['Note']);
+
+          _driverLs[document.id] = driver;
+        }
+      });
+    });
+
+    // Driver driver = Driver.id('1');
+    // driver.imageUrl =
+    //     'https://static.wikia.nocookie.net/diepio/images/6/6e/Pogchamp.jpg';
+    // driver.email = 'abc@abc.com';
+    // driver.name = 'I am POG';
+    // driver.phone = '0123456789';
+    // driver.doB = DateTime.utc(1987, 6, 12);
+    // driver.gender = 'Male';
+    // _driverLs['1'] = driver;
+    // _driverLs['2'] = driver;
+    // _driverLs['3'] = driver;
+    // _driverLs['4'] = driver;
+    // _driverLs['5'] = driver;
+    // _driverLs['6'] = driver;
+    // _driverLs['7'] = driver;
+    // _driverLs['8'] = driver;
 
     return true;
   }
@@ -65,6 +68,7 @@ class DriverImpl extends AccountDAO {
   @override
   bool update({
     String id,
+    bool isAvailable,
     String email,
     String password,
     String name,
@@ -76,44 +80,39 @@ class DriverImpl extends AccountDAO {
     String note,
   }) {
     Driver driver = _driverLs[id];
-    if (password != null) {
-      driver.changePassword(password);
-    } else {
-      driver.email = email ?? driver.email;
-      driver.name = name ?? driver.name;
-      driver.phone = phone ?? driver.phone;
-      driver.doB = doB ?? driver.doB;
-      driver.gender = gender ?? driver.gender;
-      driver.company = company ?? driver.company;
-      driver.note = note ?? driver.note;
 
-      if (image != null) {
-        String ex = image.path.split('.').last;
-        uploadImage(image, id, 'Driver/$id.$ex')
-            .then((url) => driver.imageUrl = url);
-      }
+    driver.update(
+        id: id,
+        email: email,
+        name: name,
+        password: password,
+        phone: phone,
+        doB: doB,
+        gender: gender,
+        image: image,
+        company: company,
+        note: note);
 
-      // FirebaseFirestore.instance.collection('User').doc(id).set({
-      //   'Email': driver.email,
-      //   'Name': driver.name,
-      //   'Phone': driver.phone,
-      //   'DoB': driver.doB.microsecondsSinceEpoch,
-      //   'Gender': driver.gender,
-      //   'Company': driver.company,
-      //   'Note': driver.note,
-      //   'ImageUrl': driver.imageUrl,
-      // });
-    }
     return true;
   }
 
   bool updateUsingDriverObject(String id, Driver driver) {
     _driverLs[id] = driver;
-    print('updated $id \t${driver.name}');
+    FirebaseFirestore.instance.collection('User').doc(id).set({
+      'isAvailable': driver.isAvailable,
+      'Email': driver.email,
+      'Name': driver.name,
+      'Phone': driver.phone,
+      'DoB': Timestamp.fromDate(doB),
+      'Gender': driver.gender,
+      'Company': driver.company,
+      'Note': driver.note,
+      'ImageUrl': driver.imageUrl,
+    });
+    print('[DEBUG] Updated $id \t${driver.name}');
     return true;
   }
 
-  @override
   bool add(
     String email,
     String name,
@@ -124,49 +123,45 @@ class DriverImpl extends AccountDAO {
     @required DocumentReference company,
     @required String note,
   }) {
-    Driver driver = Driver.none();
-    // driver.company = company;
-    driver.email = email;
-    driver.imageUrl =
-        'https://static.wikia.nocookie.net/diepio/images/6/6e/Pogchamp.jpg';
-    driver.name = name;
-    driver.phone = phone;
-    driver.doB = doB;
-    driver.gender = gender;
-    driver.note = note;
-    String id = Random.secure().nextInt(1000).toString();
+    String id = '';
+    FirebaseAuth.instance
+        .createUserWithEmailAndPassword(
+            email: email, password: '${doB.year}${doB.month}${doB.day}')
+        .then((user) {
+      id = user.user.uid;
+      user.user.sendEmailVerification();
+    });
 
-    // FirebaseAuth.instance
-    //     .createUserWithEmailAndPassword(
-    //         email: email, password: '${doB.year}${doB.month}${doB.day}')
-    //     .then((user) => id = user.user.uid);
-
+    String imageUrl = '';
     String ex = image.path.split('.').last;
-    // uploadImage(image, id, 'Driver/$id.$ex')
-    //     .then((url) => driver.imageUrl = url);
+    uploadImage(image, id, 'Driver/$id.$ex').then((url) => imageUrl = url);
 
-    // FirebaseFirestore.instance.collection('User').doc(id).set({
-    //   'Email': driver.email,
-    //   'Name': driver.name,
-    //   'Phone': driver.phone,
-    //   'DoB': driver.doB.microsecondsSinceEpoch,
-    //   'Gender': driver.gender,
-    //   'Company': driver.company,
-    //   'Role': 'Driver',
-    //   'Note': driver.note,
-    //   'ImageUrl': driver.imageUrl,
-    // });
-
+    FirebaseFirestore.instance.collection('User').doc(id).set({
+      'isAvailable': true,
+      'Email': email,
+      'Name': name,
+      'Phone': phone,
+      'DoB': Timestamp.fromDate(doB),
+      'Gender': gender,
+      'Company': company,
+      'Role': 'Driver',
+      'Note': note,
+      'ImageUrl': imageUrl,
+    });
+    Driver driver =
+        Driver.create(phone, email, name, doB, gender, imageUrl, company, note);
     _driverLs[id] = driver;
 
-    print('[Debug] Created Driver');
+    print('[Debug] Created Driver ${driver.toString()}');
     return true;
   }
 
-  @override
   bool delete(String id) {
     _driverLs.remove(id);
-    // FirebaseFirestore.instance.collection('User').doc(id).delete();
+    FirebaseFirestore.instance
+        .collection('User')
+        .doc(id)
+        .set({'isAvailable': false});
     return true;
   }
 

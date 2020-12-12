@@ -1,4 +1,5 @@
 import 'package:CoachTicketSelling/MainPage/User/UserUI.dart';
+import 'package:CoachTicketSelling/Utils/Route.dart';
 import 'package:flutter/material.dart';
 
 class MsgDialog {
@@ -12,8 +13,7 @@ class MsgDialog {
                 FlatButton(
                   child: Text('OK'),
                   onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => UserUI()));
+                    Navigator.popAndPushNamed(context, UserViewRoute);
                   },
                 )
               ],

@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
+import 'package:CoachTicketSelling/classes/actor/AppUser.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rounded_date_picker/rounded_picker.dart';
+import 'package:image_picker/image_picker.dart';
 
 class RegisterView extends StatefulWidget {
   @override
@@ -21,6 +25,21 @@ class _RegisterViewState extends State<RegisterView> {
   DateTime date;
   bool isSuccess = true;
   String ex;
+
+  File _imageFile;
+  String imageUrl;
+  Color borderColor = Colors.grey;
+  final picker = ImagePicker();
+
+  Future _getImg() async {
+    imageUrl = null;
+    final image = await picker.getImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _imageFile = File(image.path);
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -47,6 +66,36 @@ class _RegisterViewState extends State<RegisterView> {
         image: Utils.registerBackground,
         fit: BoxFit.fill,
       )),
+    );
+
+    Widget avatar = Padding(
+      padding: EdgeInsets.only(top: 20.0),
+      child: Container(
+        width: 150,
+        height: 150,
+        decoration: BoxDecoration(
+            shape: BoxShape.circle, border: Border.all(color: borderColor)),
+        child: CircleAvatar(
+          foregroundColor: borderColor,
+          backgroundColor: Colors.transparent,
+          child: GestureDetector(
+            onTap: _getImg,
+            child: _imageFile == null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(100.0),
+                    child: Icon(Icons.add))
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(100.0),
+                    child: Image.file(
+                      _imageFile,
+                      height: 200,
+                      width: 200,
+                      fit: BoxFit.fitWidth,
+                    ),
+                  ),
+          ),
+        ),
+      ),
     );
 
     Widget _email = TextFormField(
@@ -151,7 +200,7 @@ class _RegisterViewState extends State<RegisterView> {
                 context: context,
                 firstDate: DateTime(DateTime.now().year - 100),
                 borderRadius: 16,
-                theme: ThemeData(primarySwatch: Utils.primaryColor));
+                theme: ThemeData(primarySwatch: Colors.green));
             date != null
                 ? _dateController.text = date.toString().substring(0, 10)
                 // ignore: unnecessary_statements
@@ -195,12 +244,19 @@ class _RegisterViewState extends State<RegisterView> {
         print(user.user);
         user.user.updateProfile(displayName: _nameController.text);
         user.user.reload();
-        // TODO: FIX ACCOUNT
-        // Account account = Account.instance;
-        // account.update(user.user.email, _nameController.text,
-        //     _phoneController.text, date, dropDownValue, 'user');
+        AppUser appUser = AppUser.instance;
+        appUser.update(
+          id: user.user.uid,
+          email: _emailController.text.trim(),
+          name: _nameController.text.trim(),
+          phone: _phoneController.text.trim(),
+          gender: dropDownValue,
+          doB: date,
+          image: _imageFile,
+        );
         Navigator.pop(context);
-        await user.user.sendEmailVerification();
+        //TODO: Verification
+        // await user.user.sendEmailVerification();
       } catch (e) {
         setState(() {
           if (e.code == 'email-already-in-use') {
@@ -234,6 +290,7 @@ class _RegisterViewState extends State<RegisterView> {
                   ),
                   padding: EdgeInsets.symmetric(vertical: 10),
                 ),
+                avatar,
                 _email,
                 _password('Password (More than 6 characters)'),
                 _password('Retype password'),

@@ -10,15 +10,22 @@ class TripImplement {
   static TripImplement get instance => _instance;
   TripImplement._() {
     Trip trip = Trip(
-      imageUrl:
-          'https://pbs.twimg.com/profile_images/640666088271839233/OTKlt5pC.jpg',
+      // imageUrl:
+      //     'https://pbs.twimg.com/profile_images/640666088271839233/OTKlt5pC.jpg',
       detail: '',
       totalSeat: 30,
       seat: {},
       source: 'SGN',
       destination: 'HCM',
       price: 100,
-      duration: 3,
+      // duration: {
+      //   'Time start': Timestamp.fromDate(DateTime.now()),
+      //   'Time end': Timestamp.fromDate(DateTime.now().add(Duration(hours: 5)))
+      // },
+      duration: {
+        'Time start': DateTime.now(),
+        'Time end': DateTime.now().add(Duration(hours: 5))
+      },
     );
 
     _tripLs['1'] = trip;
@@ -29,16 +36,32 @@ class TripImplement {
     _tripLs['6'] = trip;
   }
 
-  bool update(String source, String destination, int price, int totalSeat,
-      String detail) {
+  bool update(String id,
+      {String source,
+      String destination,
+      int price,
+      int totalSeat,
+      String detail,
+      Map<String, DateTime> duration,
+      Map<String, bool> seat,
+      DocumentReference driver}) {
+    _tripLs[id].update(
+        source: source,
+        destination: destination,
+        price: price,
+        totalSeat: totalSeat,
+        detail: detail,
+        duration: duration,
+        seat: seat,
+        driver: driver);
     return true;
   }
 
   bool add(String source, String destination, int price, int totalSeat,
       String detail, DocumentReference company) {
     _tripLs[Random.secure().nextInt(1000).toString()] = Trip(
-        imageUrl:
-            'https://pbs.twimg.com/profile_images/640666088271839233/OTKlt5pC.jpg',
+        // imageUrl:
+        //     'https://pbs.twimg.com/profile_images/640666088271839233/OTKlt5pC.jpg',
         source: source,
         destination: destination,
         price: price,

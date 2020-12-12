@@ -1,3 +1,4 @@
+import 'package:CoachTicketSelling/Utils/Route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
@@ -166,8 +167,7 @@ Widget _bookingItem(
   return GestureDetector(
     onTap: () {
       print(index);
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => ChooseSeat()));
+      Navigator.pushNamed(context, UserChooseTripViewRoute);
     },
     child: Container(
       width: 500,

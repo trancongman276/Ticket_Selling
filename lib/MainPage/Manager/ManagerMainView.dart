@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:CoachTicketSelling/MainPage/Manager/Charts/ChartOveral.dart';
 import 'package:CoachTicketSelling/MainPage/Manager/Add/OveralAddView.dart';
 import 'package:CoachTicketSelling/MainPage/Manager/Manage/OveralManageView.dart';
@@ -21,11 +23,6 @@ class _ManagerMainViewState extends State<ManagerMainView>
   List<bool> bottomAppState = List<bool>.generate(3, (index) => false);
   int currentBABState = 0;
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   void notificationOnClick() {
     // TODO: Create Route
   }
@@ -40,6 +37,27 @@ class _ManagerMainViewState extends State<ManagerMainView>
     setState(() {
       bottomAppState[index] = true;
     });
+  }
+
+  Future<bool> _onWillPop() {
+    return showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text('Exit - Sign Out'),
+              content: Text('Do you want to close app? Or maybe Sign out?'),
+              actions: <Widget>[
+                FlatButton(
+                    onPressed: () {
+                      Utils.logout();
+                      Navigator.of(context).pop(true);
+                    },
+                    child: Text('Sign out')),
+                FlatButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: Text('No')),
+                FlatButton(onPressed: () => exit(0), child: Text('Yes')),
+              ],
+            ));
   }
 
   @override
@@ -76,23 +94,26 @@ class _ManagerMainViewState extends State<ManagerMainView>
       ],
     );
 
-    return Scaffold(
-      appBar: appbar,
-      body: SafeArea(
-        child: IndexedStack(
-          children: page,
-          index: currentBABState,
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        appBar: appbar,
+        body: SafeArea(
+          child: IndexedStack(
+            children: page,
+            index: currentBABState,
+          ),
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Utils.primaryColor,
-        currentIndex: currentBABState,
-        onTap: (index) => bottomAppBarOnClick(index),
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: iconLs[0], label: 'Report'),
-          BottomNavigationBarItem(icon: iconLs[1], label: 'Add'),
-          BottomNavigationBarItem(icon: iconLs[2], label: 'Manage'),
-        ],
+        bottomNavigationBar: BottomNavigationBar(
+          selectedItemColor: Utils.primaryColor,
+          currentIndex: currentBABState,
+          onTap: (index) => bottomAppBarOnClick(index),
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(icon: iconLs[0], label: 'Report'),
+            BottomNavigationBarItem(icon: iconLs[1], label: 'Add'),
+            BottomNavigationBarItem(icon: iconLs[2], label: 'Manage'),
+          ],
+        ),
       ),
     );
   }

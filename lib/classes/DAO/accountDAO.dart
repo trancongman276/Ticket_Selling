@@ -3,11 +3,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 abstract class AccountDAO {
-  @protected
   String email;
-  @protected
   String name;
-  @protected
   String phone;
   @protected
   DateTime doB;
@@ -28,11 +25,6 @@ abstract class AccountDAO {
     String gender,
     File image,
   });
-
-  bool add(String email, String name, String phone, DateTime doB, String gender,
-      File image);
-
-  bool delete(String id);
 
   @protected
   Future<String> uploadImage(File _image, String id, String path) async {

@@ -20,6 +20,8 @@ class Utils {
 
   // Data
   static final FlutterSecureStorage _storage = FlutterSecureStorage();
+  static final String _defaultUrl =
+      'https://firebasestorage.googleapis.com/v0/b/coachticketselling.appspot.com/o/default.png?alt=media&token=f0e176fe-fcfa-46e8-af4f-5e0c85267de2';
 
   // Styles
   static final Map<String, TextStyle> styles = {
@@ -92,4 +94,6 @@ class Utils {
   static FlutterSecureStorage get storage => _storage;
 
   static Color get primaryColor => _primaryColor;
+
+  static String get defaultUrl => _defaultUrl;
 }
