@@ -105,41 +105,22 @@ class _ManageTripViewState extends State<ManageTripView> {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       key: _key,
-      onRefresh: () async {
-        setState(() {});
-      },
-      child: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Column(
-              children: List.generate(tripImplement.tripList.length, (index) {
-                return FlatButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, EditTripViewRoute,
-                            arguments:
-                                tripImplement.tripList.keys.elementAt(index))
-                        .then((value) {
-                      setState(() {});
-                    });
-                  },
-                  child: tripField(tripImplement
-                      .tripList[tripImplement.tripList.keys.elementAt(index)]),
-                );
-              }),
-              // (context, index) {
-              //   return FlatButton(
-              //     onPressed: () {
-              //
-              //       Navigator.pushNamed(context, EditTripViewRoute);
-              //     },
-              //     child: tripField(trip),
-              //   );
-              // },
-              // ),
-            ),
-          ],
-        ),
-      ),
+      onRefresh: _refresh,
+      child: ListView.builder(
+          itemCount: tripImplement.tripList.length,
+          itemBuilder: (context, index) {
+            return FlatButton(
+              onPressed: () {
+                Navigator.pushNamed(context, EditTripViewRoute,
+                        arguments: tripImplement.tripList.keys.elementAt(index))
+                    .then((value) {
+                  setState(() {});
+                });
+              },
+              child: tripField(tripImplement
+                  .tripList[tripImplement.tripList.keys.elementAt(index)]),
+            );
+          }),
     );
   }
 }

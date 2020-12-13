@@ -1,22 +1,23 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:CoachTicketSelling/classes/actor/Company.dart';
+import 'package:CoachTicketSelling/classes/actor/Driver.dart';
 
 class Trip {
-  String detail;
-  int totalSeat;
-  Map<String, bool> seat;
   String source;
   String destination;
+  String detail;
+  int totalSeat;
+  List<int> seat;
   Map<String, DateTime> time;
   int price;
-  DocumentReference driver;
-  DocumentReference company;
+  Driver driver;
+  Company company;
 
   Trip(
-      {this.detail,
+      {this.source,
+      this.destination,
+      this.detail,
       this.totalSeat,
       this.seat,
-      this.source,
-      this.destination,
       this.time,
       this.price,
       this.driver,
@@ -29,8 +30,8 @@ class Trip {
     int totalSeat,
     String detail,
     Map<String, DateTime> time,
-    Map<String, bool> seat,
-    DocumentReference driver,
+    List<int> seat,
+    Driver driver,
   }) {
     this.source = source ?? this.source;
     this.destination = destination ?? this.destination;

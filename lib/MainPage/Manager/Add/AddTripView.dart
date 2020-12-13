@@ -3,7 +3,6 @@ import 'package:CoachTicketSelling/classes/Implement/DriverImpl.dart';
 import 'package:CoachTicketSelling/classes/Implement/TripImpl.dart';
 import 'package:CoachTicketSelling/classes/actor/Driver.dart';
 import 'package:CoachTicketSelling/classes/actor/Trip.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rounded_date_picker/rounded_picker.dart';
@@ -27,13 +26,15 @@ class _AddTripViewState extends State<AddTripView> {
     if (tripID != null) {
       Trip trip = tripImplement.getTrip(tripID);
 
-      source.text = trip.source;
-      dest.text = trip.destination;
+      fromPlaceLs = [trip.source];
+      choosingFromPlace = trip.source;
+
+      finishPlaceLs = [trip.destination];
+      choosingFinishPlace = trip.destination;
+
       price.text = trip.price.toString();
       seat.text = trip.totalSeat.toString();
       detail.text = trip.detail;
-
-      selectedEndDate = selectedStartDate = true;
 
       dateStart.text = Utils.dateFormat.format(trip.time['Start Time']);
       dateEnd.text = Utils.dateFormat.format(trip.time['Finish Time']);
@@ -42,34 +43,38 @@ class _AddTripViewState extends State<AddTripView> {
     }
   }
 
-  List<String> getDriverLs(String start, String end) {
+  Future<List<String>> getDriverLs(String start, String end) async {
     List<String> _freeDriverLs = ['Driver'];
-    driverLs = driverImpl.getFreeDriver(start, end);
-    _freeDriverLs.addAll(List.generate(driverLs.length, (index) {
-      Driver driver = driverLs[index];
-      return '$index. ' + driver.name;
-    }));
-    return _freeDriverLs;
+    await driverImpl.getFreeDriver(start, end).then((value) {
+      driverLs = value;
+      _freeDriverLs.addAll(List.generate(driverLs.length, (index) {
+        Driver driver = driverLs[index];
+        return '$index. ' + driver.name;
+      }));
+    });
+
+    return Future.value(_freeDriverLs);
   }
 
   GlobalKey<FormState> _key = GlobalKey<FormState>();
-  final TextEditingController source = TextEditingController();
-  final TextEditingController dest = TextEditingController();
   final TextEditingController price = TextEditingController();
   final TextEditingController seat = TextEditingController();
   final TextEditingController detail = TextEditingController();
   final TextEditingController dateStart = TextEditingController();
   final TextEditingController dateEnd = TextEditingController();
   String errorMessage = '';
-  // File _image;
-  // final picker = ImagePicker();
-  // Color borderColor = Colors.grey;
+
   String choosingDriver = 'Driver';
   List<Driver> driverLs;
   List<String> freeDriverLs = ['Driver'];
+
+  String choosingFromPlace = 'From';
+  List<String> fromPlaceLs = ['From', 'HN'];
+
+  String choosingFinishPlace = 'Finish';
+  List<String> finishPlaceLs = ['Finish', 'HCM'];
+
   ThemeData themeData = ThemeData(primarySwatch: Colors.green);
-  bool selectedStartDate = false;
-  bool selectedEndDate = false;
 
   Future<DateTime> dateTimePicker(DateTime initDate, TimeOfDay initTime) async {
     DateTime date;
@@ -145,32 +150,31 @@ class _AddTripViewState extends State<AddTripView> {
 
   void saveTrip() {
     if (tripID != null) {
-      // trip.source = source.text.trim();
-      // trip.destination = dest.text.trim();
-      // trip.price = int.tryParse(price.text);
-      // trip.totalSeat = int.tryParse(seat.text);
-      // trip.detail = detail.text;
       tripImplement.update(tripID,
-          source: source.text.trim(),
-          destination: dest.text.trim(),
+          source: choosingFromPlace,
+          destination: choosingFinishPlace,
           price: int.tryParse(price.text),
           detail: detail.text);
       Navigator.pop(context);
     } else {
+      Map<String, DateTime> tempMap = {
+        'Start Time': Utils.dateFormat.parse(dateStart.text),
+        'Finish Time': Utils.dateFormat.parse(dateEnd.text)
+      };
       tripImplement.add(
-          source.text.trim(),
-          dest.text.trim(),
-          int.parse(price.text),
-          int.parse(seat.text),
-          FirebaseFirestore.instance
-              .collection('User')
-              .doc(driverLs[freeDriverLs.indexOf(choosingDriver)].id),
-          detail.text,
-          null);
-      // Manager.instance.company);
+        choosingFromPlace,
+        choosingFinishPlace,
+        int.parse(price.text),
+        int.parse(seat.text),
+        driverLs[freeDriverLs.indexOf(choosingDriver) - 1],
+        detail.text,
+        tempMap,
+      );
       _key.currentState.reset();
-      source.text = '';
-      dest.text = '';
+      choosingFromPlace = 'From';
+      choosingFinishPlace = 'Finish';
+      dateStart.text = '';
+      dateEnd.text = '';
       price.text = '';
       seat.text = '';
       choosingDriver = 'Driver';
@@ -179,23 +183,74 @@ class _AddTripViewState extends State<AddTripView> {
     }
   }
 
-  // Future _getImg() async {
-  //   final image = await picker.getImage(source: ImageSource.gallery);
-  //   if (image != null) {
-  //     setState(() {
-  //       _image = File(image.path);
-  //     });
-  //   }
-  // }
+  bool checkSave() {
+    if (_key.currentState.validate()) {
+      if (tripID != null) {
+        saveTrip();
+      }
+      if (freeDriverLs.indexOf(choosingDriver) == 0) {
+        setState(() {
+          errorMessage = 'Bad choosing Driver';
+        });
+        return false;
+      }
+      if ((choosingFromPlace == 'From') | (choosingFinishPlace == 'Finish')) {
+        setState(() {
+          errorMessage = 'Bad choosing Source and Destination';
+        });
+        return false;
+      }
+      if ((Utils.dateFormat
+              .parse(dateStart.text)
+              .isAfter(Utils.dateFormat.parse(dateEnd.text))) |
+          (dateStart.text == dateEnd.text)) {
+        setState(() {
+          errorMessage = 'Bad choosing Time';
+        });
+        return false;
+      }
+      saveTrip();
+      return true;
+    }
+    return false;
+  }
+
+  Widget placeChoosingDropBox(
+      List<String> dropDownLs, String value, bool isFrom) {
+    return Container(
+      child: DropdownButton<String>(
+        underline: Container(
+          height: 1,
+          color: Colors.grey,
+        ),
+        value: value,
+        items: dropDownLs.map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+        onChanged: !isFrom
+            ? (choosingFromPlace == 'From'
+                ? null
+                : (String newValue) {
+                    setState(() {
+                      choosingFinishPlace = newValue;
+                    });
+                  })
+            : (String newValue) {
+                setState(() {
+                  choosingFromPlace = newValue;
+                });
+              },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    Widget chooseDate(
-      String label,
-      TextEditingController controller,
-      DateTime startDate,
-      TimeOfDay startTime,
-    ) {
+    Widget chooseDate(String label, TextEditingController controller,
+        DateTime startDate, TimeOfDay startTime) {
       return Container(
         child: Row(
           children: [
@@ -219,17 +274,20 @@ class _AddTripViewState extends State<AddTripView> {
             ),
             IconButton(
               onPressed: () async {
-                dateTimePicker(startDate, startTime).then((datetime) {
+                await dateTimePicker(startDate, startTime)
+                    .then((datetime) async {
                   if (datetime != null) {
                     controller.text = Utils.dateFormat.format(datetime);
-                    setState(() {
-                      selectedStartDate = true;
-                      if (dateEnd.text.isNotEmpty) {
-                        selectedEndDate = true;
-                        freeDriverLs =
-                            getDriverLs(dateStart.text, dateEnd.text);
-                      }
-                    });
+
+                    if (dateEnd.text.isNotEmpty) {
+                      await getDriverLs(dateStart.text, dateEnd.text)
+                          .then((value) {
+                        setState(() {
+                          freeDriverLs = value;
+                        });
+                      });
+                    }
+                    setState(() {});
                   }
                 });
               },
@@ -244,36 +302,11 @@ class _AddTripViewState extends State<AddTripView> {
     Widget body = Column(
       children: <Widget>[
         Row(
-          children: <Widget>[
-            Expanded(
-              child: TextFormField(
-                controller: source,
-                validator: Utils.validateEmpty,
-                textInputAction: TextInputAction.next,
-                keyboardType: TextInputType.name,
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                    hintText: 'From',
-                    focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Utils.primaryColor))),
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            placeChoosingDropBox(fromPlaceLs, choosingFromPlace, true),
             Icon(Icons.arrow_forward_rounded),
-            Expanded(
-              child: TextFormField(
-                controller: dest,
-                validator: Utils.validateEmpty,
-                keyboardType: TextInputType.name,
-                textInputAction: TextInputAction.next,
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                    hintText: 'To',
-                    focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Utils.primaryColor))),
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
+            placeChoosingDropBox(finishPlaceLs, choosingFinishPlace, false),
           ],
         ),
         Row(
@@ -346,7 +379,7 @@ class _AddTripViewState extends State<AddTripView> {
                 child: Text(value),
               );
             }).toList(),
-            onChanged: !selectedEndDate
+            onChanged: dateEnd.text.isEmpty
                 ? null
                 : (String newValue) {
                     setState(() {
@@ -382,19 +415,8 @@ class _AddTripViewState extends State<AddTripView> {
                   color: Utils.primaryColor,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0)),
-                  onPressed: () async {
-                    // if (_key.currentState.validate() && _image != null)
-                    if (_key.currentState.validate()) {
-                      if (tripID != null) {
-                        saveTrip();
-                      } else if (freeDriverLs.indexOf(choosingDriver) == 0) {
-                        setState(() {
-                          errorMessage = 'Bad choosing Driver';
-                          return;
-                        });
-                      } else
-                        saveTrip();
-                    }
+                  onPressed: () {
+                    checkSave();
                   },
                   child: Text(
                     'Save',
@@ -428,34 +450,6 @@ class _AddTripViewState extends State<AddTripView> {
 
     return Column(
       children: <Widget>[
-        // Row(
-        //   children: [
-        //     Expanded(
-        //       child: Padding(
-        //         padding: EdgeInsets.all(10.0),
-        //         child: GestureDetector(
-        //           onTap: _getImg,
-        //           child: _image == null
-        //               ? Container(
-        //                   height: 100.0,
-        //                   decoration: BoxDecoration(
-        //                       border:
-        //                           Border.all(width: 1.0, color: borderColor)),
-        //                   child: Icon(
-        //                     Icons.add,
-        //                     size: 50.0,
-        //                     color: borderColor,
-        //                   ),
-        //                 )
-        //               : Image.file(
-        //                   _image,
-        //                   fit: BoxFit.fitWidth,
-        //                 ),
-        //         ),
-        //       ),
-        //     ),
-        //   ],
-        // ),
         Form(
             key: _key,
             child: Padding(

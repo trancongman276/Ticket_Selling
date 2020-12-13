@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:CoachTicketSelling/classes/Implement/DriverImpl.dart';
 import 'package:CoachTicketSelling/classes/actor/Driver.dart';
-import 'package:CoachTicketSelling/classes/actor/Manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rounded_date_picker/rounded_picker.dart';
 import 'package:image_picker/image_picker.dart';
@@ -114,7 +113,7 @@ class _AddDriverViewState extends State<AddDriverView> {
     } else {
       driverImpl.add(email.text.trim(), name.text.trim(), phone.text,
           DateTime.parse(dob.text), dropDownValue, _imageFile,
-          company: Manager.instance.company, note: note.text);
+          note: note.text);
       _key.currentState.reset();
       reset();
     }

@@ -1,5 +1,5 @@
+import 'package:CoachTicketSelling/classes/actor/Company.dart';
 import 'package:CoachTicketSelling/classes/actor/Driver.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 abstract class DriverDAO {
@@ -11,7 +11,7 @@ abstract class DriverDAO {
   DateTime doB;
   String gender;
   String role;
-  DocumentReference company;
+  Company company;
 
   bool update({
     @required String id,
@@ -20,7 +20,7 @@ abstract class DriverDAO {
     String phone,
     DateTime doB,
     String gender,
-    DocumentReference company,
+    Company company,
   });
 
   bool add(
@@ -30,7 +30,7 @@ abstract class DriverDAO {
     String phone,
     DateTime doB,
     String gender,
-    DocumentReference company,
+    Company company,
   );
 
   Driver get(String id);

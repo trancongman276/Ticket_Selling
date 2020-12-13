@@ -12,8 +12,9 @@ class _ManageDriverViewState extends State<ManageDriverView> {
   DriverImpl driverImpl = DriverImpl.instance;
   final GlobalKey<RefreshIndicatorState> _key =
       GlobalKey<RefreshIndicatorState>();
+
   Future _refresh() async {
-    if (driverImpl.len() == 0) {
+    if (!driverImpl.isInit) {
       await driverImpl.init();
       _key.currentState?.show();
     }
@@ -79,31 +80,22 @@ class _ManageDriverViewState extends State<ManageDriverView> {
 
     return RefreshIndicator(
       key: _key,
-      onRefresh: () async {
-        _refresh();
-      },
-      child: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Column(
-              children: List.generate(driverImpl.len(), (index) {
-                return FlatButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, EditDriverViewRoute,
-                            arguments:
-                                driverImpl.driverList.keys.elementAt(index))
-                        .then((value) {
-                      setState(() {});
-                    });
-                  },
-                  child: driverField(driverImpl
-                      .driverList[driverImpl.driverList.keys.elementAt(index)]),
-                );
-              }),
-            ),
-          ],
-        ),
-      ),
+      onRefresh: _refresh,
+      child: ListView.builder(
+          itemCount: driverImpl.len(),
+          itemBuilder: (context, index) {
+            return FlatButton(
+              onPressed: () {
+                Navigator.pushNamed(context, EditDriverViewRoute,
+                        arguments: driverImpl.driverList.keys.elementAt(index))
+                    .then((value) {
+                  setState(() {});
+                });
+              },
+              child: driverField(driverImpl
+                  .driverList[driverImpl.driverList.keys.elementAt(index)]),
+            );
+          }),
     );
   }
 }
