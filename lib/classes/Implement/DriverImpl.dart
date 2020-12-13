@@ -126,32 +126,32 @@ class DriverImpl extends AccountDAO {
   }
 
   // Add Driver
-  bool add(String email, String name, String phone, DateTime doB, String gender,
-      File image,
-      {@required String note}) {
+  Future<bool> add(String email, String name, String phone, DateTime doB,
+      String gender, File image,
+      {@required String note}) async {
     String id = '';
-    FirebaseAuth.instance
+    await FirebaseAuth.instance
         .createUserWithEmailAndPassword(
             email: email, password: '${doB.year}${doB.month}${doB.day}')
         .then((user) {
       id = user.user.uid;
-      user.user.sendEmailVerification();
+      // user.user.sendEmailVerification();
     });
 
     String imageUrl = '';
     String ex = image.path.split('.').last;
-    uploadImage(image, id, 'Driver/$id.$ex').then((url) => imageUrl = url);
+    imageUrl = await uploadImage(image, id, 'Driver/$id.$ex');
 
     DocumentReference ref =
         FirebaseFirestore.instance.collection('User').doc(id);
-    ref.set({
+    await ref.set({
       'isAvailable': true,
       'Email': email,
       'Name': name,
       'Phone': phone,
       'DoB': Timestamp.fromDate(doB),
       'Gender': gender,
-      'Company': company,
+      'Company': company.documentReference,
       'Role': 'Driver',
       'Note': note,
       'ImageUrl': imageUrl,

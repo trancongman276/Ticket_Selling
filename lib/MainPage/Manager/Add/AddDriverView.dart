@@ -121,7 +121,11 @@ class _AddDriverViewState extends State<AddDriverView> {
 
   Future _getImg() async {
     imageUrl = null;
-    final image = await picker.getImage(source: ImageSource.gallery);
+    final image = await picker.getImage(
+        source: ImageSource.gallery,
+        maxWidth: 128.0,
+        maxHeight: 128.0,
+        imageQuality: 100);
     if (image != null) {
       setState(() {
         _imageFile = File(image.path);
@@ -308,20 +312,24 @@ class _AddDriverViewState extends State<AddDriverView> {
             height: 150,
             decoration: BoxDecoration(
                 shape: BoxShape.circle, border: Border.all(color: borderColor)),
-            child: CircleAvatar(
-              foregroundColor: borderColor,
-              backgroundColor: Colors.transparent,
-              child: GestureDetector(
-                onTap: _getImg,
+            child: GestureDetector(
+              onTap: _getImg,
+              child: CircleAvatar(
+                foregroundColor: borderColor,
+                backgroundColor: Colors.transparent,
                 child: _imageFile == null
                     ? (imageUrl == null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(100.0),
-                            child: Icon(Icons.add))
+                        ? Icon(
+                            Icons.add,
+                          )
                         : ClipRRect(
                             borderRadius: BorderRadius.circular(100.0),
-                            child: Image.network(imageUrl,
-                                fit: BoxFit.fitHeight, height: 200),
+                            child: Image.network(
+                              imageUrl,
+                              width: 200,
+                              fit: BoxFit.fitWidth,
+                              height: 200,
+                            ),
                           ))
                     : ClipRRect(
                         borderRadius: BorderRadius.circular(100.0),

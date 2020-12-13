@@ -4,6 +4,8 @@ import 'package:CoachTicketSelling/MainPage/Manager/Charts/ChartOveral.dart';
 import 'package:CoachTicketSelling/MainPage/Manager/Add/OveralAddView.dart';
 import 'package:CoachTicketSelling/MainPage/Manager/Manage/OveralManageView.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
+import 'package:CoachTicketSelling/classes/Implement/DriverImpl.dart';
+import 'package:CoachTicketSelling/classes/Implement/TripImpl.dart';
 import 'package:flutter/material.dart';
 
 class ManagerMainView extends StatefulWidget {
@@ -13,6 +15,22 @@ class ManagerMainView extends StatefulWidget {
 
 class _ManagerMainViewState extends State<ManagerMainView>
     with AutomaticKeepAliveClientMixin {
+  Future _refresh() async {
+    if (!DriverImpl.instance.isInit) {
+      await DriverImpl.instance.init();
+    }
+    if (TripImplement.instance.tripList.length == 0) {
+      await TripImplement.instance.init();
+    }
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    _refresh();
+    super.initState();
+  }
+
   List<Icon> iconLs = <Icon>[
     Icon(Icons.show_chart),
     Icon(Icons.add),

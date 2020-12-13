@@ -43,7 +43,8 @@ class _ManageDriverViewState extends State<ManageDriverView> {
               child: Image.network(
                 driver.imageUrl,
                 height: _height,
-                fit: BoxFit.fitHeight,
+                width: _height,
+                fit: BoxFit.fitWidth,
               ),
             ), //image
             Expanded(

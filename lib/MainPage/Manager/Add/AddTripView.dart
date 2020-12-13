@@ -26,12 +26,6 @@ class _AddTripViewState extends State<AddTripView> {
     if (tripID != null) {
       Trip trip = tripImplement.getTrip(tripID);
 
-      fromPlaceLs = [trip.source];
-      choosingFromPlace = trip.source;
-
-      finishPlaceLs = [trip.destination];
-      choosingFinishPlace = trip.destination;
-
       price.text = trip.price.toString();
       seat.text = trip.totalSeat.toString();
       detail.text = trip.detail;
@@ -40,6 +34,29 @@ class _AddTripViewState extends State<AddTripView> {
       dateEnd.text = Utils.dateFormat.format(trip.time['Finish Time']);
       choosingDriver = driverImpl.driverList[trip.driver.id].name;
       freeDriverLs = [choosingDriver];
+
+      choosingFromPlace = trip.source;
+      choosingFinishPlace = trip.destination;
+      getRoute();
+    } else {
+      getRoute();
+    }
+  }
+
+  Future<Map<String, List<String>>> getRoute() async {
+    await tripImplement.init();
+    if (tripID == null)
+      setState(() {
+        route = tripImplement.company.route;
+        fromPlaceLs = route.keys.toList();
+        choosingFromPlace = fromPlaceLs[0];
+      });
+    else {
+      setState(() {
+        route = tripImplement.company.route;
+        fromPlaceLs = route.keys.toList();
+        finishPlaceLs = route[choosingFromPlace];
+      });
     }
   }
 
@@ -68,11 +85,13 @@ class _AddTripViewState extends State<AddTripView> {
   List<Driver> driverLs;
   List<String> freeDriverLs = ['Driver'];
 
-  String choosingFromPlace = 'From';
-  List<String> fromPlaceLs = ['From', 'HN'];
+  String choosingFromPlace = '';
+  List<String> fromPlaceLs = [];
 
-  String choosingFinishPlace = 'Finish';
-  List<String> finishPlaceLs = ['Finish', 'HCM'];
+  String choosingFinishPlace = '';
+  List<String> finishPlaceLs = [];
+
+  Map<String, List<String>> route;
 
   ThemeData themeData = ThemeData(primarySwatch: Colors.green);
 
@@ -241,6 +260,8 @@ class _AddTripViewState extends State<AddTripView> {
             : (String newValue) {
                 setState(() {
                   choosingFromPlace = newValue;
+                  finishPlaceLs = route[choosingFromPlace];
+                  choosingFinishPlace = finishPlaceLs[0];
                 });
               },
       ),
