@@ -353,13 +353,13 @@ class _DriverViewState extends State<DriverView> with TickerProviderStateMixin {
             //     });
             //   },
             // ),
-            // RaisedButton(
-            //   onPressed: addTrip,
-            //   child: Text('Add Trip'),
-            //   // setState(() {
-            //   //   _calendarController.setCalendarFormat(CalendarFormat.week);
-            //   // });
-            // ),
+            RaisedButton(
+              onPressed: addTrip,
+              child: Text('Add Trip'),
+              // setState(() {
+              //   _calendarController.setCalendarFormat(CalendarFormat.week);
+              // });
+            ),
           ],
         ),
         // const SizedBox(height: 8.0),
@@ -394,28 +394,14 @@ class _DriverViewState extends State<DriverView> with TickerProviderStateMixin {
   //     print(value.id);
   //   });
   // }
-  // void addTrip() {
-  //   final firestoreInstance = FirebaseFirestore.instance;
-  //
-  //   // CollectionReference Trip = FirebaseFirestore.instance.collection('Trip1');
-  //
-  //   firestoreInstance.collection("Trip").add(
-  //       {
-  //         "Total Seat" : "25",
-  //         "Detail" : "Visit",
-  //         "Source" : "Hà Nội",
-  //         "Destination": "Đồng Nai",
-  //         "Price":250000,
-  //         "Company ID": firestoreInstance.collection("Trip").doc('Trip'+"C1"),
-  //         "Seat" : {
-  //           "Seat ID" : "1",
-  //           "Seat Num" : "15",
-  //         },
-  //       })
-  //       .then((value){
-  //     print(value.id);
-  //   });
-  // }
+  void addTrip() {
+    final firestoreInstance = FirebaseFirestore.instance;
+    firestoreInstance.collection("User").get().then((querySnapshot) {
+      querySnapshot.docs.forEach((result) {
+        print(result.data());
+      });
+    });
+  }
   //
 
   // void addTrip() {

@@ -25,9 +25,13 @@ void addTrip() {
     "Source": "Hà Nội",
     "Destination": "Đồng Nai",
     "Price": 250000,
-    "Time": Timestamp.now(),
+
     "Company ID": firestoreInstance.collection("Trip").doc('Trip' + "C1"),
     "Driver ID": firestoreInstance.collection("Trip").doc('Trip' + "D1"),
+    "Time": {
+      "Start Time":Timestamp.now(),
+      "Finish Time":Timestamp.now(),
+    },
     "Seat": {
       "Seat ID": "1",
       "Seat Num": "15",
@@ -113,6 +117,7 @@ void getCompany() {
     });
   });
 }
+
 void getAllUser() {
   final firestoreInstance = FirebaseFirestore.instance;
   firestoreInstance.collection("User").get().then((querySnapshot) {
