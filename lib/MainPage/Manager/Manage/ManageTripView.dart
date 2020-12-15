@@ -86,17 +86,10 @@ class _ManageTripViewState extends State<ManageTripView> {
   }
 
   Future _refresh() async {
-    if (tripImplement.tripList.length == 0) {
+    if (!tripImplement.isInit) {
       await tripImplement.init();
-      _key.currentState?.show();
     }
     setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _refresh();
   }
 
   Map<String, bool> map;

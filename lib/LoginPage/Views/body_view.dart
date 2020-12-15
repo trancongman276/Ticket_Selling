@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:CoachTicketSelling/MainPage/User/UserUI.dart';
-
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:CoachTicketSelling/Utils/Route.dart';
 import 'package:CoachTicketSelling/classes/actor/AppUser.dart';
@@ -22,7 +20,7 @@ class _BodyViewState extends State<BodyView>
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   Future<bool> _onWillPop() {
-    return showDialog(
+    return showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
               title: Text('Exit'),
@@ -34,30 +32,6 @@ class _BodyViewState extends State<BodyView>
                 FlatButton(onPressed: () => exit(0), child: Text('Yes')),
               ],
             ));
-  }
-
-  Future<bool> _navigate() async {
-    String id = FirebaseAuth.instance.currentUser.uid;
-
-    String role = '';
-    await FirebaseFirestore.instance
-        .collection('User')
-        .doc(id)
-        .get()
-        .then((doc) => role = doc.data()['Role']);
-    switch (role) {
-      case 'User':
-        AppUser.instance.getUser(FirebaseAuth.instance.currentUser.uid);
-        Navigator.pushNamed(context, UserViewRoute);
-        break;
-      case 'Driver':
-        Navigator.pushNamed(context, DriverViewRoute);
-        break;
-      case 'Manager':
-        Navigator.pushNamed(context, ManagerViewRoute);
-        break;
-    }
-    return Future.value(true);
   }
 
   @override
@@ -125,29 +99,33 @@ class _BodyViewState extends State<BodyView>
       ), // Google
     ];
 
-    void login() async {
+    Future login() async {
       try {
         print('[DEBUG] Loggin in');
-        UserCredential user = await Utils.firebaseAuth
+        await Utils.firebaseAuth
             .signInWithEmailAndPassword(
                 email: _emailController.text.trim(),
-                password: _passwordController.text.trim());
-        print("[DEBUG] Email verified: " +
-            Utils.firebaseAuth.currentUser.emailVerified.toString());
+                password: _passwordController.text.trim())
+            .then((value) async {
+          await Utils.storage
+              .write(key: 'e', value: _emailController.text.trim());
+          await Utils.storage
+              .write(key: 'p', value: _passwordController.text.trim());
+          Navigator.pushNamed(context, LoadingViewRoute);
+        });
+        
+        // print("[DEBUG] Email verified: " +
+        //     Utils.firebaseAuth.currentUser.emailVerified.toString());
         // TODO: Verification
         // if (user.user.emailVerified == false) {
         //   setState(() {
         //     errorMessage = "Email is not verified";
         //   });
         // } else {
-        await Utils.storage
-            .write(key: 'e', value: _emailController.text.trim());
-        await Utils.storage
-            .write(key: 'p', value: _passwordController.text.trim());
-        _navigate();
+
         // }
       } catch (error) {
-        print('[DEBUG] ' + error.code);
+        print('[DEBUG] $error');
         setState(() {
           switch (error.code) {
             case "wrong-password":

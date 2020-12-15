@@ -37,26 +37,19 @@ class _AddTripViewState extends State<AddTripView> {
 
       choosingFromPlace = trip.source;
       choosingFinishPlace = trip.destination;
-      getRoute();
-    } else {
-      getRoute();
-    }
-  }
 
-  Future<Map<String, List<String>>> getRoute() async {
-    await tripImplement.init();
-    if (tripID == null)
-      setState(() {
-        route = tripImplement.company.route;
-        fromPlaceLs = route.keys.toList();
-        choosingFromPlace = fromPlaceLs[0];
-      });
-    else {
-      setState(() {
-        route = tripImplement.company.route;
-        fromPlaceLs = route.keys.toList();
-        finishPlaceLs = route[choosingFromPlace];
-      });
+      fromPlaceLs = [choosingFromPlace];
+      finishPlaceLs = [choosingFinishPlace];
+      route = {choosingFromPlace: finishPlaceLs};
+      // route = tripImplement.company.route;
+      // fromPlaceLs = route.keys.toList();
+      // choosingFromPlace = fromPlaceLs[0];
+    } else {
+      route = tripImplement.company.route;
+      fromPlaceLs = route.keys.toList();
+      choosingFromPlace = fromPlaceLs[0];
+      finishPlaceLs = route[choosingFromPlace];
+      choosingFinishPlace = finishPlaceLs[0];
     }
   }
 
@@ -190,8 +183,9 @@ class _AddTripViewState extends State<AddTripView> {
         tempMap,
       );
       _key.currentState.reset();
-      choosingFromPlace = 'From';
-      choosingFinishPlace = 'Finish';
+      choosingFromPlace = fromPlaceLs[0];
+      finishPlaceLs = route[choosingFromPlace];
+      choosingFinishPlace = finishPlaceLs[0];
       dateStart.text = '';
       dateEnd.text = '';
       price.text = '';
@@ -213,7 +207,7 @@ class _AddTripViewState extends State<AddTripView> {
         });
         return false;
       }
-      if ((choosingFromPlace == 'From') | (choosingFinishPlace == 'Finish')) {
+      if ((choosingFromPlace.isEmpty) | (choosingFinishPlace.isEmpty)) {
         setState(() {
           errorMessage = 'Bad choosing Source and Destination';
         });

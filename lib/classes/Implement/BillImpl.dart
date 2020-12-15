@@ -55,9 +55,12 @@ class BillImplement {
 
   bool _initMostVisited() {
     _billLs.forEach((id, bill) {
-      _visit[bill.time.month - 1][bill.destination] == null
-          ? _visit[bill.time.month - 1].putIfAbsent(bill.destination, () => 1)
-          : _visit[bill.time.month - 1][bill.destination] += 1;
+      if (_visit[bill.time.month - 1][bill.destination] == null) {
+        _visit[bill.time.month - 1].putIfAbsent(bill.destination, () => 1);
+      } else {
+        _visit[bill.time.month - 1]
+            .update(bill.destination, (value) => value + 1);
+      }
     });
     _billLs.forEach((id, bill) {
       var sortedValue = _visit[bill.time.month - 1].keys.toList(growable: false)
@@ -75,7 +78,11 @@ class BillImplement {
 
     _billLs.forEach((id, bill) {
       allRating[bill.time.month - 1].putIfAbsent(bill.destination, () => []);
-      allRating[bill.time.month - 1][bill.destination].add(bill.rate);
+      // allRating[bill.time.month - 1][bill.destination].add(bill.rate);
+      allRating[bill.time.month - 1].update(bill.destination, (value) {
+        value.add(bill.rate);
+        return value;
+      });
     });
 
     for (int index = 0; index < allRating.length; index++) {

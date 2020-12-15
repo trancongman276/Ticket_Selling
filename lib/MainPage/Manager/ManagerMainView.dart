@@ -15,22 +15,6 @@ class ManagerMainView extends StatefulWidget {
 
 class _ManagerMainViewState extends State<ManagerMainView>
     with AutomaticKeepAliveClientMixin {
-  Future _refresh() async {
-    if (!DriverImpl.instance.isInit) {
-      await DriverImpl.instance.init();
-    }
-    if (TripImplement.instance.tripList.length == 0) {
-      await TripImplement.instance.init();
-    }
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    _refresh();
-    super.initState();
-  }
-
   List<Icon> iconLs = <Icon>[
     Icon(Icons.show_chart),
     Icon(Icons.add),
@@ -41,8 +25,9 @@ class _ManagerMainViewState extends State<ManagerMainView>
   List<bool> bottomAppState = List<bool>.generate(3, (index) => false);
   int currentBABState = 0;
 
-  void notificationOnClick() {
+  Future notificationOnClick() async {
     // TODO: Create Route
+    // await Utils.toJson(FirebaseFirestore.instance.collection('User'));
   }
 
   void bottomAppBarOnClick(int index) {
@@ -65,8 +50,10 @@ class _ManagerMainViewState extends State<ManagerMainView>
               content: Text('Do you want to close app? Or maybe Sign out?'),
               actions: <Widget>[
                 FlatButton(
-                    onPressed: () {
-                      Utils.logout();
+                    onPressed: () async {
+                      await Utils.logout();
+                      DriverImpl.kill();
+                      TripImplement.kill();
                       Navigator.of(context).pop(true);
                     },
                     child: Text('Sign out')),

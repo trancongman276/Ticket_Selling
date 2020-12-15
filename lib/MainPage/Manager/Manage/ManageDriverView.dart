@@ -16,15 +16,8 @@ class _ManageDriverViewState extends State<ManageDriverView> {
   Future _refresh() async {
     if (!driverImpl.isInit) {
       await driverImpl.init();
-      _key.currentState?.show();
     }
     setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _refresh();
   }
 
   @override

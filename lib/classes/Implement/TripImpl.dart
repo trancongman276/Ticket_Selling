@@ -6,8 +6,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TripImplement {
   Company company;
+  bool isInit = false;
   Map<String, Trip> _tripLs = {};
   static TripImplement _instance = TripImplement._();
+  static bool kill() {
+    _instance = TripImplement._();
+    return true;
+  }
+
   static TripImplement get instance => _instance;
   TripImplement._();
 
@@ -17,16 +23,16 @@ class TripImplement {
       await Manager.instance.getData();
     }
     company = Manager.instance.company;
-
     await FirebaseFirestore.instance
         .collection('Trip')
         .where('Company', isEqualTo: company.documentReference)
         .get()
         .then((query) {
       query.docs.forEach((doc) async {
-        _assignData(doc, true);
+        await _assignData(doc, true);
       });
     });
+    isInit = true;
     return Future.value(true);
   }
 
@@ -48,9 +54,9 @@ class TripImplement {
     tempMap.forEach((key, value) {
       time[key] = DateTime.parse(value.toDate().toString());
     });
-    Company _company;
+    Company _company = Company.none();
+
     if (!isManager) {
-      _company = Company.none();
       await _company.getData(doc.data()['Company']);
     }
     DocumentReference ref = doc.data()['Driver'];
@@ -100,7 +106,6 @@ class TripImplement {
   //Adding trip handling
   Future<bool> add(String source, String destination, int price, int totalSeat,
       Driver driver, String detail, Map<String, DateTime> time) async {
-    String id;
     Map<String, Timestamp> tempMap =
         time.map((key, value) => MapEntry(key, Timestamp.fromDate(value)));
     await FirebaseFirestore.instance.collection('Trip').add({
@@ -113,17 +118,19 @@ class TripImplement {
       'Company': company.documentReference,
       'Detail': detail,
       'Time': tempMap,
-    }).then((value) => id = value.id);
-    _tripLs[id] = Trip(
-      source: source,
-      destination: destination,
-      price: price,
-      totalSeat: totalSeat,
-      detail: detail,
-      driver: driver,
-      company: company,
-      time: time,
-    );
+    }).then((value) {
+      _tripLs[value.id] = Trip(
+        source: source,
+        destination: destination,
+        price: price,
+        totalSeat: totalSeat,
+        detail: detail,
+        driver: driver,
+        company: company,
+        time: time,
+      );
+    });
+
     return Future.value(true);
   }
 

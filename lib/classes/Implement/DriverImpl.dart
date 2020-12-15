@@ -14,7 +14,11 @@ class DriverImpl extends AccountDAO {
   bool isInit = false;
   Map<String, Driver> _driverLs = {};
 
-  static final DriverImpl _instance = DriverImpl._();
+  static DriverImpl _instance = DriverImpl._();
+  static bool kill() {
+    _instance = DriverImpl._();
+    return true;
+  }
 
   static DriverImpl get instance => _instance;
 
@@ -130,17 +134,28 @@ class DriverImpl extends AccountDAO {
       String gender, File image,
       {@required String note}) async {
     String id = '';
-    await FirebaseAuth.instance
-        .createUserWithEmailAndPassword(
-            email: email, password: '${doB.year}${doB.month}${doB.day}')
-        .then((user) {
-      id = user.user.uid;
-      // user.user.sendEmailVerification();
-    });
+
+    for (var driver in _driverLs.values) {
+      if (driver.email == email) {
+        return false;
+      }
+    }
+
+    try {
+      await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+              email: email, password: '${doB.year}${doB.month}${doB.day}')
+          .then((user) {
+        id = user.user.uid;
+        // user.user.sendEmailVerification();
+      });
+    } catch (e) {
+      if (e.code == 'email-already-in-use') return false;
+    }
 
     String imageUrl = '';
     String ex = image.path.split('.').last;
-    imageUrl = await uploadImage(image, id, 'Driver/$id.$ex');
+    imageUrl = await uploadImage(image, 'Driver/$id.$ex');
 
     DocumentReference ref =
         FirebaseFirestore.instance.collection('User').doc(id);
@@ -166,11 +181,13 @@ class DriverImpl extends AccountDAO {
 
   // Delete Driver
   bool delete(String id) {
-    _driverLs.remove(id);
+    _driverLs[id].isAvailable = false;
+    update(id: id, isAvailable: false);
     FirebaseFirestore.instance
         .collection('User')
         .doc(id)
         .set({'isAvailable': false});
+    _driverLs.remove(id);
     return true;
   }
 
@@ -204,9 +221,16 @@ class DriverImpl extends AccountDAO {
 
   // Get Driver ID
   String getDriverID(Driver driver) {
-    _driverLs.forEach((key, value) {
-      if (value == driver) return key;
-    });
+    // String _key = '';
+    // _driverLs.forEach((key, value) {
+    //   if (value == driver) return ;
+    // });
+    // return '';
+    for (var key in _driverLs.keys) {
+      if (_driverLs[key] == driver) {
+        return key;
+      }
+    }
     return null;
   }
 

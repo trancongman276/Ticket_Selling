@@ -30,8 +30,7 @@ class AppUser extends AccountDAO {
 
       if (image != null) {
         String ex = image.path.split('.').last;
-        uploadImage(image, id, 'User/$id.$ex')
-            .then((url) => this.imageUrl = url);
+        uploadImage(image, 'User/$id.$ex').then((url) => this.imageUrl = url);
       }
 
       FirebaseFirestore.instance.collection('User').doc(id).set({
@@ -47,8 +46,8 @@ class AppUser extends AccountDAO {
     return true;
   }
 
-  bool getUser([String id]) {
-    FirebaseFirestore.instance
+  Future<bool> getUser([String id]) async {
+    await FirebaseFirestore.instance
         .collection('User')
         .doc(id)
         .get()

@@ -2,7 +2,6 @@ import 'package:CoachTicketSelling/Utils/Route.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
-import '../Payment/PaymentUI.dart';
 import 'Ticket.dart';
 
 class TicketUI extends StatefulWidget {

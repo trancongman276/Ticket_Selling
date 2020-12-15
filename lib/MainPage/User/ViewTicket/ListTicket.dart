@@ -33,8 +33,8 @@ class _ListTicketState extends State<ListTicket> {
               content: Text('Do you want to close app? Or maybe Sign out?'),
               actions: <Widget>[
                 FlatButton(
-                    onPressed: () {
-                      Utils.logout();
+                    onPressed: () async {
+                      await Utils.logout();
                       Navigator.pushNamed(context, LoginViewRoute);
                     },
                     child: Text('Sign out')),

@@ -1,18 +1,13 @@
 import 'dart:io';
 
-import 'package:CoachTicketSelling/MainPage/USer/ViewTicket/ListTicket.dart';
 import 'package:CoachTicketSelling/MainPage/User/BookTrip/RecommendationItem.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:CoachTicketSelling/Utils/Route.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rounded_date_picker/rounded_picker.dart';
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
-import 'BookTrip/BookingUI.dart';
-import 'Profile.dart';
 
 class UserUI extends StatefulWidget {
   @override
@@ -59,8 +54,8 @@ class _UserUIState extends State<UserUI> {
               content: Text('Do you want to close app? Or maybe Sign out?'),
               actions: <Widget>[
                 FlatButton(
-                    onPressed: () {
-                      Utils.logout();
+                    onPressed: () async{
+                      await Utils.logout();
                       Navigator.pushNamed(context, LoginViewRoute);
                     },
                     child: Text('Sign out')),

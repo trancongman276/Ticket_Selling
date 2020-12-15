@@ -4,6 +4,7 @@ import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:CoachTicketSelling/classes/Implement/DriverImpl.dart';
 import 'package:CoachTicketSelling/classes/actor/Driver.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_rounded_date_picker/rounded_picker.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -26,7 +27,8 @@ class _AddDriverViewState extends State<AddDriverView> {
       phone.text = driver.phone;
       email.text = driver.email;
       note.text = driver.note;
-      dob.text = '${driver.doB.year}-${driver.doB.month}-${driver.doB.day}';
+      dob.text =
+          '${driver.doB.year}-${driver.doB.month}-${driver.doB.day < 10 ? ('0' + driver.doB.day.toString()) : driver.doB.day}';
       imageUrl = driver.imageUrl;
       dropDownValue = driver.gender;
     }
@@ -89,6 +91,33 @@ class _AddDriverViewState extends State<AddDriverView> {
         });
   }
 
+  Future<bool> _showAlertDialog() async {
+    return showDialog<bool>(
+        context: context,
+        barrierDismissible: false, // user must tap button!
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Duplicate Driver'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text('This Driver already existed.'),
+                  Text('Please update this Driver in Manage page.'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Ok'),
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+              ),
+            ],
+          );
+        });
+  }
+
   void deleteDriver() {
     _showDialog().then((value) {
       if (value == true) {
@@ -100,6 +129,7 @@ class _AddDriverViewState extends State<AddDriverView> {
 
   void saveDriver() {
     if (driverID != null) {
+      print(DateTime.parse(dob.text));
       driverImpl.update(
         id: driverID,
         email: email.text,
@@ -111,9 +141,15 @@ class _AddDriverViewState extends State<AddDriverView> {
       );
       Navigator.pop(context);
     } else {
-      driverImpl.add(email.text.trim(), name.text.trim(), phone.text,
-          DateTime.parse(dob.text), dropDownValue, _imageFile,
-          note: note.text);
+      driverImpl
+          .add(email.text.trim(), name.text.trim(), phone.text,
+              DateTime.parse(dob.text), dropDownValue, _imageFile,
+              note: note.text)
+          .then((value) {
+        if (!value) {
+          _showAlertDialog();
+        }
+      });
       _key.currentState.reset();
       reset();
     }
@@ -173,9 +209,13 @@ class _AddDriverViewState extends State<AddDriverView> {
             ),
             IconButton(
               onPressed: () async {
+                DateTime now = DateTime.now();
                 date = await showRoundedDatePicker(
                     context: context,
-                    firstDate: DateTime(DateTime.now().year - 100),
+                    firstDate:
+                        DateTime(DateTime.now().year - 100, now.month, now.day),
+                    lastDate: DateTime(now.year - 18, now.month, now.day + 1),
+                    initialDate: DateTime(now.year - 18, now.month, now.day),
                     borderRadius: 16,
                     theme: ThemeData(primarySwatch: Colors.green));
                 date != null
@@ -218,6 +258,9 @@ class _AddDriverViewState extends State<AddDriverView> {
           controller: phone,
           textInputAction: TextInputAction.next,
           keyboardType: TextInputType.phone,
+          inputFormatters: <TextInputFormatter>[
+            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+          ],
           decoration: InputDecoration(
             hintText: '0123xxxxx',
             labelText: 'Phone',
@@ -233,6 +276,7 @@ class _AddDriverViewState extends State<AddDriverView> {
             cursorColor: Utils.primaryColor,
             validator: Utils.validateEmail,
             controller: email,
+            readOnly: driverID != null ? true : false,
             textInputAction: TextInputAction.next,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(

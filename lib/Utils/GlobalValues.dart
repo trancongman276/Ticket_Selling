@@ -1,3 +1,9 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:CoachTicketSelling/classes/Implement/DriverImpl.dart';
+import 'package:CoachTicketSelling/classes/Implement/TripImpl.dart';
+import 'package:CoachTicketSelling/classes/actor/Manager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +11,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 
 class Utils {
   // Variables
@@ -35,7 +42,7 @@ class Utils {
     value = value.trim();
     Pattern pattern =
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-    RegExp regex = new RegExp(pattern);
+    RegExp regex = RegExp(pattern);
     if (!regex.hasMatch(value))
       return 'Enter Valid Email';
     else
@@ -74,9 +81,116 @@ class Utils {
     return null;
   }
 
-  static void logout() {
-    storage.delete(key: 'e');
-    storage.delete(key: 'p');
+  static Future<void> logout() async {
+    await storage.delete(key: 'e');
+    await storage.delete(key: 'p');
+  }
+
+  static Future<Map> toJson(CollectionReference collectionReference) async {
+    Map<String, Map<String, dynamic>> allData = {};
+    await FirebaseFirestore.instance.collection('User').get().then((query) {
+      Map<String, Map<String, dynamic>> data = Map.fromIterable(query.docs,
+          key: (e) => e.id,
+          value: (e) {
+            Map<String, dynamic> tempMap = e.data();
+            Timestamp timestamp = e.data()['DoB'];
+            tempMap['DoB'] = _dateFormat
+                .format(DateTime.parse(timestamp.toDate().toString()));
+            if (e.data()['Company'] != null) {
+              DocumentReference ref = e.data()['Company'];
+              tempMap['Company'] = '/Company/${ref.id}';
+            }
+            QueryDocumentSnapshot _e = e;
+            if (e.data()['Role'] == 'User') {
+              CollectionReference billRef = FirebaseFirestore.instance
+                  .collection('User')
+                  .doc(_e.id)
+                  .collection('Bill');
+
+              billRef.get().then((value) {
+                Map<String, dynamic> billLs = {};
+                billLs = Map.fromIterable(value.docs,
+                    key: (e) => e.id,
+                    value: (e) {
+                      billRef
+                          .doc(e.id)
+                          .collection('Ticket')
+                          .get()
+                          .then((value) {
+                        Map<String, dynamic> ticketLs =
+                            Map.fromIterable(value.docs,
+                                key: (e) => e.id,
+                                value: (e) {
+                                  Map<String, dynamic> tempMap = e.data();
+                                  tempMap['Trip'] =
+                                      '/Trip/${e.data()['Trip'].id}';
+                                  return tempMap;
+                                });
+                        billLs[e.id]['Ticket'] = ticketLs;
+                      });
+                      Map<String, dynamic> tempMap = e.data();
+                      tempMap['Time'] = _dateFormat.format(
+                          DateTime.parse(e.data()['Time'].toDate().toString()));
+                      return tempMap;
+                    });
+                tempMap['Bill'] = billLs;
+              });
+            }
+            return tempMap;
+          });
+      allData['User'] = data;
+    });
+
+    await FirebaseFirestore.instance.collection('Trip').get().then((query) {
+      Map<String, Map<String, dynamic>> data = Map.fromIterable(query.docs,
+          key: (e) => e.id,
+          value: (e) {
+            Map<String, dynamic> tempMap = e.data();
+            Map<String, Timestamp> tempTime =
+                Map<String, Timestamp>.from(e.data()['Time']);
+            Map<String, String> tempString = {
+              'Start Time': _dateFormat.format(
+                  DateTime.parse(tempTime['Start Time'].toDate().toString())),
+              'Finish Time': _dateFormat.format(
+                  DateTime.parse(tempTime['Finish Time'].toDate().toString()))
+            };
+            tempMap['Time'] = tempString;
+
+            if (e.data()['Company'] != null) {
+              DocumentReference ref = e.data()['Company'];
+              tempMap['Company'] = '/Company/${ref.id}';
+            }
+            if (e.data()['Driver'] != null) {
+              DocumentReference ref = e.data()['Driver'];
+              tempMap['Driver'] = '/User/${ref.id}';
+            }
+            return tempMap;
+          });
+      allData['Trip'] = data;
+    });
+
+    await FirebaseFirestore.instance.collection('Company').get().then((query) {
+      Map<String, Map<String, dynamic>> data = Map.fromIterable(
+        query.docs,
+        key: (e) => e.id,
+        value: (e) {
+          Map<String, dynamic> tempMap = e.data();
+          return tempMap;
+        },
+      );
+      allData['Company'] = data;
+    });
+    var result = json.encode(allData);
+
+    String dir = (await getTemporaryDirectory()).path;
+    File temp = new File('$dir/db.json');
+    await temp.writeAsString(result);
+
+    DriverImpl.instance.uploadImage(temp, '/db.json').then((value) {
+      print('Url: $value');
+      temp.delete();
+    });
+    return Future.value(allData);
   }
 
   static DateFormat _dateFormat = DateFormat('dd/MM/yyyy HH:mm');

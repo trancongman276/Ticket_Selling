@@ -1,0 +1,263 @@
+{
+    "User": {
+        "8VrniMcyeCMVdz0EUPhYIbaWp0i2": {
+            "Role": "Driver",
+            "isAvailable": true,
+            "Company": "/Company/UbfHvitTCnrXZbLspSIx",
+            "Email": "mrD@test.com",
+            "DoB": "14/12/1965 00:00",
+            "Phone": "01214169533",
+            "Note": "Call me Mr. D!",
+            "ImageUrl": "https://firebasestorage.googleapis.com/v0/b/coachticketselling.appspot.com/o/Driver%2F8VrniMcyeCMVdz0EUPhYIbaWp0i2.jpg?alt=media&token=3417485c-635b-415a-b522-18e48e92afba",
+            "Gender": "Male",
+            "Name": "Mr. D"
+        },
+        "HMy2KlpmBubIGW1JYwXFHsTrfoo1": {
+            "Role": "Driver",
+            "isAvailable": true,
+            "Company": "/Company/sFn8uWN8g1txGmG5O5Iv",
+            "Email": "testDriver@test.com",
+            "Phone": "0123456789",
+            "DoB": "01/12/2020 00:00",
+            "ImageUrl": "https://firebasestorage.googleapis.com/v0/b/coachticketselling.appspot.com/o/default.png?alt=media&token=f0e176fe-fcfa-46e8-af4f-5e0c85267de2",
+            "Gender": "Male",
+            "Name": "Test Driver"
+        },
+        "ImjsJf1bBogKUcHHH8pcNW81t4j2": {
+            "Role": "Driver",
+            "isAvailable": true,
+            "Company": "/Company/sFn8uWN8g1txGmG5O5Iv",
+            "Email": "Simon@test.com",
+            "DoB": "09/12/1980 00:00",
+            "Phone": "01209198040",
+            "Note": "They call me Howard, but you can call me tonight!",
+            "ImageUrl": "https://firebasestorage.googleapis.com/v0/b/coachticketselling.appspot.com/o/Driver%2FImjsJf1bBogKUcHHH8pcNW81t4j2.jpg?alt=media&token=7ae1176d-b0f8-4754-9166-b3d5949962f0",
+            "Gender": "Male",
+            "Name": "Simon Wolowitz"
+        },
+        "SblWFbkudqRhJ1HwWWFlpfag2dn1": {
+            "Role": "User",
+            "isAvailable": true,
+            "Email": "trancongman276@gmail.com",
+            "Phone": "0853611335",
+            "DoB": "12/07/2000 00:00",
+            "ImageUrl": "https://firebasestorage.googleapis.com/v0/b/coachticketselling.appspot.com/o/default.png?alt=media&token=f0e176fe-fcfa-46e8-af4f-5e0c85267de2",
+            "Gender": "Male",
+            "Name": "Tran Cong Man",
+            "Bill": {
+                "9zXyASnbUqyQgtXWbX6A": {
+                    "Time": "14/12/2020 13:12",
+                    "Cost": 133,
+                    "Ticket": {
+                        "LYjXMAiwMgJ6Z7JKvWfF": {
+                            "Trip": "/Trip/FHCoYFySLcNMQ91nQsSD",
+                            "Rating": null,
+                            "SeatNum": 5
+                        }
+                    }
+                }
+            }
+        },
+        "T563XUzCwIXDWvwSJ3EoVg6tvFu2": {
+            "Role": "Manager",
+            "Company": "/Company/sFn8uWN8g1txGmG5O5Iv",
+            "Email": "testManager@test.com",
+            "DoB": "12/12/2020 12:53",
+            "Phone": "0123456789",
+            "ImageUrl": "https://firebasestorage.googleapis.com/v0/b/coachticketselling.appspot.com/o/default.png?alt=media&token=f0e176fe-fcfa-46e8-af4f-5e0c85267de2",
+            "Gender": "Male",
+            "Name": "Test Manager"
+        },
+        "aZVXkIjxLCVLiVZjDtyFkWPmK9r2": {
+            "Role": "Driver",
+            "isAvailable": true,
+            "Company": "/Company/sFn8uWN8g1txGmG5O5Iv",
+            "Email": "Johnny@test.com",
+            "Phone": "0430197545",
+            "DoB": "30/04/1975 00:00",
+            "Note": "I'm not some kind of nerd,\nI'm the king of nerds.",
+            "ImageUrl": "https://firebasestorage.googleapis.com/v0/b/coachticketselling.appspot.com/o/Driver%2FaZVXkIjxLCVLiVZjDtyFkWPmK9r2.jpg?alt=media&token=90eeba9f-23fe-43dd-8c46-9b23fcb9e5bb",
+            "Gender": "Male",
+            "Name": "Johnny Hofstadter"
+        },
+        "hSzPOJsCZNewBhezqHo3E9FaapG2": {
+            "Role": "Manager",
+            "Company": "/Company/UbfHvitTCnrXZbLspSIx",
+            "Email": "testManager2@test.com",
+            "Phone": "0123456789",
+            "DoB": "14/12/2020 08:48",
+            "ImageUrl": "https://firebasestorage.googleapis.com/v0/b/coachticketselling.appspot.com/o/default.png?alt=media&token=f0e176fe-fcfa-46e8-af4f-5e0c85267de2",
+            "Gender": "Female",
+            "Name": "Lisa"
+        },
+        "jSAyCNiasua8g0YKowo0OMSGjf12": {
+            "Role": "User",
+            "Email": "testUser@test.com",
+            "Phone": "0123456789",
+            "DoB": "04/11/2020 00:00",
+            "ImageUrl": "https://firebasestorage.googleapis.com/v0/b/coachticketselling.appspot.com/o/default.png?alt=media&token=f0e176fe-fcfa-46e8-af4f-5e0c85267de2",
+            "Gender": "Male",
+            "Name": "Test User",
+            "Bill": {}
+        },
+        "ppUfMuHpA2Z0EBJT4JowEyr9XV22": {
+            "Role": "Driver",
+            "isAvailable": true,
+            "Company": "/Company/sFn8uWN8g1txGmG5O5Iv",
+            "Email": "jimmy@test.com",
+            "Phone": "0324197347",
+            "DoB": "24/03/1973 00:00",
+            "Note": "I love physic!",
+            "ImageUrl": "https://firebasestorage.googleapis.com/v0/b/coachticketselling.appspot.com/o/Driver%2FppUfMuHpA2Z0EBJT4JowEyr9XV22.jpg?alt=media&token=e5526309-ea97-45b9-9e68-ee13743d7160",
+            "Gender": "Male",
+            "Name": "Jim Cooper"
+        },
+        "rodIqBCQMyd1aUmy1J5AauaJ2M93": {
+            "Role": "Driver",
+            "isAvailable": true,
+            "Company": "/Company/sFn8uWN8g1txGmG5O5Iv",
+            "Email": "Kunal@test.com",
+            "DoB": "06/10/1981 00:00",
+            "Phone": "01006198139",
+            "Note": "With your American accent, everything you say sounds stupid!",
+            "ImageUrl": "https://firebasestorage.googleapis.com/v0/b/coachticketselling.appspot.com/o/Driver%2FrodIqBCQMyd1aUmy1J5AauaJ2M93.jpg?alt=media&token=bfd0b1fb-ea88-49e3-9d41-ee4d9a64e53b",
+            "Gender": "Male",
+            "Name": "Kunal Koothrappali"
+        },
+        "wvStaJEYJebZ3tDmY4FrNTDFxW32": {
+            "Role": "Driver",
+            "isAvailable": true,
+            "Company": "/Company/UbfHvitTCnrXZbLspSIx",
+            "Email": "alexa@test.com",
+            "DoB": "14/12/1993 00:00",
+            "Phone": "01214199300",
+            "Note": "Excuse me?",
+            "ImageUrl": "https://firebasestorage.googleapis.com/v0/b/coachticketselling.appspot.com/o/Driver%2FwvStaJEYJebZ3tDmY4FrNTDFxW32.jpg?alt=media&token=76e50f5b-c23f-4596-8749-c1eec2f1a2b4",
+            "Gender": "Male",
+            "Name": "Alexa Karma"
+        }
+    },
+    "Trip": {
+        "FHCoYFySLcNMQ91nQsSD": {
+            "Destination": "VT",
+            "Company": "/Company/UbfHvitTCnrXZbLspSIx",
+            "Seat": [
+                "5"
+            ],
+            "Price": 133,
+            "Driver": "/User/8VrniMcyeCMVdz0EUPhYIbaWp0i2",
+            "Time": {
+                "Start Time": "15/12/2020 09:11",
+                "Finish Time": "15/12/2020 11:11"
+            },
+            "Source": "NT",
+            "Total Seat": 12,
+            "Detail": "Fun trip with MR. D"
+        },
+        "HgYeJgY9BbRwvRmPMWqo": {
+            "Destination": "HCM",
+            "Seat": [],
+            "Company": "/Company/UbfHvitTCnrXZbLspSIx",
+            "Price": 999,
+            "Driver": "/User/wvStaJEYJebZ3tDmY4FrNTDFxW32",
+            "Time": {
+                "Start Time": "16/12/2020 10:23",
+                "Finish Time": "17/12/2020 00:23"
+            },
+            "Detail": "God will bless this Trip",
+            "Source": "HN",
+            "Total Seat": 17
+        },
+        "R1yWucWXNijqdk7L9SrF": {
+            "Destination": "DL",
+            "Seat": [],
+            "Company": "/Company/UbfHvitTCnrXZbLspSIx",
+            "Price": 145,
+            "Driver": "/User/8VrniMcyeCMVdz0EUPhYIbaWp0i2",
+            "Time": {
+                "Start Time": "18/12/2020 09:25",
+                "Finish Time": "19/12/2020 10:25"
+            },
+            "Detail": "Another fun Trip with MR. D",
+            "Source": "NT",
+            "Total Seat": 55
+        },
+        "aEt1BIjQrc0hxnf7MoAi": {
+            "Destination": "HCM",
+            "Company": "/Company/sFn8uWN8g1txGmG5O5Iv",
+            "Seat": [],
+            "Price": 199,
+            "Driver": "/User/HMy2KlpmBubIGW1JYwXFHsTrfoo1",
+            "Time": {
+                "Start Time": "16/12/2020 20:21",
+                "Finish Time": "17/12/2020 20:21"
+            },
+            "Source": "HN",
+            "Detail": "Enjoy the long trip with the great quality and love from us.",
+            "Total Seat": 20
+        },
+        "h8KiPGuz2Nkb0bpIED1x": {
+            "Destination": "HCM",
+            "Company": "/Company/sFn8uWN8g1txGmG5O5Iv",
+            "Seat": [],
+            "Price": 120,
+            "Driver": "/User/HMy2KlpmBubIGW1JYwXFHsTrfoo1",
+            "Time": {
+                "Start Time": "14/12/2020 19:23",
+                "Finish Time": "15/12/2020 13:25"
+            },
+            "Detail": "Test Trip",
+            "Source": "HN",
+            "Total Seat": 40
+        }
+    },
+    "Company": {
+        "UbfHvitTCnrXZbLspSIx": {
+            "ImageUrl": "https://firebasestorage.googleapis.com/v0/b/coachticketselling.appspot.com/o/default.png?alt=media&token=f0e176fe-fcfa-46e8-af4f-5e0c85267de2",
+            "Route": {
+                "HCM": [
+                    "HN",
+                    "VT",
+                    "NT",
+                    "DL"
+                ],
+                "HN": [
+                    "HCM"
+                ],
+                "NT": [
+                    "DL",
+                    "VT"
+                ],
+                "DL": [
+                    "NT"
+                ],
+                "VT": [
+                    "NT",
+                    "DL"
+                ]
+            },
+            "Name": "Thành Grapefruit"
+        },
+        "sFn8uWN8g1txGmG5O5Iv": {
+            "ImageUrl": "https://firebasestorage.googleapis.com/v0/b/coachticketselling.appspot.com/o/default.png?alt=media&token=f0e176fe-fcfa-46e8-af4f-5e0c85267de2",
+            "Route": {
+                "HCM": [
+                    "DN",
+                    "HUE",
+                    "HN"
+                ],
+                "HN": [
+                    "HUE",
+                    "HCM"
+                ],
+                "HUE": [
+                    "DN"
+                ],
+                "DN": [
+                    "HUE"
+                ]
+            },
+            "Name": "Con heo"
+        }
+    }
+}

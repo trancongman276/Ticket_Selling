@@ -11,18 +11,20 @@ bool connected = false;
 String nextRoute = '';
 void main() async {
   try {
-    final result = await InternetAddress.lookup('google.com');
-    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-      print('[DEBUG] Connected');
-      connected = true;
-      WidgetsFlutterBinding.ensureInitialized();
-      await Firebase.initializeApp();
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp();
+    if (!kIsWeb) {
       print("[DEBUG]Checking login");
-      if (!kIsWeb) logined = await route.checkLogined();
+      logined = await route.checkLogined();
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        print('[DEBUG] Connected');
+        connected = true;
+      }
       print("[DEBUG]Checked: $logined");
-      await route.navigate().then((value) => nextRoute = value);
-      runApp(MyApp());
+      if (logined) await route.navigate().then((value) => nextRoute = value);
     }
+    runApp(MyApp());
   } on SocketException catch (_) {
     print('[DEBUG] Not connected');
     runApp(MyApp());
@@ -40,7 +42,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "Welcome",
       onGenerateRoute: route.generateRoute,
-      initialRoute: logined ? nextRoute : route.LoginViewRoute,
+      initialRoute: logined ? route.LoadingViewRoute : route.LoginViewRoute,
     );
   }
 }

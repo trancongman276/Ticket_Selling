@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:CoachTicketSelling/classes/actor/Company.dart';
+import 'package:CoachTicketSelling/classes/actor/Trip.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:CoachTicketSelling/classes/DAO/accountDAO.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Driver extends AccountDAO {
+  bool isInit = false;
   String id;
   bool isAvailable = true;
   String email;
@@ -18,10 +20,9 @@ class Driver extends AccountDAO {
   Company company;
   String note;
   DocumentReference documentReference;
-  List<Map<String, DateTime>> _dayWorkLs;
-
-  static Driver _currentDriver =
-      Driver.id(FirebaseAuth.instance.currentUser.uid);
+  List<Map<String, DateTime>> _dayWorkLs = [];
+  List<Trip> _tripWorkLs = [];
+  static Driver _currentDriver = Driver._();
 
   static Driver get currentDriver => _currentDriver;
 
@@ -35,14 +36,24 @@ class Driver extends AccountDAO {
       this.imageUrl,
       this.company,
       this.note,
-      this.documentReference) {
-    getDayWork(id).then((dayWork) => _dayWorkLs = dayWork);
-  }
+      this.documentReference);
+
+  Driver._();
 
   Driver.id(this.id) {
+    init();
+  }
+
+  bool kill() {
+    _currentDriver = Driver._();
+    return true;
+  }
+
+  Future init() async {
+    if (this.id == null) this.id =FirebaseAuth.instance.currentUser.uid;
     Timestamp timestamp;
     documentReference = FirebaseFirestore.instance.collection('User').doc(id);
-    documentReference.get().then((document) async {
+    await documentReference.get().then((document) async {
       this.isAvailable = document.data()['isAvalable'];
       this.company = Company.none();
       await company.getData(document.data()['Company']);
@@ -55,7 +66,7 @@ class Driver extends AccountDAO {
       this.note = document.data()['Note'];
       this.imageUrl = document.data()['ImageUrl'];
     });
-    getDayWork(id).then((dayWork) => _dayWorkLs = dayWork);
+    _dayWorkLs = await getDayWork(this.id);
   }
 
   _changePassword(String password) {
@@ -83,7 +94,6 @@ class Driver extends AccountDAO {
     if (password != null) {
       this._changePassword(password);
     } else {
-      this.isAvailable = isAvailable ?? this.isAvailable;
       this.email = email ?? this.email;
       this.name = name ?? this.name;
       this.phone = phone ?? this.phone;
@@ -93,18 +103,16 @@ class Driver extends AccountDAO {
 
       if (image != null) {
         String ex = image.path.split('.').last;
-        uploadImage(image, id, 'Driver/$id.$ex')
-            .then((url) => this.imageUrl = url);
+        uploadImage(image, 'Driver/$id.$ex').then((url) => this.imageUrl = url);
       }
-
       FirebaseFirestore.instance.collection('User').doc(id).set({
         'isAvailable': this.isAvailable,
         'Email': this.email,
         'Name': this.name,
         'Phone': this.phone,
-        'DoB': Timestamp.fromDate(doB),
+        'DoB': Timestamp.fromDate(this.doB),
         'Gender': this.gender,
-        'Company': this.company,
+        'Company': this.company.documentReference,
         'Note': this.note,
         'ImageUrl': this.imageUrl,
       });
@@ -113,23 +121,29 @@ class Driver extends AccountDAO {
   }
 
   Future<List<Map<String, DateTime>>> getDayWork(String id) async {
-    List<Map<String, DateTime>> dayWork = [];
+    _dayWorkLs = [];
+    if (_dayWorkLs.isEmpty) {
+      await FirebaseFirestore.instance
+          .collection('Trip')
+          .where('Driver', isEqualTo: this.documentReference)
+          .get()
+          .then((query) {
+        query.docs.forEach((doc) {
+          _tripWorkLs.add(Trip(
+              source: doc.data()['Source'],
+              destination: doc.data()['Destination']));
 
-    await FirebaseFirestore.instance
-        .collection('Trip')
-        .where('Driver', isEqualTo: this.documentReference)
-        .get()
-        .then((query) {
-      query.docs.forEach((doc) {
-        Map<String, Timestamp> time =
-            Map<String, Timestamp>.from(doc.data()['Time']);
-        
-        dayWork.add(time.map((key, value) =>
-            MapEntry(key, DateTime.parse(value.toDate().toString()))));
+          Map<String, Timestamp> time =
+              Map<String, Timestamp>.from(doc.data()['Time']);
+
+          _dayWorkLs.add(time.map((key, value) =>
+              MapEntry(key, DateTime.parse(value.toDate().toString()))));
+        });
       });
-    });
-    return Future.value(dayWork);
+    }
+    return Future.value(_dayWorkLs);
   }
 
   List<Map<String, DateTime>> get dayWorkList => _dayWorkLs;
+  List<Trip> get tripWorkList => _tripWorkLs;
 }

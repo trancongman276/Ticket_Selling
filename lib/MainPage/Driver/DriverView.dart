@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:CoachTicketSelling/MainPage/Driver/table_calendar.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
+import 'package:CoachTicketSelling/classes/Implement/DriverImpl.dart';
 import 'package:CoachTicketSelling/classes/actor/Driver.dart';
+import 'package:CoachTicketSelling/classes/actor/Trip.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -27,74 +29,20 @@ class DriverView extends StatefulWidget {
 }
 
 class _DriverViewState extends State<DriverView> with TickerProviderStateMixin {
-  Map<DateTime, List> _events;
-  List _selectedEvents;
+  Map<DateTime, List<String>> _events = {};
+  List _selectedEvents = [];
   AnimationController _animationController;
   CalendarController _calendarController;
-
+  Driver driver = Driver.currentDriver;
+  bool isInit = false;
   @override
   void initState() {
     super.initState();
+    init();
     Firebase.initializeApp().whenComplete(() {
       print("completed");
-      setState(() {});
     });
-    final _selectedDay = DateTime.now();
 
-    _events = {
-      _selectedDay.subtract(Duration(days: 30)): [
-        'From: Ha Noi \nTo: Ho Chi Minh City \nDuration: 9h-12h30',
-        'From: Ha Noi \nTo: Ho Chi Minh City \nDuration: 9h-12h30'
-      ],
-      _selectedDay.subtract(Duration(days: 27)): ['Event A1'],
-      _selectedDay.subtract(Duration(days: 20)): [
-        'Event A2',
-        'Event B2',
-        'Event C2',
-        'Event D2'
-      ],
-      _selectedDay.subtract(Duration(days: 16)): ['Event A3', 'Event B3'],
-      _selectedDay.subtract(Duration(days: 10)): [
-        'Event A4',
-        'Event B4',
-        'Event C4'
-      ],
-      _selectedDay.subtract(Duration(days: 4)): [
-        'Event A5',
-        'Event B5',
-        'Event C5'
-      ],
-      _selectedDay.subtract(Duration(days: 2)): ['Event A6', 'Event B6'],
-      _selectedDay: ['Event A7', 'Event B7', 'Event C7', 'Event D7'],
-      _selectedDay.add(Duration(days: 1)): [
-        'Event A8',
-        'Event B8',
-        'Event C8',
-        'Event D8'
-      ],
-      _selectedDay.add(Duration(days: 3)):
-          Set.from(['Event A9', 'Event A9', 'Event B9']).toList(),
-      _selectedDay.add(Duration(days: 7)): [
-        'Event A10',
-        'Event B10',
-        'Event C10'
-      ],
-      _selectedDay.add(Duration(days: 11)): ['Event A11', 'Event B11'],
-      _selectedDay.add(Duration(days: 17)): [
-        'Event A12',
-        'Event B12',
-        'Event C12',
-        'Event D12'
-      ],
-      _selectedDay.add(Duration(days: 22)): ['Event A13', 'Event B13'],
-      _selectedDay.add(Duration(days: 26)): [
-        'Event A14',
-        'Event B14',
-        'Event C14'
-      ],
-    };
-
-    _selectedEvents = _events[_selectedDay] ?? [];
     _calendarController = CalendarController();
 
     _animationController = AnimationController(
@@ -103,6 +51,24 @@ class _DriverViewState extends State<DriverView> with TickerProviderStateMixin {
     );
 
     _animationController.forward();
+  }
+
+  Future init() async {
+    List<Map<String, DateTime>> dayWork = driver.dayWorkList;
+    List<Trip> tripWork = driver.tripWorkList;
+
+    for (int i = 0; i < tripWork.length; i++) {
+      DateTime start = dayWork[i]['Start Time'];
+      DateTime finish = dayWork[i]['Finish Time'];
+      if (_events[start] == null) _events[start] = [];
+      _events[start].add(
+          'From: ${tripWork[i].source}\nTo: ${tripWork[i].destination}\n' +
+              'Time: ${start.hour}:${start.minute} - ${finish.hour}:${finish.minute}');
+    }
+
+    final _selectedDay = DateTime.now();
+
+    _selectedEvents = _events[_selectedDay] ?? [];
   }
 
   @override
@@ -136,8 +102,9 @@ class _DriverViewState extends State<DriverView> with TickerProviderStateMixin {
               content: Text('Do you want to close app? Or maybe Sign out?'),
               actions: <Widget>[
                 FlatButton(
-                    onPressed: () {
-                      Utils.logout();
+                    onPressed: () async {
+                      await Utils.logout();
+                      Driver.currentDriver.kill();
                       Navigator.of(context).pop(true);
                     },
                     child: Text('Sign out')),
@@ -165,10 +132,6 @@ class _DriverViewState extends State<DriverView> with TickerProviderStateMixin {
             // Switch out 2 lines below to play with TableCalendar's settings
             //-----------------------
             _buildTableCalendar(),
-            // _buildTableCalendarWithBuilders(),
-            const SizedBox(height: 8.0),
-            _buildButtons(),
-            const SizedBox(height: 8.0),
             Expanded(child: _buildEventList()),
           ],
         ),
@@ -327,105 +290,6 @@ class _DriverViewState extends State<DriverView> with TickerProviderStateMixin {
       color: Colors.blueGrey[800],
     );
   }
-
-  Widget _buildButtons() {
-    final dateTime = _events.keys.elementAt(_events.length - 2);
-
-    return Column(
-      children: <Widget>[
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            // RaisedButton(
-            //   child: Text('Month'),
-            //   onPressed: () {
-            //     setState(() {
-            //       _calendarController.setCalendarFormat(CalendarFormat.month);
-            //     });
-            //   },
-            // ),
-            // RaisedButton(
-            //   child: Text('2 weeks'),
-            //   onPressed: () {
-            //     setState(() {
-            //       _calendarController.setCalendarFormat(CalendarFormat.twoWeeks);
-            //     });
-            //   },
-            // ),
-            // RaisedButton(
-            //   onPressed: addTrip,
-            //   child: Text('Add Trip'),
-            //   // setState(() {
-            //   //   _calendarController.setCalendarFormat(CalendarFormat.week);
-            //   // });
-            // ),
-          ],
-        ),
-        // const SizedBox(height: 8.0),
-        // RaisedButton(
-        //   child: Text('Set day ${dateTime.day}-${dateTime.month}-${dateTime.year}'),
-        //   onPressed: () {
-        //     _calendarController.setSelectedDay(
-        //       DateTime(dateTime.year, dateTime.month, dateTime.day),
-        //       runCallback: true,
-        //     );
-        //   },
-        // ),
-      ],
-    );
-  }
-
-  // void addTrip() {
-  //   final firestoreInstance = FirebaseFirestore.instance;
-  //
-  //   // CollectionReference Trip = FirebaseFirestore.instance.collection('Trip1');
-  //
-  //   firestoreInstance.collection("users").add(
-  //       {
-  //         "name" : "john",
-  //         "age" : 50,
-  //         "email" : "example@example.com",
-  //         "address" : {
-  //           "street" : "street 24",
-  //           "city" : "new york"
-  //         }
-  //       }).then((value){
-  //     print(value.id);
-  //   });
-  // }
-  // void addTrip() {
-  //   final firestoreInstance = FirebaseFirestore.instance;
-  //
-  //   // CollectionReference Trip = FirebaseFirestore.instance.collection('Trip1');
-  //
-  //   firestoreInstance.collection("Trip").add(
-  //       {
-  //         "Total Seat" : "25",
-  //         "Detail" : "Visit",
-  //         "Source" : "Hà Nội",
-  //         "Destination": "Đồng Nai",
-  //         "Price":250000,
-  //         "Company ID": firestoreInstance.collection("Trip").doc('Trip'+"C1"),
-  //         "Seat" : {
-  //           "Seat ID" : "1",
-  //           "Seat Num" : "15",
-  //         },
-  //       })
-  //       .then((value){
-  //     print(value.id);
-  //   });
-  // }
-  //
-
-  // void addTrip() {
-  // final firestoreInstance = FirebaseFirestore.instance;
-  // firestoreInstance.collection("User").get().then((querySnapshot) {
-  //   querySnapshot.docs.forEach((result) {
-  //     print(result.data()["Bill"]);
-  //   });
-  // });
-  // }
 
   Widget _buildEventList() {
     return ListView(

@@ -27,14 +27,14 @@ abstract class AccountDAO {
   });
 
   @protected
-  Future<String> uploadImage(File _image, String id, String path) async {
-    String url;
+  Future<String> uploadImage(File _image, String path) async {
+    String url = '';
     print(path);
     Reference storageReference = FirebaseStorage.instance.ref().child(path);
     UploadTask uploadTask = storageReference.putFile(_image);
     await uploadTask.then((snap) async {
       await snap.ref.getDownloadURL().then((value) => url = value);
     });
-    return url;
+    return Future.value(url);
   }
 }

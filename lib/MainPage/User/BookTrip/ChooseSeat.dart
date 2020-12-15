@@ -1,4 +1,3 @@
-import 'package:CoachTicketSelling/MainPage/User/ViewTicket/TicketUI.dart';
 import 'package:CoachTicketSelling/Utils/Route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

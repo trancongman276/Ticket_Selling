@@ -14,15 +14,15 @@ import 'package:CoachTicketSelling/MainPage/User/Profile.dart';
 import 'package:CoachTicketSelling/MainPage/User/UserUI.dart';
 import 'package:CoachTicketSelling/MainPage/User/ViewTicket/ListTicket.dart';
 import 'package:CoachTicketSelling/MainPage/User/ViewTicket/TicketUI.dart';
+import 'package:CoachTicketSelling/MainPage/LoadingView.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:CoachTicketSelling/Utils/enum.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:CoachTicketSelling/classes/actor/AppUser.dart';
 
 const String LoginViewRoute = '/';
-
+const String LoadingViewRoute = '/loading';
 const String RegisterViewRoute = '/register';
 const String ForgetViewRoute = '/forget';
 const String ManagerViewRoute = '/manager';
@@ -49,6 +49,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => RegisterView());
     case ForgetViewRoute:
       return MaterialPageRoute(builder: (context) => ForgetPasswordView());
+
+    case LoadingViewRoute:
+      return MaterialPageRoute(builder: (context) => LoadingView());
 
     case ManagerViewRoute:
       return MaterialPageRoute(builder: (context) => ManagerMainView());
@@ -112,8 +115,7 @@ Future<bool> checkLogined() async {
   print("[DEBUG] Email: $mail | Pass: $pass");
   if (mail != null && pass != null) {
     await FirebaseAuth.instance
-        .signInWithEmailAndPassword(email: mail, password: pass)
-        .then((user) => AppUser.instance.getUser(user.user.uid));
+        .signInWithEmailAndPassword(email: mail, password: pass);
     return true;
   } else {
     return false;
@@ -128,19 +130,19 @@ Future<String> navigate() async {
       .doc(id)
       .get()
       .then((doc) => role = doc.data()['Role']);
-  switch (role) {
-    case 'User':
-      AppUser.instance.getUser(FirebaseAuth.instance.currentUser.uid);
-      return Future.value(UserViewRoute);
-      break;
-    case 'Driver':
-      return Future.value(DriverViewRoute);
-      break;
-    case 'Manager':
-      return Future.value(ManagerViewRoute);
-      break;
-  }
-  return Future.value(LoginViewRoute);
+  // switch (role) {
+  //   case 'User':
+  //     AppUser.instance.getUser(FirebaseAuth.instance.currentUser.uid);
+  //     return Future.value(UserViewRoute);
+  //     break;
+  //   case 'Driver':
+  //     return Future.value(DriverViewRoute);
+  //     break;
+  //   case 'Manager':
+  //     return Future.value(ManagerViewRoute);
+  //     break;
+  // }
+  return Future.value(role);
 }
 
 class DetailedChartArgs {
