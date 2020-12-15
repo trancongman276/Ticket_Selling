@@ -50,7 +50,7 @@ class Driver extends AccountDAO {
   }
 
   Future init() async {
-    if (this.id == null) this.id =FirebaseAuth.instance.currentUser.uid;
+    if (this.id == null) this.id = FirebaseAuth.instance.currentUser.uid;
     Timestamp timestamp;
     documentReference = FirebaseFirestore.instance.collection('User').doc(id);
     await documentReference.get().then((document) async {
@@ -113,6 +113,7 @@ class Driver extends AccountDAO {
         'DoB': Timestamp.fromDate(this.doB),
         'Gender': this.gender,
         'Company': this.company.documentReference,
+        'Role': 'Driver',
         'Note': this.note,
         'ImageUrl': this.imageUrl,
       });

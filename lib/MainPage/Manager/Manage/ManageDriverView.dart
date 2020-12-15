@@ -50,9 +50,12 @@ class _ManageDriverViewState extends State<ManageDriverView> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(driver.name,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20.0)),
+                        Flexible(
+                          child: Text(driver.name,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 20.0)),
+                        ),
                         Text('-',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 20.0)),

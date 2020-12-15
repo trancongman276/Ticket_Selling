@@ -123,6 +123,7 @@ class DriverImpl extends AccountDAO {
       'Gender': driver.gender,
       'Company': driver.company,
       'Note': driver.note,
+      'Role': 'Driver',
       'ImageUrl': driver.imageUrl,
     });
     print('[DEBUG] Updated $id \t${driver.name}');
@@ -183,10 +184,7 @@ class DriverImpl extends AccountDAO {
   bool delete(String id) {
     _driverLs[id].isAvailable = false;
     update(id: id, isAvailable: false);
-    FirebaseFirestore.instance
-        .collection('User')
-        .doc(id)
-        .set({'isAvailable': false});
+
     _driverLs.remove(id);
     return true;
   }

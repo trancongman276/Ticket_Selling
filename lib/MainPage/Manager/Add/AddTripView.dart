@@ -6,8 +6,7 @@ import 'package:CoachTicketSelling/classes/actor/Trip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_rounded_date_picker/rounded_picker.dart';
-// import 'package:image_picker/image_picker.dart';
-// import 'dart:io';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class AddTripView extends StatefulWidget {
   final String tripID;
@@ -32,7 +31,11 @@ class _AddTripViewState extends State<AddTripView> {
 
       dateStart.text = Utils.dateFormat.format(trip.time['Start Time']);
       dateEnd.text = Utils.dateFormat.format(trip.time['Finish Time']);
-      choosingDriver = driverImpl.driverList[trip.driver.id].name;
+
+      choosingStartDate = trip.time['Start Time'];
+      choosingFinishDate = trip.time['Finish Time'];
+
+      choosingDriver = driverImpl.driverList[trip.driver.id]?.name ?? 'Driver';
       freeDriverLs = [choosingDriver];
 
       choosingFromPlace = trip.source;
@@ -41,6 +44,7 @@ class _AddTripViewState extends State<AddTripView> {
       fromPlaceLs = [choosingFromPlace];
       finishPlaceLs = [choosingFinishPlace];
       route = {choosingFromPlace: finishPlaceLs};
+
       // route = tripImplement.company.route;
       // fromPlaceLs = route.keys.toList();
       // choosingFromPlace = fromPlaceLs[0];
@@ -50,11 +54,14 @@ class _AddTripViewState extends State<AddTripView> {
       choosingFromPlace = fromPlaceLs[0];
       finishPlaceLs = route[choosingFromPlace];
       choosingFinishPlace = finishPlaceLs[0];
+      choosingStartDate = choosingFinishDate = DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day + 1);
     }
   }
 
   Future<List<String>> getDriverLs(String start, String end) async {
     List<String> _freeDriverLs = ['Driver'];
+    choosingDriver = 'Driver';
     await driverImpl.getFreeDriver(start, end).then((value) {
       driverLs = value;
       _freeDriverLs.addAll(List.generate(driverLs.length, (index) {
@@ -84,18 +91,22 @@ class _AddTripViewState extends State<AddTripView> {
   String choosingFinishPlace = '';
   List<String> finishPlaceLs = [];
 
+  DateTime choosingStartDate;
+  DateTime choosingFinishDate;
+
   Map<String, List<String>> route;
 
   ThemeData themeData = ThemeData(primarySwatch: Colors.green);
 
-  Future<DateTime> dateTimePicker(DateTime initDate, TimeOfDay initTime) async {
+  Future<DateTime> dateTimePicker(
+      DateTime initDate, DateTime firstDate, TimeOfDay initTime) async {
     DateTime date;
     TimeOfDay time;
     await showRoundedDatePicker(
       context: context,
       theme: themeData,
       initialDate: initDate,
-      firstDate: initDate,
+      firstDate: firstDate,
     ).then((pickedDate) async {
       if (pickedDate != null) {
         date = pickedDate;
@@ -198,22 +209,17 @@ class _AddTripViewState extends State<AddTripView> {
 
   bool checkSave() {
     if (_key.currentState.validate()) {
-      if (tripID != null) {
-        saveTrip();
-      }
       if (freeDriverLs.indexOf(choosingDriver) == 0) {
         setState(() {
           errorMessage = 'Bad choosing Driver';
         });
         return false;
-      }
-      if ((choosingFromPlace.isEmpty) | (choosingFinishPlace.isEmpty)) {
+      } else if ((choosingFromPlace.isEmpty) | (choosingFinishPlace.isEmpty)) {
         setState(() {
           errorMessage = 'Bad choosing Source and Destination';
         });
         return false;
-      }
-      if ((Utils.dateFormat
+      } else if ((Utils.dateFormat
               .parse(dateStart.text)
               .isAfter(Utils.dateFormat.parse(dateEnd.text))) |
           (dateStart.text == dateEnd.text)) {
@@ -221,8 +227,8 @@ class _AddTripViewState extends State<AddTripView> {
           errorMessage = 'Bad choosing Time';
         });
         return false;
-      }
-      saveTrip();
+      } else
+        saveTrip();
       return true;
     }
     return false;
@@ -264,8 +270,13 @@ class _AddTripViewState extends State<AddTripView> {
 
   @override
   Widget build(BuildContext context) {
-    Widget chooseDate(String label, TextEditingController controller,
-        DateTime startDate, TimeOfDay startTime) {
+    Widget chooseDate(
+        String label,
+        TextEditingController controller,
+        DateTime startDate,
+        DateTime firstDate,
+        TimeOfDay startTime,
+        bool isFrom) {
       return Container(
         child: Row(
           children: [
@@ -289,11 +300,14 @@ class _AddTripViewState extends State<AddTripView> {
             ),
             IconButton(
               onPressed: () async {
-                await dateTimePicker(startDate, startTime)
+                await dateTimePicker(startDate, firstDate, startTime)
                     .then((datetime) async {
                   if (datetime != null) {
                     controller.text = Utils.dateFormat.format(datetime);
-
+                    if (isFrom)
+                      choosingStartDate = datetime;
+                    else
+                      choosingFinishDate = datetime;
                     if (dateEnd.text.isNotEmpty) {
                       await getDriverLs(dateStart.text, dateEnd.text)
                           .then((value) {
@@ -315,6 +329,8 @@ class _AddTripViewState extends State<AddTripView> {
     }
 
     Widget body = Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -330,19 +346,18 @@ class _AddTripViewState extends State<AddTripView> {
               chooseDate(
                   'Start at',
                   dateStart,
-                  DateTime(
-                    DateTime.now().year,
-                    DateTime.now().month,
-                    DateTime.now().day + 1,
-                  ),
-                  TimeOfDay.now()),
+                  choosingStartDate,
+                  DateTime.now(),
+                  TimeOfDay.fromDateTime(choosingStartDate),
+                  true),
               if (dateStart.text.isNotEmpty)
                 chooseDate(
                     'Finish at',
                     dateEnd,
-                    Utils.dateFormat.parse(dateStart.text),
-                    TimeOfDay.fromDateTime(
-                        Utils.dateFormat.parse(dateStart.text))),
+                    choosingFinishDate,
+                    choosingStartDate,
+                    TimeOfDay.fromDateTime(choosingFinishDate),
+                    false),
             ]),
         TextFormField(
           validator: Utils.validateEmpty,
@@ -379,29 +394,57 @@ class _AddTripViewState extends State<AddTripView> {
                 borderSide: BorderSide(color: Utils.primaryColor)),
           ),
         ),
-        Container(
-          alignment: Alignment.centerLeft,
-          padding: EdgeInsets.only(bottom: 30.0, top: 10.0),
-          child: DropdownButton<String>(
-            underline: Container(
-              height: 1,
-              color: Colors.grey,
+        Row(
+          children: [
+            Container(
+              alignment: Alignment.centerLeft,
+              padding: EdgeInsets.only(bottom: 30.0, top: 10.0),
+              child: DropdownButton<String>(
+                underline: Container(
+                  height: 1,
+                  color: Colors.grey,
+                ),
+                value: choosingDriver,
+                items:
+                    freeDriverLs.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Container(
+                      width: 150.0,
+                      child: Text(
+                        value,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (String newValue) {
+                  setState(() {
+                    choosingDriver = newValue;
+                  });
+                },
+              ),
             ),
-            value: choosingDriver,
-            items: freeDriverLs.map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-            onChanged: dateEnd.text.isEmpty
-                ? null
-                : (String newValue) {
+            GestureDetector(
+              onTap: () async {
+                if (freeDriverLs.length == 1) {
+                  await getDriverLs(dateStart.text, dateEnd.text).then((value) {
                     setState(() {
-                      choosingDriver = newValue;
+                      freeDriverLs = value;
                     });
-                  },
-          ),
+                  });
+                }
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10.0, bottom: 10.0),
+                child: FaIcon(
+                  FontAwesomeIcons.redo,
+                  color: Utils.primaryColor,
+                  size: 20.0,
+                ),
+              ),
+            ),
+          ],
         ),
         TextFormField(
           minLines: 4,

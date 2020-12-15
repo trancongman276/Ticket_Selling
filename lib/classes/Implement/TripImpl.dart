@@ -113,7 +113,7 @@ class TripImplement {
       'Destination': destination,
       'Price': price,
       'Total Seat': totalSeat,
-      'Seat': List<int>.empty(),
+      'Seat': [],
       'Driver': FirebaseFirestore.instance.collection('User').doc(driver.id),
       'Company': company.documentReference,
       'Detail': detail,

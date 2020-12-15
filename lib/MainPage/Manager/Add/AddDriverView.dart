@@ -28,9 +28,14 @@ class _AddDriverViewState extends State<AddDriverView> {
       email.text = driver.email;
       note.text = driver.note;
       dob.text =
-          '${driver.doB.year}-${driver.doB.month}-${driver.doB.day < 10 ? ('0' + driver.doB.day.toString()) : driver.doB.day}';
+          '${driver.doB.year}-${driver.doB.month < 10 ? ('0' + driver.doB.month.toString()) : driver.doB.month}' +
+              '-${driver.doB.day < 10 ? ('0' + driver.doB.day.toString()) : driver.doB.day}';
+      date = DateTime.parse(dob.text);
       imageUrl = driver.imageUrl;
       dropDownValue = driver.gender;
+    } else {
+      date = DateTime(
+          DateTime.now().year - 18, DateTime.now().month, DateTime.now().day);
     }
   }
 
@@ -210,18 +215,19 @@ class _AddDriverViewState extends State<AddDriverView> {
             IconButton(
               onPressed: () async {
                 DateTime now = DateTime.now();
-                date = await showRoundedDatePicker(
+                DateTime _date;
+                _date = await showRoundedDatePicker(
                     context: context,
                     firstDate:
                         DateTime(DateTime.now().year - 100, now.month, now.day),
                     lastDate: DateTime(now.year - 18, now.month, now.day + 1),
-                    initialDate: DateTime(now.year - 18, now.month, now.day),
+                    initialDate: date,
                     borderRadius: 16,
                     theme: ThemeData(primarySwatch: Colors.green));
-                date != null
-                    ? dob.text = date.toString().substring(0, 10)
-                    // ignore: unnecessary_statements
-                    : Null;
+                if (_date != null) {
+                  dob.text = date.toString().substring(0, 10);
+                  date = _date;
+                }
               },
               icon: Icon(Icons.calendar_today),
               color: Utils.primaryColor.withBlue(10),
@@ -348,6 +354,7 @@ class _AddDriverViewState extends State<AddDriverView> {
     );
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Padding(
           padding: EdgeInsets.only(top: 20.0),
