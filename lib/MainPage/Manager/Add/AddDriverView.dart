@@ -208,7 +208,7 @@ class _AddDriverViewState extends State<AddDriverView> {
                   ),
                 ),
                 controller: dob,
-                readOnly: true,
+                enabled: false,
               ),
             ),
             IconButton(
@@ -282,7 +282,7 @@ class _AddDriverViewState extends State<AddDriverView> {
             cursorColor: Utils.primaryColor,
             validator: Utils.validateEmail,
             controller: email,
-            readOnly: driverID != null ? true : false,
+            enabled: driverID == null ? true : false,
             textInputAction: TextInputAction.next,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
