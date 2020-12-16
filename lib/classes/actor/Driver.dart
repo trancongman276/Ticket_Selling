@@ -103,7 +103,8 @@ class Driver extends AccountDAO {
 
       if (image != null) {
         String ex = image.path.split('.').last;
-        uploadImage(image, 'Driver/$id.$ex').then((url) => this.imageUrl = url);
+        await uploadImage(image, 'Driver/$id.$ex')
+            .then((url) => this.imageUrl = url);
       }
       await FirebaseFirestore.instance.collection('User').doc(id).set({
         'isAvailable': this.isAvailable,

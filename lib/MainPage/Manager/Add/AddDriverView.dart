@@ -142,6 +142,7 @@ class _AddDriverViewState extends State<AddDriverView> {
         gender: dropDownValue,
         note: note.text,
         doB: DateTime.tryParse(dob.text),
+        image: _imageFile,
       );
       Navigator.pop(context);
     } else {
@@ -162,10 +163,7 @@ class _AddDriverViewState extends State<AddDriverView> {
   Future _getImg() async {
     imageUrl = null;
     final image = await picker.getImage(
-        source: ImageSource.gallery,
-        maxWidth: 128.0,
-        maxHeight: 128.0,
-        imageQuality: 100);
+        source: ImageSource.gallery, maxWidth: 500, maxHeight: 500);
     if (image != null) {
       setState(() {
         _imageFile = File(image.path);
@@ -377,9 +375,8 @@ class _AddDriverViewState extends State<AddDriverView> {
                             borderRadius: BorderRadius.circular(100.0),
                             child: Image.network(
                               imageUrl,
-                              width: 200,
+                              width: 200.0,
                               fit: BoxFit.fitWidth,
-                              height: 200,
                             ),
                           ))
                     : ClipRRect(

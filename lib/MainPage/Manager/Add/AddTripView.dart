@@ -66,7 +66,7 @@ class _AddTripViewState extends State<AddTripView> {
       driverLs = value;
       _freeDriverLs.addAll(List.generate(driverLs.length, (index) {
         Driver driver = driverLs[index];
-        return '$index. ' + driver.name;
+        return '(${DateTime.now().year - driver.doB.year}) ' + driver.name;
       }));
     });
 
@@ -102,28 +102,32 @@ class _AddTripViewState extends State<AddTripView> {
       DateTime initDate, DateTime firstDate, TimeOfDay initTime) async {
     DateTime date;
     TimeOfDay time;
-    await showRoundedDatePicker(
-      context: context,
-      theme: themeData,
-      initialDate: initDate,
-      firstDate: firstDate,
-    ).then((pickedDate) async {
-      if (pickedDate != null) {
-        date = pickedDate;
+    try {
+      await showRoundedDatePicker(
+        context: context,
+        theme: themeData,
+        initialDate: initDate,
+        firstDate: firstDate,
+      ).then((pickedDate) async {
+        if (pickedDate != null) {
+          date = pickedDate;
 
-        await showRoundedTimePicker(
-          context: context,
-          initialTime: TimeOfDay(hour: 0, minute: 0),
-          theme: themeData,
-        ).then((pickedTime) {
-          if (pickedTime != null) {
-            time = pickedTime;
-          } else
-            return null;
-        });
-      } else
-        return null;
-    });
+          await showRoundedTimePicker(
+            context: context,
+            initialTime: TimeOfDay(hour: 0, minute: 0),
+            theme: themeData,
+          ).then((pickedTime) {
+            if (pickedTime != null) {
+              time = pickedTime;
+            } else
+              return null;
+          });
+        } else
+          return null;
+      });
+    } catch (e) {
+      setState(() {});
+    }
 
     return DateTime(date.year, date.month, date.day, time.hour, time.minute);
   }
@@ -172,18 +176,20 @@ class _AddTripViewState extends State<AddTripView> {
   }
 
   void saveTrip() {
+    Map<String, DateTime> tempMap = {
+      'Start Time': Utils.dateFormat.parse(dateStart.text),
+      'Finish Time': Utils.dateFormat.parse(dateEnd.text)
+    };
     if (tripID != null) {
       tripImplement.update(tripID,
           source: choosingFromPlace,
           destination: choosingFinishPlace,
           price: int.tryParse(price.text),
-          detail: detail.text);
+          totalSeat: int.parse(seat.text),
+          detail: detail.text,
+          time: tempMap);
       Navigator.pop(context);
     } else {
-      Map<String, DateTime> tempMap = {
-        'Start Time': Utils.dateFormat.parse(dateStart.text),
-        'Finish Time': Utils.dateFormat.parse(dateEnd.text)
-      };
       tripImplement.add(
         choosingFromPlace,
         choosingFinishPlace,

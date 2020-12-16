@@ -14,22 +14,32 @@ class RegisterView extends StatefulWidget {
 
 class _RegisterViewState extends State<RegisterView> {
   final GlobalKey<FormState> _key = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _retypepasswordController =
-      TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _dateController = TextEditingController();
-  String dropDownValue = 'Male';
+  TextEditingController _emailController;
+  TextEditingController _passwordController;
+  TextEditingController _retypepasswordController;
+  TextEditingController _nameController;
+  TextEditingController _phoneController;
+  TextEditingController _dateController;
+  String dropDownValue;
   DateTime date;
-  bool isSuccess = true;
+  bool isSuccess;
   String ex;
 
   File _imageFile;
   String imageUrl;
-  Color borderColor = Colors.grey;
+  Color borderColor;
+
   final picker = ImagePicker();
+  _RegisterViewState() {
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+    _retypepasswordController = TextEditingController();
+    _nameController = TextEditingController();
+    _dateController = TextEditingController();
+    dropDownValue = 'Male';
+    borderColor = Colors.grey;
+    isSuccess = true;
+  }
 
   Future _getImg() async {
     imageUrl = null;
@@ -58,16 +68,94 @@ class _RegisterViewState extends State<RegisterView> {
     super.dispose();
   }
 
+  void register() async {
+    try {
+      final UserCredential user = await Utils.firebaseAuth
+          .createUserWithEmailAndPassword(
+              email: _emailController.text.trim(),
+              password: _passwordController.text.trim());
+
+      user.user.updateProfile(displayName: _nameController.text);
+      user.user.reload();
+      AppUser appUser = AppUser.instance;
+      appUser.update(
+          id: user.user.uid,
+          email: _emailController.text.trim(),
+          name: _nameController.text.trim(),
+          phone: _phoneController.text.trim(),
+          gender: dropDownValue,
+          doB: date,
+          image: _imageFile,
+          billLs: {});
+      Navigator.pop(context);
+      //TODO: Verification
+      // await user.user.sendEmailVerification();
+    } catch (e) {
+      setState(() {
+        if (e.code == 'email-already-in-use') {
+          ex = e.message;
+          isSuccess = false;
+        }
+      });
+    }
+  }
+
+  Widget _background = Container(
+    decoration: BoxDecoration(
+        image: DecorationImage(
+      image: Utils.registerBackground,
+      fit: BoxFit.fill,
+    )),
+  );
+
+  Widget _password(String hint) {
+    return TextFormField(
+      textInputAction: TextInputAction.next,
+      controller:
+          hint[0] == 'P' ? _passwordController : _retypepasswordController,
+      obscureText: true,
+      validator: hint[0] == 'P'
+          ? Utils.validatePassword
+          : (value) =>
+              Utils.validateRetypePassword(value, _passwordController.text),
+      decoration: InputDecoration(
+        labelText: hint[0] == 'P' ? 'Password' : 'Retype password',
+        labelStyle: TextStyle(color: Utils.primaryColor),
+        hintText: hint,
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: Utils.primaryColor,
+            width: 1.5,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _gender() {
+    return DropdownButton<String>(
+      underline: Container(
+        height: 1,
+        color: Colors.grey,
+      ),
+      value: dropDownValue,
+      items: <String>['Male', 'Female', 'Other']
+          .map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+      onChanged: (String newValue) {
+        setState(() {
+          dropDownValue = newValue;
+        });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    Widget _background = Container(
-      decoration: BoxDecoration(
-          image: DecorationImage(
-        image: Utils.registerBackground,
-        fit: BoxFit.fill,
-      )),
-    );
-
     Widget avatar = Padding(
       padding: EdgeInsets.only(top: 20.0),
       child: Container(
@@ -114,30 +202,6 @@ class _RegisterViewState extends State<RegisterView> {
         ),
       ),
     );
-
-    Widget _password(String hint) {
-      return TextFormField(
-        textInputAction: TextInputAction.next,
-        controller:
-            hint[0] == 'P' ? _passwordController : _retypepasswordController,
-        obscureText: true,
-        validator: hint[0] == 'P'
-            ? Utils.validatePassword
-            : (value) =>
-                Utils.validateRetypePassword(value, _passwordController.text),
-        decoration: InputDecoration(
-          labelText: hint[0] == 'P' ? 'Password' : 'Retype password',
-          labelStyle: TextStyle(color: Utils.primaryColor),
-          hintText: hint,
-          focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(
-              color: Utils.primaryColor,
-              width: 1.5,
-            ),
-          ),
-        ),
-      );
-    }
 
     Widget _name = TextFormField(
       textInputAction: TextInputAction.next,
@@ -211,60 +275,6 @@ class _RegisterViewState extends State<RegisterView> {
         ),
       ],
     );
-
-    Widget _gender() {
-      return DropdownButton<String>(
-        underline: Container(
-          height: 1,
-          color: Colors.grey,
-        ),
-        value: dropDownValue,
-        items: <String>['Male', 'Female', 'Other']
-            .map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value),
-          );
-        }).toList(),
-        onChanged: (String newValue) {
-          setState(() {
-            dropDownValue = newValue;
-          });
-        },
-      );
-    }
-
-    void register() async {
-      try {
-        final UserCredential user = await Utils.firebaseAuth
-            .createUserWithEmailAndPassword(
-                email: _emailController.text.trim(),
-                password: _passwordController.text.trim());
-
-        user.user.updateProfile(displayName: _nameController.text);
-        user.user.reload();
-        AppUser appUser = AppUser.instance;
-        appUser.update(
-          id: user.user.uid,
-          email: _emailController.text.trim(),
-          name: _nameController.text.trim(),
-          phone: _phoneController.text.trim(),
-          gender: dropDownValue,
-          doB: date,
-          image: _imageFile,
-        );
-        Navigator.pop(context);
-        //TODO: Verification
-        // await user.user.sendEmailVerification();
-      } catch (e) {
-        setState(() {
-          if (e.code == 'email-already-in-use') {
-            ex = e.message;
-            isSuccess = false;
-          }
-        });
-      }
-    }
 
     Widget _body = Container(
       padding: EdgeInsets.symmetric(vertical: 100, horizontal: 20),

@@ -1,4 +1,5 @@
 import 'package:CoachTicketSelling/classes/Implement/BillImpl.dart';
+import 'package:date_util/date_util.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -44,7 +45,7 @@ class _DetailChartState extends State<DetailChart> {
     'December'
   ];
   int currentMonth = DateTime.now().month;
-
+  double average = 0.0;
   Map<ChartView, int> max = {
     ChartView.Monthly: -1,
     ChartView.Yearly: -1,
@@ -55,9 +56,26 @@ class _DetailChartState extends State<DetailChart> {
       case ChartQuery.Income:
         name = 'Income';
         showSwitchView = true;
-        _dataList = currentView == ChartView.Monthly
-            ? _billImplement.getAllDailyIncome(currentMonth - 1)
-            : _billImplement.getAllMonthlyIncome();
+        if (currentView == ChartView.Monthly) {
+          List<int> tempLs = _billImplement.getAllDailyIncome(currentMonth - 1);
+          _dataList = tempLs;
+          average =
+              tempLs.reduce((value, element) => value + element).toDouble();
+          if (currentMonth == DateTime.now().month) {
+            average =
+                num.parse((average / DateTime.now().day).toStringAsFixed(2));
+          } else {
+            average = num.parse((average /
+                    DateUtil().daysInMonth(currentMonth, DateTime.now().year))
+                .toStringAsFixed(2));
+          }
+        } else {
+          List<int> tempLs = _billImplement.getAllMonthlyIncome();
+          _dataList = tempLs;
+          average = num.parse(
+              (tempLs.reduce((value, element) => value + element) / 12)
+                  .toStringAsFixed(2));
+        }
         break;
       case ChartQuery.KPIs:
         name = 'KPIs';
@@ -119,6 +137,7 @@ class _DetailChartState extends State<DetailChart> {
   Widget build(BuildContext context) {
     final _lineBarsData = [
       LineChartBarData(
+        preventCurveOverShooting: true,
         spots: _splotList,
         isCurved: true,
         colors: [Colors.white],
@@ -153,7 +172,9 @@ class _DetailChartState extends State<DetailChart> {
                 if (currentView == ChartView.Monthly) {
                   if (value.toInt() + 1 == 1 ||
                       value.toInt() + 1 == 15 ||
-                      value.toInt() + 1 == 30) {
+                      value.toInt() + 1 ==
+                          DateUtil()
+                              .daysInMonth(currentMonth, DateTime.now().year)) {
                     return (value.toInt() + 1).toString() +
                         '/' +
                         currentMonth.toString() +
@@ -248,7 +269,7 @@ class _DetailChartState extends State<DetailChart> {
                             color: Colors.white),
                       ),
                       Text(
-                        "Average: .",
+                        "Average: \$$average",
                         style: GoogleFonts.nunito(
                             textStyle: TextStyle(color: Colors.white),
                             fontWeight: FontWeight.w500,

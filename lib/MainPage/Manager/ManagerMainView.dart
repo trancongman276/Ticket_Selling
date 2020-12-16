@@ -5,6 +5,7 @@ import 'package:CoachTicketSelling/MainPage/Manager/Add/OveralAddView.dart';
 import 'package:CoachTicketSelling/MainPage/Manager/Manage/OveralManageView.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:CoachTicketSelling/Utils/Route.dart';
+import 'package:CoachTicketSelling/classes/Implement/BillImpl.dart';
 import 'package:CoachTicketSelling/classes/Implement/DriverImpl.dart';
 import 'package:CoachTicketSelling/classes/Implement/TripImpl.dart';
 import 'package:CoachTicketSelling/classes/actor/Manager.dart';
@@ -58,6 +59,7 @@ class _ManagerMainViewState extends State<ManagerMainView>
                       DriverImpl.kill();
                       TripImplement.kill();
                       Manager.kill();
+                      BillImplement.kill();
                       Navigator.of(context).pop(true);
                     },
                     child: Text('Sign out')),

@@ -1,3 +1,4 @@
+import 'package:CoachTicketSelling/classes/Implement/BillImpl.dart';
 import 'package:CoachTicketSelling/classes/Implement/DriverImpl.dart';
 import 'package:CoachTicketSelling/classes/Implement/TripImpl.dart';
 import 'package:CoachTicketSelling/classes/actor/AppUser.dart';
@@ -40,6 +41,7 @@ class _LoadingViewState extends State<LoadingView> {
           await Manager.instance.getData();
           await DriverImpl.instance.init();
           await TripImplement.instance.init('Manager');
+          await BillImplement.instance.refresh();
           break;
         case 'Driver':
           await Driver.currentDriver.init();
@@ -68,10 +70,13 @@ class _LoadingViewState extends State<LoadingView> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: Center(
-        child: CircularProgressIndicator(),
+    return WillPopScope(
+      onWillPop: () => Future.value(false),
+      child: Container(
+        color: Colors.white,
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
       ),
     );
   }

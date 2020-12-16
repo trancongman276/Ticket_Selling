@@ -52,16 +52,9 @@ class _OveralChartViewState extends State<OveralChartView> {
       size: 15.0,
     )
   ];
-  final List<FlSpot> listSpot = [
-    FlSpot(0, 3),
-    FlSpot(2.6, 2),
-    FlSpot(4.9, 5),
-    FlSpot(6.2, 4),
-    FlSpot(7.2, 5),
-    FlSpot(8.9, 5),
-    FlSpot(13, 5),
-  ];
-  final List<int> listShowSpot = [9];
+
+  // final List<int> listShowSpot = [DateTime.now().day - 1];
+  List<int> showSpotIndex = [DateTime.now().day - 1, DateTime.now().month - 1];
   List<int> max = [0, 0];
   BillImplement billImplement = BillImplement.instance;
   List<Widget> overViewWidge = [];
@@ -89,24 +82,25 @@ class _OveralChartViewState extends State<OveralChartView> {
   Widget viewMax() {
     List<Widget> list = [];
     for (int i = 0; i < 3; i++) {
-      list.add(
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '${i + 1}. ${_dataList[DateTime.now().month - 1].keys.elementAt(i)}',
-              style: TextStyle(color: Colors.white),
-            ),
-            Text(
-              _dataList[DateTime.now().month - 1]
-                      [_dataList[DateTime.now().month - 1].keys.elementAt(i)]
-                  .toString(),
-              style: TextStyle(color: Colors.white),
-            )
-          ],
-        ),
-      );
+      if (_dataList[DateTime.now().month - 1].keys.length >= 3)
+        list.add(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${i + 1}. ${_dataList[DateTime.now().month - 1].keys.elementAt(i)}',
+                style: TextStyle(color: Colors.white),
+              ),
+              Text(
+                _dataList[DateTime.now().month - 1]
+                        [_dataList[DateTime.now().month - 1].keys.elementAt(i)]
+                    .toString(),
+                style: TextStyle(color: Colors.white),
+              )
+            ],
+          ),
+        );
     }
     return Padding(
       padding: const EdgeInsets.all(10.0),
@@ -158,11 +152,12 @@ class _OveralChartViewState extends State<OveralChartView> {
     LineChartBarData lineChartBarData(int index) {
       List<FlSpot> spotLs = index == 0 ? _spotIncomeList : _spotKpisList;
       return LineChartBarData(
+        preventCurveOverShooting: true,
         spots: spotLs,
         dotData: FlDotData(
             show: true,
             checkToShowDot: (FlSpot spot, LineChartBarData barData) {
-              return spot == spotLs[listShowSpot[0]] ?? true;
+              return spot == spotLs[showSpotIndex[index]] ?? true;
             }),
         isCurved: true,
         colors: [Colors.white],
@@ -177,7 +172,7 @@ class _OveralChartViewState extends State<OveralChartView> {
 
     LineChartData mainData(int index) {
       LineChartBarData _lineChartBarData = lineChartBarData(index);
-
+      int spotIndex = showSpotIndex[index];
       return LineChartData(
         minX: -1,
         maxX: 31,
@@ -186,12 +181,19 @@ class _OveralChartViewState extends State<OveralChartView> {
         gridData: FlGridData(show: false),
         titlesData: FlTitlesData(show: false),
         borderData: FlBorderData(show: false),
-        showingTooltipIndicators: listShowSpot.map((index) {
-          return ShowingTooltipIndicators(index, [
-            LineBarSpot(
-                _lineChartBarData, index, _lineChartBarData.spots[index]),
-          ]);
-        }).toList(),
+        // showingTooltipIndicators: listShowSpot.map((index) {
+        //   return ShowingTooltipIndicators(index, [
+        //     LineBarSpot(
+        //         _lineChartBarData, index, _lineChartBarData.spots[index]),
+        //   ]);
+        // }).toList(),
+
+        showingTooltipIndicators: [
+          ShowingTooltipIndicators(spotIndex, [
+            LineBarSpot(_lineChartBarData, spotIndex,
+                _lineChartBarData.spots[showSpotIndex[index]])
+          ])
+        ],
         lineTouchData: LineTouchData(
           enabled: false,
           touchTooltipData: LineTouchTooltipData(
@@ -232,6 +234,7 @@ class _OveralChartViewState extends State<OveralChartView> {
                 AspectRatio(
                   aspectRatio: 16 / 9,
                   child: Container(
+                    padding: EdgeInsets.all(10.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10.0),
                       color: colorLs[typeChartLs[index]],

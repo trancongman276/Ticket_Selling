@@ -85,8 +85,8 @@ class _ProfileState extends State<Profile> {
   Future _getImg() async {
     final image = await picker.getImage(
         source: ImageSource.gallery,
-        maxWidth: 128.0,
-        maxHeight: 128.0,
+        maxWidth: 500.0,
+        maxHeight: 500.0,
         imageQuality: 100);
     if (image != null) {
       setState(() {

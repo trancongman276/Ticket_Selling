@@ -1,32 +1,69 @@
 import 'dart:collection';
 
+import 'package:CoachTicketSelling/classes/TripRoute.dart';
 import 'package:CoachTicketSelling/classes/actor/Bill.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:date_util/date_util.dart';
 
 class BillImplement {
   Map<String, Bill> _billLs = {};
   List<int> _incomeMonthly = [];
-  List<List<int>> _incomeDaily =
-      List.generate(12, (index) => List.generate(31, (index) => 0));
+  List<List<int>> _incomeDaily = List.generate(
+      12,
+      (index) => List.generate(
+          DateUtil().daysInMonth(index + 1, DateTime.now().year),
+          (index) => 0));
   List<double> _kpis = List.generate(12, (index) => 0.0);
-  List<Map<String, int>> _visit = List.generate(12, (index) => {});
-  List<Map<String, double>> _rate = List.generate(12, (index) => {});
+  List<Map<TripRoute, int>> _visit = List.generate(12, (index) => {});
+  List<Map<TripRoute, double>> _rate = List.generate(12, (index) => {});
 
-  BillImplement._() {
-    refresh();
-  }
+  BillImplement._();
 
   static BillImplement _instance = BillImplement._();
   static BillImplement get instance => _instance;
+  static bool kill() {
+    _instance = BillImplement._();
+    return true;
+  }
 
-  bool _initBill() {
-    _billLs['5'] = Bill(20, 4, 'Nha Trang', DateTime.now());
-    _billLs['6'] = Bill(20, 4, 'Hue', DateTime.now());
-    _billLs['7'] = Bill(20, 4, 'Da Nang', DateTime.now());
-    _billLs['8'] = Bill(20, 4, 'Daklak', DateTime.now());
-    _billLs['1'] = Bill(100, 3.5, 'Ha Noi', DateTime.now());
-    _billLs['2'] = Bill(200, 4.5, 'Ho Chi Minh', DateTime.now());
-    _billLs['3'] = Bill(300, 1.5, 'Ha Noi', DateTime.now());
-    _billLs['4'] = Bill(500, 3.5, 'Ho Chi Minh', DateTime.now());
+  Future<bool> _initBill() async {
+    _incomeDaily = List.generate(12, (index) {
+      if ((index + 1) == DateTime.now().month) {
+        return List.generate(DateTime.now().day, (index) => 0);
+      } else
+        return List.generate(
+            DateUtil().daysInMonth(index + 1, DateTime.now().year),
+            (index) => 0);
+    });
+
+    await FirebaseFirestore.instance
+        .collection('User')
+        .where('Role', isEqualTo: 'User')
+        .get()
+        .then((user) {
+      for (QueryDocumentSnapshot query in user.docs) {
+        var userBillList = query.data()['Bill'];
+        Map<String, Map<String, dynamic>> ticket = query.data()['Ticket'];
+        double rate = -1;
+        if (ticket != null) if (ticket.isNotEmpty) {
+          rate = 0;
+          for (Map<String, dynamic> map in ticket.values) {
+            rate += map['Rate'];
+          }
+          rate /= ticket.length;
+        }
+
+        userBillList.forEach((key, bill) {
+          _billLs[key] = Bill(
+            tripRoute: TripRoute(
+                source: bill['Source'], destination: bill['Destination']),
+            cost: bill['Cost'],
+            time: DateTime.parse(bill['Time'].toDate().toString()),
+            rate: rate == -1 ? 0 : rate,
+          );
+        });
+      }
+    });
 
     return true;
   }
@@ -36,9 +73,10 @@ class BillImplement {
       _incomeDaily[bill.time.month - 1][bill.time.day - 1] = bill.cost;
     });
     _incomeDaily.forEach((month) {
-      if (month.isNotEmpty)
-        _incomeMonthly.add(month.reduce((current, next) => current + next));
-      else
+      if (month.isNotEmpty) {
+        int income = month.reduce((value, element) => value + element);
+        _incomeMonthly.add(income);
+      } else
         _incomeMonthly.add(0);
     });
     return true;
@@ -55,11 +93,11 @@ class BillImplement {
 
   bool _initMostVisited() {
     _billLs.forEach((id, bill) {
-      if (_visit[bill.time.month - 1][bill.destination] == null) {
-        _visit[bill.time.month - 1].putIfAbsent(bill.destination, () => 1);
+      if (_visit[bill.time.month - 1][bill.tripRoute] == null) {
+        _visit[bill.time.month - 1].putIfAbsent(bill.tripRoute, () => 1);
       } else {
         _visit[bill.time.month - 1]
-            .update(bill.destination, (value) => value + 1);
+            .update(bill.tripRoute, (value) => value + 1);
       }
     });
     _billLs.forEach((id, bill) {
@@ -73,13 +111,13 @@ class BillImplement {
   }
 
   bool _initRating() {
-    List<Map<String, List<double>>> allRating =
+    // 12 months
+    List<Map<TripRoute, List<double>>> allRating =
         List.generate(12, (index) => {});
 
     _billLs.forEach((id, bill) {
-      allRating[bill.time.month - 1].putIfAbsent(bill.destination, () => []);
-      // allRating[bill.time.month - 1][bill.destination].add(bill.rate);
-      allRating[bill.time.month - 1].update(bill.destination, (value) {
+      allRating[bill.time.month - 1].putIfAbsent(bill.tripRoute, () => []);
+      allRating[bill.time.month - 1].update(bill.tripRoute, (value) {
         value.add(bill.rate);
         return value;
       });
@@ -99,8 +137,8 @@ class BillImplement {
     return true;
   }
 
-  bool refresh() {
-    _initBill();
+  Future<bool> refresh() async {
+    await _initBill();
     _initIncome();
     _initKpis();
     _initMostVisited();
@@ -111,6 +149,6 @@ class BillImplement {
   List<int> getAllDailyIncome(int month) => _incomeDaily[month];
   List<int> getAllMonthlyIncome() => _incomeMonthly;
   List<double> getKpis() => _kpis;
-  List<Map<String, int>> getVisited() => _visit;
-  List<Map<String, double>> getRating() => _rate;
+  List<Map<TripRoute, int>> getVisited() => _visit;
+  List<Map<TripRoute, double>> getRating() => _rate;
 }

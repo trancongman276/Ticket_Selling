@@ -1,8 +1,10 @@
+import 'package:CoachTicketSelling/classes/TripRoute.dart';
+
 class Bill {
   final int cost;
   final double rate;
-  final String destination;
+  final TripRoute tripRoute;
   final DateTime time;
 
-  Bill(this.cost, this.rate, this.destination, this.time);
+  Bill({this.tripRoute, this.cost, this.rate, this.time});
 }

@@ -28,6 +28,7 @@ dependencies:
   simple_gesture_detector:
   path_provider:
   file:
+  date_util:
     
   #Server
   firebase_auth:

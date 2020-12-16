@@ -90,7 +90,10 @@ class _BarChartViewState extends State<BarChartView> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        dataList[currentMonth - 1].keys.elementAt(index),
+                        dataList[currentMonth - 1]
+                            .keys
+                            .elementAt(index)
+                            .toString(),
                         style: TextStyle(fontSize: 20.0, color: Colors.white),
                       ),
                       Text(
@@ -215,7 +218,7 @@ class _BarChartViewState extends State<BarChartView> {
           color: i >= colorLs.length - 1
               ? colorLs[colorLs.length - 1]
               : colorLs[i],
-          value: value.toDouble(),
+          value: (value.isFinite && value != 00) ? value.toDouble() : 1,
           title: i >= colorLs.length - 1 ? '' : value.toString(),
           titleStyle: TextStyle(
             fontSize: 18.0,
