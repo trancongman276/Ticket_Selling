@@ -113,7 +113,7 @@ class _AddTripViewState extends State<AddTripView> {
 
         await showRoundedTimePicker(
           context: context,
-          initialTime: initTime,
+          initialTime: TimeOfDay(hour: 0, minute: 0),
           theme: themeData,
         ).then((pickedTime) {
           if (pickedTime != null) {
@@ -209,7 +209,7 @@ class _AddTripViewState extends State<AddTripView> {
 
   bool checkSave() {
     if (_key.currentState.validate()) {
-      if (freeDriverLs.indexOf(choosingDriver) == 0) {
+      if (choosingDriver == 'Driver') {
         setState(() {
           errorMessage = 'Bad choosing Driver';
         });
@@ -295,7 +295,7 @@ class _AddTripViewState extends State<AddTripView> {
                   ),
                 ),
                 controller: controller,
-                readOnly: true,
+                enabled: false,
               ),
             ),
             IconButton(
@@ -430,6 +430,7 @@ class _AddTripViewState extends State<AddTripView> {
                 if (freeDriverLs.length == 1) {
                   await getDriverLs(dateStart.text, dateEnd.text).then((value) {
                     setState(() {
+                      choosingDriver = 'Driver';
                       freeDriverLs = value;
                     });
                   });

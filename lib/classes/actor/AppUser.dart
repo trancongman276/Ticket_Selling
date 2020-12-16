@@ -6,19 +6,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AppUser extends AccountDAO {
+  Map<String, Map<String, dynamic>> billLs;
+
   static AppUser _instance = AppUser._();
   static AppUser get instance => _instance;
   AppUser._();
   @override
-  Future<bool> update(
-      {String id,
-      String email,
-      String password,
-      String name,
-      String phone,
-      DateTime doB,
-      String gender,
-      File image}) async {
+  Future<bool> update({
+    String id,
+    String email,
+    String password,
+    String name,
+    String phone,
+    DateTime doB,
+    String gender,
+    File image,
+    Map<String, Map<String, dynamic>> billLs,
+  }) async {
     if (password != null) {
       await FirebaseAuth.instance.currentUser.updatePassword(password);
     } else {
@@ -27,6 +31,7 @@ class AppUser extends AccountDAO {
       this.phone = phone ?? this.phone;
       this.doB = doB ?? this.doB;
       this.gender = gender ?? this.gender;
+      this.billLs = billLs ?? this.billLs;
 
       if (image != null) {
         String ex = image.path.split('.').last;
@@ -41,6 +46,7 @@ class AppUser extends AccountDAO {
         'Gender': this.gender,
         'ImageUrl': this.imageUrl ?? Utils.defaultUrl,
         'Role': 'User',
+        'Bill': this.billLs,
       });
     }
     return true;
@@ -59,6 +65,8 @@ class AppUser extends AccountDAO {
       this.doB = DateTime.tryParse(timestamp.toDate().toString());
       this.gender = document.data()['Gender'];
       this.imageUrl = document.data()['ImageUrl'];
+      var map = document.data()['Bill'];
+      this.billLs = Map<String, Map<String, dynamic>>.from(map);
     });
     return true;
   }

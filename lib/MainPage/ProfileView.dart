@@ -139,7 +139,7 @@ class _ProfileState extends State<Profile> {
       children: <Widget>[
         TextFormField(
           initialValue: name,
-          readOnly: true,
+          enabled: false,
           decoration: InputDecoration(
             labelText: 'Name',
             labelStyle: TextStyle(
@@ -165,7 +165,7 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
                 controller: dobText,
-                readOnly: true,
+                enabled: false,
               ),
             ),
             if (isEditing)
@@ -225,7 +225,7 @@ class _ProfileState extends State<Profile> {
           cursorColor: Utils.primaryColor,
           validator: (value) => Utils.validateNumber(value, 9, 12),
           controller: phone,
-          readOnly: !isEditing,
+          enabled: isEditing,
           textInputAction: TextInputAction.next,
           keyboardType: TextInputType.phone,
           inputFormatters: <TextInputFormatter>[
@@ -242,7 +242,7 @@ class _ProfileState extends State<Profile> {
         ),
         if (role != 'User')
           TextFormField(
-            readOnly: true,
+            enabled: false,
             initialValue: company,
             decoration: InputDecoration(
               labelText: 'Company',
@@ -255,7 +255,7 @@ class _ProfileState extends State<Profile> {
         Padding(
           padding: EdgeInsets.only(bottom: 30.0),
           child: TextFormField(
-            readOnly: true,
+            enabled: false,
             initialValue: email,
             decoration: InputDecoration(
               labelText: 'Email',
@@ -271,7 +271,7 @@ class _ProfileState extends State<Profile> {
             minLines: 4,
             maxLines: 10,
             controller: note,
-            readOnly: !isEditing,
+            enabled: isEditing,
             validator: Utils.validateEmpty,
             textInputAction: TextInputAction.done,
             decoration: InputDecoration(
