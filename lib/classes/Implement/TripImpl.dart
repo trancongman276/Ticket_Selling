@@ -18,11 +18,11 @@ class TripImplement {
   TripImplement._();
 
   //For Specific company
-  Future<bool> init() async {
-    if (Manager.instance.company == null) {
-      await Manager.instance.getData();
-    }
-    company = Manager.instance.company;
+  Future<bool> init(String role) async {
+    if (role == 'Manager')
+      company = Manager.instance.company;
+    else if (role == 'Driver') company = Driver.currentDriver.company;
+
     await FirebaseFirestore.instance
         .collection('Trip')
         .where('Company', isEqualTo: company.documentReference)

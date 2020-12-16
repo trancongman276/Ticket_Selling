@@ -10,7 +10,7 @@ class AppUser extends AccountDAO {
   static AppUser get instance => _instance;
   AppUser._();
   @override
-  bool update(
+  Future<bool> update(
       {String id,
       String email,
       String password,
@@ -18,9 +18,9 @@ class AppUser extends AccountDAO {
       String phone,
       DateTime doB,
       String gender,
-      File image}) {
+      File image}) async {
     if (password != null) {
-      FirebaseAuth.instance.currentUser.updatePassword(password);
+      await FirebaseAuth.instance.currentUser.updatePassword(password);
     } else {
       this.email = email ?? this.email;
       this.name = name ?? this.name;
@@ -33,7 +33,7 @@ class AppUser extends AccountDAO {
         uploadImage(image, 'User/$id.$ex').then((url) => this.imageUrl = url);
       }
 
-      FirebaseFirestore.instance.collection('User').doc(id).set({
+      await FirebaseFirestore.instance.collection('User').doc(id).set({
         'Email': this.email,
         'Name': this.name,
         'Phone': this.phone,

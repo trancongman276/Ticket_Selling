@@ -2,12 +2,14 @@ import 'dart:io';
 
 import 'package:CoachTicketSelling/MainPage/Driver/table_calendar.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
+import 'package:CoachTicketSelling/Utils/Route.dart';
 import 'package:CoachTicketSelling/classes/Implement/DriverImpl.dart';
 import 'package:CoachTicketSelling/classes/actor/Driver.dart';
 import 'package:CoachTicketSelling/classes/actor/Trip.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 // Example holidays
 final Map<DateTime, List> _holidays = {
@@ -39,9 +41,7 @@ class _DriverViewState extends State<DriverView> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     init();
-    Firebase.initializeApp().whenComplete(() {
-      print("completed");
-    });
+    Firebase.initializeApp().whenComplete(() {});
 
     _calendarController = CalendarController();
 
@@ -79,7 +79,6 @@ class _DriverViewState extends State<DriverView> with TickerProviderStateMixin {
   }
 
   void _onDaySelected(DateTime day, List events, List holidays) {
-    print('CALLBACK: _onDaySelected');
     setState(() {
       _selectedEvents = events;
     });
@@ -91,7 +90,6 @@ class _DriverViewState extends State<DriverView> with TickerProviderStateMixin {
 
   void _onCalendarCreated(
       DateTime first, DateTime last, CalendarFormat format) {
-    print('CALLBACK: _onCalendarCreated');
   }
 
   Future<bool> _onWillPop() {
@@ -104,7 +102,7 @@ class _DriverViewState extends State<DriverView> with TickerProviderStateMixin {
                 FlatButton(
                     onPressed: () async {
                       await Utils.logout();
-                      Driver.currentDriver.kill();
+                      Driver.kill();
                       Navigator.of(context).pop(true);
                     },
                     child: Text('Sign out')),
@@ -125,6 +123,22 @@ class _DriverViewState extends State<DriverView> with TickerProviderStateMixin {
           automaticallyImplyLeading: false,
           backgroundColor: Color(0xff2ecc71),
           title: Text('Hi ${Driver.currentDriver.name},'),
+          actions: <Widget>[
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, ProfileViewRoute,
+                    arguments: 'Driver');
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(top: 15.0, right: 15.0),
+                child: FaIcon(
+                  FontAwesomeIcons.userCircle,
+                  size: 25.0,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
         ),
         body: Column(
           mainAxisSize: MainAxisSize.max,

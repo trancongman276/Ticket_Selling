@@ -87,7 +87,7 @@ class _ManageTripViewState extends State<ManageTripView> {
 
   Future _refresh() async {
     if (!tripImplement.isInit) {
-      await tripImplement.init();
+      await tripImplement.init('Manager');
     }
     setState(() {});
   }

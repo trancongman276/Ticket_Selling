@@ -26,9 +26,7 @@ class DriverImpl extends AccountDAO {
 
   // Init Driver list
   Future<bool> init() async {
-    if (Manager.instance.company == null) {
-      await Manager.instance.getData();
-    }
+    
     company = Manager.instance.company;
 
     Timestamp timestamp;
@@ -77,14 +75,13 @@ class DriverImpl extends AccountDAO {
     // _driverLs['7'] = driver;
     // _driverLs['8'] = driver;
     isInit = true;
-    print('[DEBUG] Driver Implement initiated.');
 
     return true;
   }
 
   //Update Driver
   @override
-  bool update(
+  Future<bool> update(
       {String id,
       bool isAvailable,
       String email,
@@ -94,10 +91,10 @@ class DriverImpl extends AccountDAO {
       DateTime doB,
       String gender,
       File image,
-      String note}) {
+      String note}) async {
     Driver driver = _driverLs[id];
 
-    driver.update(
+    await driver.update(
         id: id,
         email: email,
         name: name,
@@ -126,7 +123,6 @@ class DriverImpl extends AccountDAO {
       'Role': 'Driver',
       'ImageUrl': driver.imageUrl,
     });
-    print('[DEBUG] Updated $id \t${driver.name}');
     return true;
   }
 
@@ -176,7 +172,6 @@ class DriverImpl extends AccountDAO {
         id, phone, email, name, doB, gender, imageUrl, company, note, ref);
     _driverLs[id] = driver;
 
-    print('[DEBUG] Created Driver ${driver.toString()}');
     return true;
   }
 

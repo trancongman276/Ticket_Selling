@@ -7,12 +7,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class Profile extends StatefulWidget {
+class UserProfile extends StatefulWidget {
   @override
-  _ProfileState createState() => _ProfileState();
+  _UserProfileState createState() => _UserProfileState();
 }
 
-class _ProfileState extends State<Profile> {
+class _UserProfileState extends State<UserProfile> {
   int currentIndex = 0;
   String fullName = 'Nguyen Huynh Phuong Thanh';
   String email = 'abc@gmail.com';

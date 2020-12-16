@@ -134,7 +134,6 @@ class _AddDriverViewState extends State<AddDriverView> {
 
   void saveDriver() {
     if (driverID != null) {
-      print(DateTime.parse(dob.text));
       driverImpl.update(
         id: driverID,
         email: email.text,
@@ -240,6 +239,7 @@ class _AddDriverViewState extends State<AddDriverView> {
                     height: 1,
                     color: Colors.grey,
                   ),
+                  disabledHint: Text('Driver'),
                   value: dropDownValue,
                   items: <String>['Male', 'Female', 'Other']
                       .map<DropdownMenuItem<String>>((String value) {

@@ -1,6 +1,7 @@
 import 'package:CoachTicketSelling/LoginPage/forgetView.dart';
 import 'package:CoachTicketSelling/LoginPage/loginView.dart';
 import 'package:CoachTicketSelling/LoginPage/registerView.dart';
+import 'package:CoachTicketSelling/MainPage/ChangePasswordView.dart';
 import 'package:CoachTicketSelling/MainPage/Manager/Charts/DetailBarChart.dart';
 import 'package:CoachTicketSelling/MainPage/Manager/Charts/DetailLineChart.dart';
 import 'package:CoachTicketSelling/MainPage/Manager/ManagerMainView.dart';
@@ -15,6 +16,7 @@ import 'package:CoachTicketSelling/MainPage/User/UserUI.dart';
 import 'package:CoachTicketSelling/MainPage/User/ViewTicket/ListTicket.dart';
 import 'package:CoachTicketSelling/MainPage/User/ViewTicket/TicketUI.dart';
 import 'package:CoachTicketSelling/MainPage/LoadingView.dart';
+import 'package:CoachTicketSelling/MainPage/ProfileView.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:CoachTicketSelling/Utils/enum.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -40,6 +42,8 @@ const String UserPreviewTicketViewRoute =
 const String UserPaymentViewRoute =
     '/user/findTrip/chooseSeat/previewTickets/payment';
 const String DriverViewRoute = '/driver';
+const String ProfileViewRoute = '/profile';
+const String ChangePasswordViewRoute = '/profile/changePassword';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -87,7 +91,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case UserViewRoute:
       return MaterialPageRoute(builder: (context) => UserUI());
     case UserProfileViewRoute:
-      return MaterialPageRoute(builder: (context) => Profile());
+      return MaterialPageRoute(builder: (context) => UserProfile());
     case UserTicketViewRoute:
       return MaterialPageRoute(builder: (context) => ListTicket());
     case UserFindTripViewRoute:
@@ -104,6 +108,18 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           builder: (context) => DriverView(
                 title: 'Driver view',
               ));
+    case ProfileViewRoute:
+      var arg = settings.arguments;
+      return MaterialPageRoute(
+          builder: (context) => Profile(
+                role: arg,
+              ));
+    case ChangePasswordViewRoute:
+      var arg = settings.arguments;
+      return MaterialPageRoute(
+          builder: (context) => ChangePasswordView(
+                role: arg,
+              ));
     default:
       return null;
   }
@@ -112,7 +128,6 @@ Route<dynamic> generateRoute(RouteSettings settings) {
 Future<bool> checkLogined() async {
   String mail = await Utils.storage.read(key: 'e');
   String pass = await Utils.storage.read(key: 'p');
-  print("[DEBUG] Email: $mail | Pass: $pass");
   if (mail != null && pass != null) {
     await FirebaseAuth.instance
         .signInWithEmailAndPassword(email: mail, password: pass);

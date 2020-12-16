@@ -192,6 +192,7 @@ class Utils {
     });
     return Future.value(allData);
   }
+  
 
   static DateFormat _dateFormat = DateFormat('dd/MM/yyyy HH:mm');
   // Getter

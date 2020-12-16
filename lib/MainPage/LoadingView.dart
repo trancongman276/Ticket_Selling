@@ -3,6 +3,7 @@ import 'package:CoachTicketSelling/classes/Implement/TripImpl.dart';
 import 'package:CoachTicketSelling/classes/actor/AppUser.dart';
 import 'package:CoachTicketSelling/classes/actor/Driver.dart';
 import 'package:CoachTicketSelling/Utils/Route.dart';
+import 'package:CoachTicketSelling/classes/actor/Manager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -33,15 +34,16 @@ class _LoadingViewState extends State<LoadingView> {
       switch (_role) {
         case 'User':
           await AppUser.instance.getUser(FirebaseAuth.instance.currentUser.uid);
-          await TripImplement.instance.init();
+          // await TripImplement.instance.init();
           break;
         case 'Manager':
+          await Manager.instance.getData();
           await DriverImpl.instance.init();
-          await TripImplement.instance.init();
+          await TripImplement.instance.init('Manager');
           break;
         case 'Driver':
           await Driver.currentDriver.init();
-          await TripImplement.instance.init();
+          await TripImplement.instance.init('Driver');
           break;
       }
       role = doc.data()['Role'];
@@ -52,7 +54,6 @@ class _LoadingViewState extends State<LoadingView> {
 
   void navigation() async {
     String role = await getData();
-    print(Driver.currentDriver);
     switch (role) {
       case 'User':
         Navigator.of(context).popAndPushNamed(UserViewRoute);

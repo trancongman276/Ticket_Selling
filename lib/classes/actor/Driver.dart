@@ -44,7 +44,7 @@ class Driver extends AccountDAO {
     init();
   }
 
-  bool kill() {
+  static bool kill() {
     _currentDriver = Driver._();
     return true;
   }
@@ -80,7 +80,7 @@ class Driver extends AccountDAO {
   }
 
   @override
-  bool update({
+  Future<bool> update({
     String id,
     String email,
     String password,
@@ -90,7 +90,7 @@ class Driver extends AccountDAO {
     String gender,
     File image,
     String note,
-  }) {
+  }) async {
     if (password != null) {
       this._changePassword(password);
     } else {
@@ -105,7 +105,7 @@ class Driver extends AccountDAO {
         String ex = image.path.split('.').last;
         uploadImage(image, 'Driver/$id.$ex').then((url) => this.imageUrl = url);
       }
-      FirebaseFirestore.instance.collection('User').doc(id).set({
+      await FirebaseFirestore.instance.collection('User').doc(id).set({
         'isAvailable': this.isAvailable,
         'Email': this.email,
         'Name': this.name,

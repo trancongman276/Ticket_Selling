@@ -6,17 +6,12 @@ abstract class AccountDAO {
   String email;
   String name;
   String phone;
-  @protected
   DateTime doB;
-  @protected
   String gender;
-  @protected
   String role;
-  @protected
   String imageUrl;
 
-  bool update({
-    @required String id,
+  Future<bool> update({
     String email,
     String password,
     String name,
