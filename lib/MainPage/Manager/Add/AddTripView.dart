@@ -287,7 +287,7 @@ class _AddTripViewState extends State<AddTripView> {
         child: Row(
           children: [
             Container(
-              width: 135,
+              width: 125,
               child: TextFormField(
                 validator: Utils.validateEmpty,
                 decoration: InputDecoration(
