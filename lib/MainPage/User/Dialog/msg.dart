@@ -2,9 +2,10 @@ import 'package:CoachTicketSelling/Utils/Route.dart';
 import 'package:flutter/material.dart';
 
 class MsgDialog {
-  static void showMsgDialog(BuildContext context, String title, String msg) {
+  static void showMsgDialog(
+      BuildContext contextMain, String title, String msg) {
     showDialog(
-        context: context,
+        context: contextMain,
         builder: (context) => AlertDialog(
               title: Text(title),
               content: Text(msg),
@@ -12,7 +13,9 @@ class MsgDialog {
                 FlatButton(
                   child: Text('OK'),
                   onPressed: () {
-                    Navigator.popAndPushNamed(context, UserViewRoute);
+                    Navigator.pop(context);
+                    Navigator.pushNamedAndRemoveUntil(contextMain,
+                        UserViewRoute, (Route<dynamic> route) => false);
                   },
                 )
               ],

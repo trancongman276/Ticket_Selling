@@ -84,6 +84,7 @@ class Utils {
   static Future<void> logout() async {
     await storage.delete(key: 'e');
     await storage.delete(key: 'p');
+    FirebaseAuth.instance.signOut();
   }
 
   static Future<Map> toJson(CollectionReference collectionReference) async {
@@ -192,7 +193,6 @@ class Utils {
     });
     return Future.value(allData);
   }
-  
 
   static DateFormat _dateFormat = DateFormat('dd/MM/yyyy HH:mm');
   // Getter

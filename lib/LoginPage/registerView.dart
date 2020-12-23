@@ -77,9 +77,8 @@ class _RegisterViewState extends State<RegisterView> {
 
       user.user.updateProfile(displayName: _nameController.text);
       user.user.reload();
-      AppUser appUser = AppUser.instance;
-      appUser.update(
-          id: user.user.uid,
+      AppUser.instance.getUser();
+      AppUser.instance.update(
           email: _emailController.text.trim(),
           name: _nameController.text.trim(),
           phone: _phoneController.text.trim(),

@@ -14,9 +14,10 @@ import 'package:CoachTicketSelling/MainPage/User/Payment/PaymentUI.dart';
 import 'package:CoachTicketSelling/MainPage/User/Profile.dart';
 import 'package:CoachTicketSelling/MainPage/User/UserUI.dart';
 import 'package:CoachTicketSelling/MainPage/User/ViewTicket/ListTicket.dart';
-import 'package:CoachTicketSelling/MainPage/User/ViewTicket/TicketUI.dart';
+import 'package:CoachTicketSelling/MainPage/User/ViewTicket/PreviewTicketView.dart';
 import 'package:CoachTicketSelling/MainPage/LoadingView.dart';
 import 'package:CoachTicketSelling/MainPage/ProfileView.dart';
+import 'package:CoachTicketSelling/MainPage/User/ViewTicket/DetailTicketUI.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:CoachTicketSelling/Utils/enum.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -35,6 +36,7 @@ const String DetailBarChartViewRoute = '/manager/charts/barchart';
 const String UserViewRoute = '/user';
 const String UserProfileViewRoute = '/user/profile';
 const String UserTicketViewRoute = '/user/ticket';
+const String UserDetailTicketViewRoute = '/user/ticketList/detail';
 const String UserFindTripViewRoute = '/user/findTrip';
 const String UserChooseTripViewRoute = '/user/findTrip/chooseSeat';
 const String UserPreviewTicketViewRoute =
@@ -94,14 +96,36 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => UserProfile());
     case UserTicketViewRoute:
       return MaterialPageRoute(builder: (context) => ListTicket());
+    case UserDetailTicketViewRoute:
+      var arg = settings.arguments;
+      return MaterialPageRoute(
+          builder: (context) => DetailTicketUI(
+                ticketIndex: arg,
+              ));
     case UserFindTripViewRoute:
-      return MaterialPageRoute(builder: (context) => BookingUI());
+      var args = settings.arguments;
+      return MaterialPageRoute(
+          builder: (context) => BookingUI(
+                tripLs: args,
+              ));
     case UserChooseTripViewRoute:
-      return MaterialPageRoute(builder: (context) => ChooseSeat());
+      var arg = settings.arguments;
+      return MaterialPageRoute(
+          builder: (context) => ChooseSeat(
+                currentTrip: arg,
+              ));
     case UserPreviewTicketViewRoute:
-      return MaterialPageRoute(builder: (context) => TicketUI());
+      Map<String, dynamic> arg = settings.arguments;
+      return MaterialPageRoute(
+          builder: (context) => PreviewTicketView(
+                checkOutDetail: arg,
+              ));
     case UserPaymentViewRoute:
-      return MaterialPageRoute(builder: (context) => PaymentUI());
+      Map<String, dynamic> arg = settings.arguments;
+      return MaterialPageRoute(
+          builder: (context) => PaymentUI(
+                checkOutDetail: arg,
+              ));
 
     case DriverViewRoute:
       return MaterialPageRoute(

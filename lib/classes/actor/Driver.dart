@@ -132,6 +132,7 @@ class Driver extends AccountDAO {
           .then((query) {
         query.docs.forEach((doc) {
           _tripWorkLs.add(Trip(
+              id: '',
               source: doc.data()['Source'],
               destination: doc.data()['Destination']));
 

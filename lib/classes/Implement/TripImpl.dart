@@ -1,3 +1,4 @@
+import 'package:CoachTicketSelling/classes/Implement/RouteImpl.dart';
 import 'package:CoachTicketSelling/classes/actor/Company.dart';
 import 'package:CoachTicketSelling/classes/actor/Driver.dart';
 import 'package:CoachTicketSelling/classes/actor/Manager.dart';
@@ -58,9 +59,14 @@ class TripImplement {
 
     if (!isManager) {
       await _company.getData(doc.data()['Company']);
+      // RouteImpl.instance.addRoute(_company);
+      RouteImpl.instance
+          .addRouteAvailable(doc.data()['Source'], doc.data()['Destination']);
     }
+
     DocumentReference ref = doc.data()['Driver'];
     _tripLs[doc.id] = Trip(
+      id: doc.id,
       source: doc.data()['Source'],
       destination: doc.data()['Destination'],
       price: doc.data()['Price'],
@@ -74,14 +80,15 @@ class TripImplement {
   }
 
   //Update trip
-  bool update(String id,
+  Future<bool> update(String id,
       {String source,
       String destination,
       int price,
       int totalSeat,
       String detail,
       Map<String, DateTime> time,
-      List<int> seat}) {
+      Driver driver,
+      List<int> seat}) async {
     _tripLs[id].update(
         source: source,
         destination: destination,
@@ -89,9 +96,12 @@ class TripImplement {
         totalSeat: totalSeat,
         detail: detail,
         time: time,
+        driver: driver,
         seat: seat);
 
-    FirebaseFirestore.instance.collection('Trip').doc(id).set({
+    await FirebaseFirestore.instance.collection('Trip').doc(id).set({
+      'Company': _tripLs[id].company.documentReference,
+      'Driver': _tripLs[id].driver.documentReference,
       'Source': _tripLs[id].source,
       'Destination': _tripLs[id].destination,
       'Price': _tripLs[id].price,
@@ -120,6 +130,7 @@ class TripImplement {
       'Time': tempMap,
     }).then((value) {
       _tripLs[value.id] = Trip(
+        id: value.id,
         source: source,
         destination: destination,
         price: price,
@@ -131,6 +142,42 @@ class TripImplement {
       );
     });
 
+    return Future.value(true);
+  }
+
+  List<Trip> findTrip(String source, String des, DateTime time) {
+    return List<Trip>.from(_tripLs.values.where((element) {
+      if ((element.source == source) &&
+          (element.destination == des) &&
+          (element.time['Start Time'].day == time.day) &&
+          (element.time['Start Time'].month == time.month) &&
+          (element.time['Start Time'].year == time.year))
+        return true;
+      else
+        return false;
+    }));
+  }
+
+  Future<bool> refreshTripSeatInformation(String tripID) async {
+    await FirebaseFirestore.instance
+        .collection('Trip')
+        .doc(tripID)
+        .get()
+        .then((doc) {
+      _tripLs[tripID].update(
+        seat: List<int>.from(doc.data()['Seat']),
+      );
+    });
+    return Future.value(true);
+  }
+
+  Future<bool> checkSeatValid(String tripID, List<int> choosingSeat) async {
+    await refreshTripSeatInformation(tripID).then((value) async {
+      for (int seatID in choosingSeat)
+        if (_tripLs[tripID].seat.contains(seatID)) return false;
+      for (int seatID in choosingSeat) _tripLs[tripID].seat.add(seatID);
+      await this.update(tripID);
+    });
     return Future.value(true);
   }
 

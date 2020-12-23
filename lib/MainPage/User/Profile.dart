@@ -268,7 +268,7 @@ class _UserProfileState extends State<UserProfile> {
                 Navigator.popAndPushNamed(context, UserViewRoute);
               }
               if (currentIndex == 2) {
-                Navigator.popAndPushNamed(context, UserTicketViewRoute);
+                Navigator.popAndPushNamed(context, UserDetailTicketViewRoute);
               }
               currentIndex = 0;
             });

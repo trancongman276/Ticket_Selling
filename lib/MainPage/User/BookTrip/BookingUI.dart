@@ -1,4 +1,5 @@
 import 'package:CoachTicketSelling/Utils/Route.dart';
+import 'package:CoachTicketSelling/classes/actor/Trip.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
@@ -6,22 +7,129 @@ import 'package:smooth_star_rating/smooth_star_rating.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 
 class BookingUI extends StatefulWidget {
+  final List<Trip> tripLs;
+
+  const BookingUI({Key key, this.tripLs}) : super(key: key);
   @override
-  _BookingUIState createState() => _BookingUIState();
+  _BookingUIState createState() => _BookingUIState(tripLs);
 }
 
 class _BookingUIState extends State<BookingUI> {
-  String source = 'Ho Chi Minh';
-  String destination = 'Da Nang';
-  String date = '2020 - 03 - 06';
-  String timeStart = "14:00";
-  String timeEnd = "20:00";
-  String company = "Phuong Trang";
-  double rate = 3;
-  int result = 15;
-  int price = 150000;
-  String imageLink =
-      'assets/images/logo.png'; //Create class to set link image corresponding to Company logo
+  final List<Trip> _tripLs;
+  // String source;
+  // String destination;
+  // String date;
+  // String timeStart;
+  // String timeEnd;
+  // String company;
+  // double rate;
+  // int result;
+  // int price;
+  // String imageLink;
+
+  _BookingUIState(
+      this._tripLs); //Create class to set link image corresponding to Company logo
+
+  Widget _bookingItem(
+      int index,
+      String source,
+      String destination,
+      double rate,
+      String timeStart,
+      String timeEnd,
+      String company,
+      int price,
+      String imageLink,
+      BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, UserChooseTripViewRoute,
+            arguments: _tripLs[index]);
+      },
+      child: Container(
+        width: 500,
+        height: 200,
+        margin: EdgeInsets.only(bottom: 10),
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(14)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Container(
+                  height: 30,
+                  width: 30,
+                  child: Image.network(
+                    imageLink,
+                    fit: BoxFit.fill,
+                  ),
+                ),
+                SizedBox(
+                  width: 15,
+                ),
+                Text(
+                  company,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  width: 25,
+                ),
+                //Icon (FontAwesomeIcons.coins, size: 20,),
+                SizedBox(
+                  width: 5,
+                ),
+                Text(
+                  "$price VND",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                )
+              ],
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  source,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                Column(
+                  children: [
+                    _iconDestination(),
+                  ],
+                ),
+                Text(
+                  destination,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  timeStart,
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  timeEnd,
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            _rating(rate)
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,10 +149,10 @@ class _BookingUIState extends State<BookingUI> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
                         Text(
-                          source,
+                          _tripLs[0].source,
                           style: TextStyle(
                               fontSize: 30,
                               color: Colors.white,
@@ -62,7 +170,7 @@ class _BookingUIState extends State<BookingUI> {
                           width: 10,
                         ),
                         Text(
-                          destination,
+                          _tripLs[0]?.destination,
                           style: TextStyle(
                               fontSize: 30,
                               color: Colors.white,
@@ -74,7 +182,9 @@ class _BookingUIState extends State<BookingUI> {
                       height: 10,
                     ),
                     Text(
-                      date,
+                      '${_tripLs[0].time['Start Time'].day}' +
+                          '/${_tripLs[0].time['Start Time'].month}' +
+                          '/${_tripLs[0].time['Start Time'].year}',
                       style: TextStyle(
                           fontSize: 25,
                           color: Colors.white,
@@ -102,7 +212,7 @@ class _BookingUIState extends State<BookingUI> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Text(
-                            "$result Search Results",
+                            "${_tripLs[0].id != null ? _tripLs.length : 0} Search Results",
                             style: TextStyle(fontSize: 25),
                           ),
                           Icon(
@@ -117,20 +227,23 @@ class _BookingUIState extends State<BookingUI> {
                           height: 470,
                           child: ListView.builder(
                             scrollDirection: Axis.vertical,
-                            itemCount: result,
+                            itemCount:
+                                _tripLs[0].id != null ? _tripLs.length : 0,
                             itemBuilder: (context, index) {
                               return Column(
                                 children: <Widget>[
                                   _bookingItem(
                                       index,
-                                      source,
-                                      destination,
-                                      rate,
-                                      timeStart,
-                                      timeEnd,
-                                      company,
-                                      price,
-                                      imageLink,
+                                      _tripLs[index].source,
+                                      _tripLs[index].destination,
+                                      3,
+                                      '${_tripLs[index].time['Start Time'].hour}' +
+                                          ':${_tripLs[index].time['Start Time'].minute}',
+                                      '${_tripLs[index].time['Finish Time'].hour}' +
+                                          ':${_tripLs[index].time['Finish Time'].minute}',
+                                      _tripLs[index].company.name,
+                                      _tripLs[index].price,
+                                      _tripLs[index].company.imageUrl,
                                       context),
                                   //Create a class that use ID to query this information : db.string(id)
                                   SizedBox(
@@ -150,106 +263,6 @@ class _BookingUIState extends State<BookingUI> {
       ),
     );
   }
-}
-
-Widget _bookingItem(
-    int index,
-    String source,
-    String destination,
-    double rate,
-    String timeStart,
-    String timeEnd,
-    String company,
-    int price,
-    String imageLink,
-    BuildContext context) {
-  return GestureDetector(
-    onTap: () {
-      Navigator.pushNamed(context, UserChooseTripViewRoute);
-    },
-    child: Container(
-      width: 500,
-      height: 200,
-      margin: EdgeInsets.only(bottom: 10),
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(14)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Container(
-                height: 30,
-                width: 30,
-                child: Image.asset(
-                  imageLink,
-                  fit: BoxFit.fill,
-                ),
-              ),
-              SizedBox(
-                width: 15,
-              ),
-              Text(
-                company,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                width: 25,
-              ),
-              //Icon (FontAwesomeIcons.coins, size: 20,),
-              SizedBox(
-                width: 5,
-              ),
-              Text(
-                "$price VND",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              )
-            ],
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                source,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              Column(
-                children: [
-                  _iconDestination(),
-                ],
-              ),
-              Text(
-                destination,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                timeStart,
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                timeEnd,
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          _rating(rate)
-        ],
-      ),
-    ),
-  );
 }
 
 Widget _iconDestination() {

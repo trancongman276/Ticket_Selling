@@ -20,13 +20,14 @@ class _AddTripViewState extends State<AddTripView> {
   final String tripID;
   DriverImpl driverImpl = DriverImpl.instance;
   TripImplement tripImplement = TripImplement.instance;
-
+  int totalSeat;
   _AddTripViewState(this.tripID) {
     if (tripID != null) {
       Trip trip = tripImplement.getTrip(tripID);
 
       price.text = trip.price.toString();
       seat.text = trip.totalSeat.toString();
+      totalSeat = trip.totalSeat;
       detail.text = trip.detail;
 
       dateStart.text = Utils.dateFormat.format(trip.time['Start Time']);
@@ -181,12 +182,17 @@ class _AddTripViewState extends State<AddTripView> {
       'Finish Time': Utils.dateFormat.parse(dateEnd.text)
     };
     if (tripID != null) {
+      Driver driver;
+      if (driverLs != null) {
+        driver = driverLs[freeDriverLs.indexOf(choosingDriver) - 1];
+      }
       tripImplement.update(tripID,
           source: choosingFromPlace,
           destination: choosingFinishPlace,
           price: int.tryParse(price.text),
           totalSeat: int.parse(seat.text),
           detail: detail.text,
+          driver: driver,
           time: tempMap);
       Navigator.pop(context);
     } else {
@@ -384,7 +390,17 @@ class _AddTripViewState extends State<AddTripView> {
         ),
         TextFormField(
           cursorColor: Utils.primaryColor,
-          validator: Utils.validateEmpty,
+          validator: (value) {
+            if (tripID == null) {
+              return Utils.validateEmpty(value);
+            }
+            if (value.isNotEmpty) {
+              if (int.tryParse(value) < totalSeat)
+                return 'New total seat cannot lesser than old one (old: $totalSeat).';
+              return null;
+            }
+            return 'Please fill the empty form (っ °Д °;)っ';
+          },
           controller: seat,
           textInputAction: TextInputAction.next,
           keyboardType: TextInputType.phone,

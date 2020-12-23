@@ -2,18 +2,24 @@ import 'dart:io';
 
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:CoachTicketSelling/classes/DAO/accountDAO.dart';
+import 'package:CoachTicketSelling/classes/actor/Trip.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AppUser extends AccountDAO {
   Map<String, Map<String, dynamic>> billLs;
+  String id;
 
   static AppUser _instance = AppUser._();
   static AppUser get instance => _instance;
+  static bool kill() {
+    _instance = AppUser._();
+    return true;
+  }
+
   AppUser._();
   @override
   Future<bool> update({
-    String id,
     String email,
     String password,
     String name,
@@ -42,7 +48,7 @@ class AppUser extends AccountDAO {
         'Email': this.email,
         'Name': this.name,
         'Phone': this.phone,
-        'DoB': Timestamp.fromDate(doB),
+        'DoB': Timestamp.fromDate(this.doB),
         'Gender': this.gender,
         'ImageUrl': this.imageUrl ?? Utils.defaultUrl,
         'Role': 'User',
@@ -52,7 +58,10 @@ class AppUser extends AccountDAO {
     return true;
   }
 
-  Future<bool> getUser([String id]) async {
+  Future<bool> getUser() async {
+    if (this.id == null) {
+      this.id = FirebaseAuth.instance.currentUser.uid;
+    }
     await FirebaseFirestore.instance
         .collection('User')
         .doc(id)
@@ -68,6 +77,31 @@ class AppUser extends AccountDAO {
       var map = document.data()['Bill'];
       this.billLs = Map<String, Map<String, dynamic>>.from(map);
     });
+
     return true;
+  }
+
+  Future doPayment({Trip trip, List<int> seatLs}) async {
+    Timestamp buyTime = Timestamp.fromDate(DateTime.now());
+    String id = trip.id + '${buyTime.nanoseconds}';
+    Map<String, dynamic> ticketLs = {};
+    seatLs.forEach((seatID) {
+      ticketLs[id + seatID.toString()] = {
+        'SeatID': seatID,
+        'Rate': int.parse('0')
+      };
+    });
+    billLs[id] = {
+      'Trip Time': trip.time
+          .map((key, value) => MapEntry(key, Timestamp.fromDate(value))),
+      'Source': trip.source,
+      'Destination': trip.destination,
+      'Cost': trip.price * seatLs.length,
+      'Purchase Time': buyTime,
+      'Company Name': trip.company.name,
+      'Ticket': ticketLs,
+    };
+    await update();
+    return Future.value(true);
   }
 }

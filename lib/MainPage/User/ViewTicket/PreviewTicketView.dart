@@ -1,15 +1,36 @@
+import 'package:CoachTicketSelling/MainPage/User/DetailTicket.dart';
 import 'package:CoachTicketSelling/Utils/Route.dart';
+import 'package:CoachTicketSelling/classes/actor/AppUser.dart';
+import 'package:CoachTicketSelling/classes/actor/Ticket.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
-import 'Ticket.dart';
 
-class TicketUI extends StatefulWidget {
+class PreviewTicketView extends StatefulWidget {
+  final Map<String, dynamic> checkOutDetail;
+
+  const PreviewTicketView({Key key, this.checkOutDetail}) : super(key: key);
   @override
-  _TicketUIState createState() => _TicketUIState();
+  _PreviewTicketViewState createState() =>
+      _PreviewTicketViewState(checkOutDetail);
 }
 
-class _TicketUIState extends State<TicketUI> {
+class _PreviewTicketViewState extends State<PreviewTicketView> {
+  final Map<String, dynamic> checkOutDetail;
+
+  _PreviewTicketViewState(this.checkOutDetail) {
+    print(checkOutDetail);
+    source = checkOutDetail['Trip'].source;
+    dest = checkOutDetail['Trip'].destination;
+    time = checkOutDetail['Trip'].time;
+    companyName = checkOutDetail['Trip'].company.name;
+  }
+
+  String source;
+  String dest;
+  Map<String, DateTime> time;
+  String companyName;
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -69,18 +90,26 @@ class _TicketUIState extends State<TicketUI> {
                     Container(
                         height: 500,
                         child: ListView.builder(
+                          itemCount: checkOutDetail['Choosing Seat'].length,
                           scrollDirection: Axis.vertical,
                           itemBuilder: (context, index) {
                             return Column(
                               children: [
-                                Ticket(),
+                                DetailTicket(
+                                    ticket: UserTicket(
+                                        seatID: checkOutDetail['Choosing Seat']
+                                            [index],
+                                        source: source,
+                                        dest: dest,
+                                        time: time,
+                                        companyName: companyName),
+                                    name: AppUser.instance.name),
                                 SizedBox(
                                   height: 20,
                                 ),
                               ],
                             );
                           },
-                          itemCount: 2,
                         )),
                     SizedBox(
                       height: 10,
@@ -91,8 +120,8 @@ class _TicketUIState extends State<TicketUI> {
                             shape: new RoundedRectangleBorder(
                                 borderRadius: new BorderRadius.circular(30.0)),
                             onPressed: () {
-                              Navigator.pushNamed(
-                                  context, UserPaymentViewRoute);
+                              Navigator.pushNamed(context, UserPaymentViewRoute,
+                                  arguments: checkOutDetail);
                             },
                             color: Utils.primaryColor,
                             textColor: Colors.white,

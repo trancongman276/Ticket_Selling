@@ -1,4 +1,6 @@
 import 'package:CoachTicketSelling/Utils/Route.dart';
+import 'package:CoachTicketSelling/classes/Implement/TripImpl.dart';
+import 'package:CoachTicketSelling/classes/actor/Trip.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -6,19 +8,103 @@ import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 
 // ignore: must_be_immutable
 class ChooseSeat extends StatefulWidget {
+  final Trip currentTrip;
+
+  const ChooseSeat({Key key, this.currentTrip}) : super(key: key);
   @override
-  _ChooseSeatState createState() => _ChooseSeatState();
+  _ChooseSeatState createState() => _ChooseSeatState(currentTrip);
 }
 
 class _ChooseSeatState extends State<ChooseSeat> {
-  String source = 'Ho Chi Minh';
-  String destination = 'Da Nang';
-  String date = '2020 - 03 - 06';
-  bool check = true;
-  List<int> stateSeat = [1, 3, 3];
-  List<int> seatSelected = [];
-  int numSeatSelected = 0;
-  int totalSeat = 3;
+  final Trip _currentTrip;
+
+  // String source = 'Ho Chi Minh';
+  // String destination = 'Da Nang';
+  // String date = '2020 - 03 - 06';
+  // bool check = true;
+  // List<int> stateSeat = [1, 3, 3];
+  // List<int> seatSelected = [];
+  // int numSeatSelected = 0;
+  // int totalSeat = ;
+
+  _ChooseSeatState(this._currentTrip) {
+    source = _currentTrip.source;
+    destination = _currentTrip.destination;
+    date = '${_currentTrip.time['Start Time'].day}' +
+        '/${_currentTrip.time['Start Time'].month}' +
+        '/${_currentTrip.time['Start Time'].year}';
+    stateSeat = List.generate(_currentTrip.totalSeat, (index) {
+      if (_currentTrip.seat.contains(index + 1)) return 1;
+      return 3;
+    });
+    seatSelected = [];
+  }
+  String source;
+  String destination;
+  String date;
+  bool check;
+  List<int> stateSeat;
+  List<int> seatSelected;
+
+  showDuplicatedSeatDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Your seat is booked"),
+          content: Text("Please try again ≧ ﹏ ≦"),
+          actions: [
+            FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: Text('Okay'))
+          ],
+        );
+      },
+    );
+  }
+
+  showConfirmSeatDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Your seat will be dismiss after 10 minutes"),
+          content: Text("Please check out before that 🥺"),
+          actions: [
+            FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+
+                  Map<String, dynamic> tempMap = {
+                    'Trip': _currentTrip,
+                    'Choosing Seat': seatSelected
+                  };
+                  Navigator.pushNamed(this.context, UserPreviewTicketViewRoute,
+                      arguments: tempMap);
+                },
+                child: Text('Okay'))
+          ],
+        );
+      },
+    );
+  }
+
+  Future<bool> checkSeatValid() async {
+    bool isValid = await TripImplement.instance
+        .checkSeatValid(_currentTrip.id, seatSelected);
+    if (isValid) {
+      await showConfirmSeatDialog(context);
+      return Future.value(true);
+    } else {
+      await showDuplicatedSeatDialog(context);
+      setState(() {
+        stateSeat = TripImplement.instance.getTrip(_currentTrip.id).seat;
+      });
+      return Future.value(false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +122,7 @@ class _ChooseSeatState extends State<ChooseSeat> {
                   child: Column(
                     children: <Widget>[
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
                           Text(
                             source,
@@ -114,7 +200,7 @@ class _ChooseSeatState extends State<ChooseSeat> {
                           Container(
                               height: 440,
                               child: GridView.builder(
-                                itemCount: totalSeat,
+                                itemCount: stateSeat.length,
                                 scrollDirection: Axis.vertical,
                                 gridDelegate:
                                     SliverGridDelegateWithMaxCrossAxisExtent(
@@ -129,15 +215,15 @@ class _ChooseSeatState extends State<ChooseSeat> {
                                           setState(() {
                                             if (stateSeat[index] == 3) {
                                               stateSeat[index] = 2;
-                                              numSeatSelected++;
+                                              // numSeatSelected++;
                                               seatSelected.add(index + 1);
-                                              print("Num: $numSeatSelected");
+                                              // print("Num: $numSeatSelected");
                                               print(seatSelected);
                                             } else if (stateSeat[index] == 2) {
                                               stateSeat[index] = 3;
-                                              numSeatSelected--;
+                                              // numSeatSelected--;
                                               seatSelected.remove(index + 1);
-                                              print("Num: $numSeatSelected");
+                                              // print("Num: $numSeatSelected");
                                               print(seatSelected);
                                             }
                                           });
@@ -151,10 +237,12 @@ class _ChooseSeatState extends State<ChooseSeat> {
                                 shape: new RoundedRectangleBorder(
                                     borderRadius:
                                         new BorderRadius.circular(30.0)),
-                                onPressed: () {
+                                onPressed: () async {
                                   print("Choose");
-                                  Navigator.pushNamed(
-                                      context, UserPreviewTicketViewRoute);
+
+                                  await checkSeatValid().then((isValid) {
+                                    if (isValid) {}
+                                  });
                                 },
                                 color: Utils.primaryColor,
                                 textColor: Colors.white,

@@ -1,5 +1,6 @@
 import 'package:CoachTicketSelling/classes/Implement/BillImpl.dart';
 import 'package:CoachTicketSelling/classes/Implement/DriverImpl.dart';
+import 'package:CoachTicketSelling/classes/Implement/TicketImpl.dart';
 import 'package:CoachTicketSelling/classes/Implement/TripImpl.dart';
 import 'package:CoachTicketSelling/classes/actor/AppUser.dart';
 import 'package:CoachTicketSelling/classes/actor/Driver.dart';
@@ -8,6 +9,7 @@ import 'package:CoachTicketSelling/classes/actor/Manager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 class LoadingView extends StatefulWidget {
   @override
@@ -16,7 +18,8 @@ class LoadingView extends StatefulWidget {
 
 class _LoadingViewState extends State<LoadingView> {
   String route;
-
+  String role;
+  Future<bool> isInit;
   @override
   void initState() {
     super.initState();
@@ -31,11 +34,13 @@ class _LoadingViewState extends State<LoadingView> {
         .get()
         .then((doc) async {
       String _role = doc.data()['Role'];
+      this.role = _role;
 
       switch (_role) {
         case 'User':
-          await AppUser.instance.getUser(FirebaseAuth.instance.currentUser.uid);
-          // await TripImplement.instance.init();
+          await TripImplement.instance.initAll();
+          await AppUser.instance.getUser();
+          TicketImpl.instance.init();
           break;
         case 'Manager':
           await Manager.instance.getData();
@@ -48,13 +53,13 @@ class _LoadingViewState extends State<LoadingView> {
           await TripImplement.instance.init('Driver');
           break;
       }
+      isInit = Future.value(true);
       role = doc.data()['Role'];
     });
-
     return Future.value(role);
   }
 
-  void navigation() async {
+  Future<void> navigation() async {
     String role = await getData();
     switch (role) {
       case 'User':
@@ -71,13 +76,11 @@ class _LoadingViewState extends State<LoadingView> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () => Future.value(false),
-      child: Container(
-        color: Colors.white,
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
-    );
+        onWillPop: () => Future.value(false),
+        child: Container(
+            color: Colors.white,
+            child: Center(
+              child: CircularProgressIndicator(),
+            )));
   }
 }

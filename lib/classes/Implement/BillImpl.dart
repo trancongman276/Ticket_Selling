@@ -1,6 +1,8 @@
 import 'dart:collection';
 
-import 'package:CoachTicketSelling/classes/TripRoute.dart';
+import 'package:CoachTicketSelling/classes/actor/AppUser.dart';
+import 'package:CoachTicketSelling/classes/actor/Trip.dart';
+import 'package:CoachTicketSelling/classes/actor/TripRoute.dart';
 import 'package:CoachTicketSelling/classes/actor/Bill.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_util/date_util.dart';
@@ -55,12 +57,17 @@ class BillImplement {
 
         userBillList.forEach((key, bill) {
           _billLs[key] = Bill(
-            tripRoute: TripRoute(
-                source: bill['Source'], destination: bill['Destination']),
-            cost: bill['Cost'],
-            time: DateTime.parse(bill['Time'].toDate().toString()),
-            rate: rate == -1 ? 0 : rate,
-          );
+              id: key,
+              tripTime: Map<String, Timestamp>.from(bill['Trip Time']).map(
+                  (key, value) =>
+                      MapEntry(key, DateTime.parse(value.toDate().toString()))),
+              cost: bill['Cost'],
+              purchaseTime:
+                  DateTime.parse(bill['Purchase Time'].toDate().toString()),
+              rate: rate == -1 ? 0 : rate,
+              tripRoute: TripRoute(
+                  source: bill['Source'], destination: bill['Destination']),
+              companyName: bill['Company Name']);
         });
       }
     });
@@ -70,7 +77,8 @@ class BillImplement {
 
   bool _initIncome() {
     _billLs.forEach((id, bill) {
-      _incomeDaily[bill.time.month - 1][bill.time.day - 1] = bill.cost;
+      _incomeDaily[bill.purchaseTime.month - 1][bill.purchaseTime.day - 1] =
+          bill.cost;
     });
     _incomeDaily.forEach((month) {
       if (month.isNotEmpty) {
@@ -93,19 +101,24 @@ class BillImplement {
 
   bool _initMostVisited() {
     _billLs.forEach((id, bill) {
-      if (_visit[bill.time.month - 1][bill.tripRoute] == null) {
-        _visit[bill.time.month - 1].putIfAbsent(bill.tripRoute, () => 1);
+      if (_visit[bill.purchaseTime.month - 1][bill.tripRoute] == null) {
+        _visit[bill.purchaseTime.month - 1]
+            .putIfAbsent(bill.tripRoute, () => 1);
       } else {
-        _visit[bill.time.month - 1]
+        _visit[bill.purchaseTime.month - 1]
             .update(bill.tripRoute, (value) => value + 1);
       }
     });
     _billLs.forEach((id, bill) {
-      var sortedValue = _visit[bill.time.month - 1].keys.toList(growable: false)
-        ..sort((k1, k2) => _visit[bill.time.month - 1][k2]
-            .compareTo(_visit[bill.time.month - 1][k1]));
-      _visit[bill.time.month - 1] = LinkedHashMap.fromIterable(sortedValue,
-          key: (k) => k, value: (v) => _visit[bill.time.month - 1][v]);
+      var sortedValue = _visit[bill.purchaseTime.month - 1]
+          .keys
+          .toList(growable: false)
+            ..sort((k1, k2) => _visit[bill.purchaseTime.month - 1][k2]
+                .compareTo(_visit[bill.purchaseTime.month - 1][k1]));
+      _visit[bill.purchaseTime.month - 1] = LinkedHashMap.fromIterable(
+          sortedValue,
+          key: (k) => k,
+          value: (v) => _visit[bill.purchaseTime.month - 1][v]);
     });
     return true;
   }
@@ -116,8 +129,9 @@ class BillImplement {
         List.generate(12, (index) => {});
 
     _billLs.forEach((id, bill) {
-      allRating[bill.time.month - 1].putIfAbsent(bill.tripRoute, () => []);
-      allRating[bill.time.month - 1].update(bill.tripRoute, (value) {
+      allRating[bill.purchaseTime.month - 1]
+          .putIfAbsent(bill.tripRoute, () => []);
+      allRating[bill.purchaseTime.month - 1].update(bill.tripRoute, (value) {
         value.add(bill.rate);
         return value;
       });
@@ -145,6 +159,8 @@ class BillImplement {
     _initRating();
     return true;
   }
+
+
 
   List<int> getAllDailyIncome(int month) => _incomeDaily[month];
   List<int> getAllMonthlyIncome() => _incomeMonthly;

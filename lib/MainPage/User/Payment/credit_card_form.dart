@@ -1,3 +1,6 @@
+import 'package:CoachTicketSelling/MainPage/User/Dialog/loading.dart';
+import 'package:CoachTicketSelling/Utils/Route.dart';
+import 'package:CoachTicketSelling/classes/actor/AppUser.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'localized_text_model.dart';
@@ -16,6 +19,8 @@ class CreditCardForm extends StatefulWidget {
     this.textColor = Colors.black,
     this.cursorColor,
     this.localizedText = const LocalizedText(),
+    this.price,
+    this.checkOutDetail,
   })  : assert(localizedText != null),
         super(key: key);
 
@@ -28,7 +33,8 @@ class CreditCardForm extends StatefulWidget {
   final Color textColor;
   final Color cursorColor;
   final LocalizedText localizedText;
-
+  final int price;
+  final Map<String, dynamic> checkOutDetail;
   @override
   _CreditCardFormState createState() => _CreditCardFormState();
 }
@@ -40,7 +46,8 @@ class _CreditCardFormState extends State<CreditCardForm> {
   String cvvCode;
   bool isCvvFocused = false;
   Color themeColor;
-
+  int price;
+  GlobalKey<FormState> _key = GlobalKey<FormState>();
   void Function(CreditCardModel) onCreditCardModelChange;
   CreditCardModel creditCardModel;
 
@@ -65,6 +72,7 @@ class _CreditCardFormState extends State<CreditCardForm> {
     expiryDate = widget.expiryDate ?? '';
     cardHolderName = widget.cardHolderName ?? '';
     cvvCode = widget.cvvCode ?? '';
+    price = widget.price ?? 0;
 
     creditCardModel = CreditCardModel(
         cardNumber, expiryDate, cardHolderName, cvvCode, isCvvFocused);
@@ -127,6 +135,7 @@ class _CreditCardFormState extends State<CreditCardForm> {
         primaryColorDark: themeColor,
       ),
       child: Form(
+        key: _key,
         child: Column(
           children: <Widget>[
             Container(
@@ -135,6 +144,11 @@ class _CreditCardFormState extends State<CreditCardForm> {
               child: TextFormField(
                 controller: _cardNumberController,
                 cursorColor: widget.cursorColor ?? themeColor,
+                validator: (value) => value.isEmpty
+                    ? 'Fill me up please ＞︿＜'
+                    : value.length < 12
+                        ? 'Wrong Format Card Number (ノへ￣、)'
+                        : null,
                 style: TextStyle(
                   color: widget.textColor,
                 ),
@@ -153,6 +167,42 @@ class _CreditCardFormState extends State<CreditCardForm> {
               child: TextFormField(
                 controller: _expiryDateController,
                 cursorColor: widget.cursorColor ?? themeColor,
+                validator: (value) {
+                  if (value.isNotEmpty) {
+                    List<String> mmyy = value.split('/');
+                    if ((int.parse(mmyy[0]) > 12) | (int.parse(mmyy[0]) == 0))
+                      return 'Wrong Format Month (01 -> 12) (っ °Д °;)っ';
+
+                    String curYear =
+                        DateTime.now().year.toString().substring(2);
+                    String curMonth = DateTime.now().month.toString();
+                    if (int.parse(mmyy[1]) < int.parse(curYear)) {
+                      return 'Out Of Date card!!!';
+                    } else if (((int.parse(mmyy[0])) < (int.parse(curMonth))) &
+                        (int.parse(mmyy[1]) == int.parse(curYear))) {
+                      return 'Out Of Date card!!!';
+                    }
+                    return null;
+                  }
+                  return 'Fill me up please ＞︿＜';
+                },
+                onChanged: (value) {
+                  if (value.isNotEmpty) {
+                    List<String> mmyy = value.split('/');
+                    if ((value[0] != '0') & (value[0] != '1')) {
+                      _expiryDateController.text =
+                          '0' + value[0] + (mmyy.length == 2 ? mmyy[1] : '');
+                    } else if ((value[0] == '1') & (value.length > 1)) {
+                      if ((mmyy[0][1] != '0') &
+                          (mmyy[0][1] != '1') &
+                          (mmyy[0][1] != '2')) {
+                        _expiryDateController.text =
+                            value[0] + '2' + (mmyy.length == 2 ? mmyy[1] : '');
+                      }
+                    }
+                    return null;
+                  }
+                },
                 style: TextStyle(
                   color: widget.textColor,
                 ),
@@ -168,9 +218,17 @@ class _CreditCardFormState extends State<CreditCardForm> {
             Container(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               margin: const EdgeInsets.only(left: 16, top: 8, right: 16),
-              child: TextField(
+              child: TextFormField(
                 focusNode: cvvFocusNode,
                 controller: _cvvCodeController,
+                validator: (value) {
+                  if (value.isNotEmpty) {
+                    if ((value.length != 3) & (value.length != 4))
+                      return 'Invalid CVV (っ °Д °;)っ';
+                    return null;
+                  }
+                  return 'Fill me up please ＞︿＜';
+                },
                 cursorColor: widget.cursorColor ?? themeColor,
                 style: TextStyle(
                   color: widget.textColor,
@@ -195,6 +253,8 @@ class _CreditCardFormState extends State<CreditCardForm> {
               child: TextFormField(
                 controller: _cardHolderNameController,
                 cursorColor: widget.cursorColor ?? themeColor,
+                validator: (value) =>
+                    value.isEmpty ? 'Fill me up please ＞︿＜' : null,
                 style: TextStyle(
                   color: widget.textColor,
                 ),
@@ -205,6 +265,47 @@ class _CreditCardFormState extends State<CreditCardForm> {
                 ),
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.next,
+              ),
+            ),
+            Container(
+              alignment: Alignment.bottomRight,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+              child: Text(
+                "Total cost: $price VND",
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 50),
+              child: Center(
+                child: Container(
+                  child: FlatButton(
+                      shape: new RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(30.0)),
+                      onPressed: () {
+                        if (_key.currentState.validate()) {
+                          AppUser.instance
+                              .doPayment(
+                            trip: widget.checkOutDetail['Trip'],
+                            seatLs: widget.checkOutDetail['Choosing Seat'],
+                          )
+                              .then((value) {
+                            LoadingDialog.showLoadingDialog(
+                                context, 'Loading...');
+                          });
+                        }
+                      },
+                      color: Color(0xff1b447b),
+                      textColor: Colors.white,
+                      child: Text(
+                        "PAYMENT",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold),
+                      )),
+                ),
               ),
             ),
           ],

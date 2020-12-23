@@ -1,8 +1,13 @@
 import 'dart:io';
 
+import 'package:CoachTicketSelling/MainPage/ProfileView.dart';
 import 'package:CoachTicketSelling/MainPage/User/BookTrip/RecommendationItem.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:CoachTicketSelling/Utils/Route.dart';
+import 'package:CoachTicketSelling/classes/Implement/RouteImpl.dart';
+import 'package:CoachTicketSelling/classes/Implement/TripImpl.dart';
+import 'package:CoachTicketSelling/classes/actor/AppUser.dart';
+import 'package:CoachTicketSelling/classes/actor/Trip.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rounded_date_picker/rounded_picker.dart';
@@ -14,37 +19,32 @@ class UserUI extends StatefulWidget {
   _UserUIState createState() => _UserUIState();
 }
 
-List<String> _source = <String>[
-  'Ho Chi Minh',
-  'Khanh Hoa',
-  'Ha Noi',
-  'Hue',
-  'Binh Duong',
-  'Da Nang'
-];
-String _sourceValue;
-
-List<String> _destination = <String>[
-  'Ho Chi Minh',
-  'Khanh Hoa',
-  'Ha Noi',
-  'Hue',
-  'Binh Duong',
-  'Da Nang'
-];
-String _desValue;
-
-final TextEditingController _dateController = TextEditingController();
-DateTime date;
-
-int currentIndex = 1;
-
 class _UserUIState extends State<UserUI> {
-  @override
-  void initState() {
+  _UserUIState() {
     _dateController.text = "yyyy-mm-dd";
-    super.initState();
+    _refresh();
   }
+  bool isInit = false;
+  _refresh() {
+    _source = RouteImpl.instance.routeLs.keys.toList();
+    if (_source.isNotEmpty) {
+      isInit = true;
+      _sourceValue = _source[0];
+      _destination = RouteImpl.instance.routeLs[_sourceValue];
+      _desValue = _destination[0];
+    }
+  }
+
+  List<String> _source = ['Source'];
+  String _sourceValue = 'Source';
+
+  List<String> _destination = ['Destination'];
+  String _desValue = 'Destination';
+
+  final TextEditingController _dateController = TextEditingController();
+  DateTime date;
+
+  int currentIndex = 1;
 
   Future<bool> _onWillPop() {
     return showDialog(
@@ -54,8 +54,11 @@ class _UserUIState extends State<UserUI> {
               content: Text('Do you want to close app? Or maybe Sign out?'),
               actions: <Widget>[
                 FlatButton(
-                    onPressed: () async{
+                    onPressed: () async {
                       await Utils.logout();
+                      AppUser.kill();
+                      TripImplement.kill();
+                      RouteImpl.kill();
                       Navigator.pushNamed(context, LoginViewRoute);
                     },
                     child: Text('Sign out')),
@@ -67,12 +70,33 @@ class _UserUIState extends State<UserUI> {
             ));
   }
 
+  bool checkAndNavigate() {
+    if ((_sourceValue != 'Source') &
+        (_desValue != 'Destination') &
+        (_dateController.text != 'yyyy-mm-dd')) {
+      var tripLs =
+          TripImplement.instance.findTrip(_sourceValue, _desValue, date);
+
+      Navigator.pushNamed(context, UserFindTripViewRoute,
+          arguments: tripLs.isNotEmpty
+              ? tripLs
+              : [
+                  Trip(
+                      id: null,
+                      source: _sourceValue,
+                      destination: _desValue,
+                      time: Map<String, DateTime>.from({'Start Time': date}))
+                ]);
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        backgroundColor: Color(0xFFE8F5E9),
+        backgroundColor: Colors.white,
         body: SingleChildScrollView(
           child: SafeArea(
             child: Container(
@@ -115,16 +139,23 @@ class _UserUIState extends State<UserUI> {
                                       //color: Colors.blue,
                                       child: DropdownButton(
                                         hint: Text("Select Source"),
-                                        dropdownColor: Utils.primaryColor,
                                         isExpanded: true,
                                         icon: Icon(Icons.arrow_drop_down),
                                         iconSize: 30,
                                         style: TextStyle(
                                             fontSize: 16, color: Colors.black),
                                         value: _sourceValue,
+                                        onTap: () {
+                                          if (!isInit) {
+                                            setState(() => _refresh());
+                                          }
+                                        },
                                         onChanged: (value) {
                                           setState(() {
                                             _sourceValue = value;
+                                            _destination = RouteImpl
+                                                .instance.routeLs[_sourceValue];
+                                            _desValue = _destination[0];
                                           });
                                         },
                                         items: _source.map((value) {
@@ -150,13 +181,17 @@ class _UserUIState extends State<UserUI> {
                                       width: 250,
                                       child: DropdownButton(
                                         hint: Text("Select Destination"),
-                                        dropdownColor: Utils.primaryColor,
                                         isExpanded: true,
                                         icon: Icon(Icons.arrow_drop_down),
                                         iconSize: 30,
                                         style: TextStyle(
                                             fontSize: 16, color: Colors.black),
                                         value: _desValue,
+                                        onTap: () {
+                                          if (!isInit) {
+                                            setState(() => _refresh());
+                                          }
+                                        },
                                         onChanged: (value) {
                                           setState(() {
                                             _desValue = value;
@@ -260,14 +295,12 @@ class _UserUIState extends State<UserUI> {
                         children: <Widget>[
                           Padding(
                             padding: const EdgeInsets.fromLTRB(20, 0, 10, 0),
-                            child: IconButton(
-                              icon: Icon(Icons.search,
-                                  size: 65, color: Utils.primaryColor),
-                              onPressed: () {
-                                Navigator.pushNamed(
-                                    context, UserFindTripViewRoute);
+                            child: GestureDetector(
+                              child: Icon(Icons.search,
+                                  size: 70, color: Utils.primaryColor),
+                              onTap: () {
+                                checkAndNavigate();
                               },
-                              tooltip: "SEARCH",
                             ),
                           ),
                           Padding(
@@ -356,7 +389,10 @@ class _UserUIState extends State<UserUI> {
             setState(() {
               currentIndex = index;
               if (currentIndex == 0) {
-                Navigator.popAndPushNamed(context, UserProfileViewRoute);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Profile(role: 'User')));
               }
               if (currentIndex == 2) {
                 Navigator.popAndPushNamed(context, UserTicketViewRoute);
