@@ -55,6 +55,7 @@ class TripImplement {
     tempMap.forEach((key, value) {
       time[key] = DateTime.parse(value.toDate().toString());
     });
+    if (time['Start Time'].isBefore(DateTime.now())) return false;
     Company _company = Company.none();
 
     if (!isManager) {

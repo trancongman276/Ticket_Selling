@@ -234,8 +234,7 @@ class _UserUIState extends State<UserUI> {
                                   onPressed: () async {
                                     date = await showRoundedDatePicker(
                                         context: context,
-                                        firstDate:
-                                            DateTime(DateTime.now().year - 100),
+                                        firstDate: DateTime.now(),
                                         borderRadius: 16,
                                         theme: ThemeData(
                                             primarySwatch: Colors.green));

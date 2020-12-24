@@ -63,7 +63,7 @@ class _DriverViewState extends State<DriverView> with TickerProviderStateMixin {
       if (_events[start] == null) _events[start] = [];
       _events[start].add(
           'From: ${tripWork[i].source}\nTo: ${tripWork[i].destination}\n' +
-              'Time: ${start.hour}:${start.minute} - ${finish.hour}:${finish.minute}');
+              'Time: ${start.hour}:${start.minute} - ${finish.day}/${finish.month} ${finish.hour}:${finish.minute}');
     }
 
     final _selectedDay = DateTime.now();

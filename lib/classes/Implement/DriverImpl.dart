@@ -26,7 +26,6 @@ class DriverImpl extends AccountDAO {
 
   // Init Driver list
   Future<bool> init() async {
-    
     company = Manager.instance.company;
 
     Timestamp timestamp;
@@ -95,7 +94,6 @@ class DriverImpl extends AccountDAO {
     Driver driver = _driverLs[id];
 
     await driver.update(
-        id: id,
         email: email,
         name: name,
         password: password,

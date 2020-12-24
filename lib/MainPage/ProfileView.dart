@@ -103,7 +103,11 @@ class _ProfileState extends State<Profile> {
         break;
       case 'Driver':
         await Driver.currentDriver.update(
-            doB: dob, gender: gender, phone: phone.text, image: _imageFile);
+            doB: dob,
+            gender: gender,
+            phone: phone.text,
+            note: note.text,
+            image: _imageFile);
         break;
       case 'User':
         await AppUser.instance.update(
@@ -139,7 +143,7 @@ class _ProfileState extends State<Profile> {
       children: <Widget>[
         TextFormField(
           initialValue: name,
-          enabled: false,
+          // enabled: false,
           decoration: InputDecoration(
             labelText: 'Name',
             labelStyle: TextStyle(

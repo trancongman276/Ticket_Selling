@@ -54,7 +54,7 @@ class Driver extends AccountDAO {
     Timestamp timestamp;
     documentReference = FirebaseFirestore.instance.collection('User').doc(id);
     await documentReference.get().then((document) async {
-      this.isAvailable = document.data()['isAvalable'];
+      this.isAvailable = document.data()['isAvailable'];
       this.company = Company.none();
       await company.getData(document.data()['Company']);
       this.email = document.data()['Email'];
@@ -81,7 +81,6 @@ class Driver extends AccountDAO {
 
   @override
   Future<bool> update({
-    String id,
     String email,
     String password,
     String name,
@@ -106,7 +105,7 @@ class Driver extends AccountDAO {
         await uploadImage(image, 'Driver/$id.$ex')
             .then((url) => this.imageUrl = url);
       }
-      await FirebaseFirestore.instance.collection('User').doc(id).set({
+      await FirebaseFirestore.instance.collection('User').doc(this.id).set({
         'isAvailable': this.isAvailable,
         'Email': this.email,
         'Name': this.name,
