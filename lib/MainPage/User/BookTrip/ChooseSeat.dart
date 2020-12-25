@@ -46,6 +46,28 @@ class _ChooseSeatState extends State<ChooseSeat> {
   List<int> stateSeat;
   List<int> seatSelected;
 
+  showEmptySeatDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Something seems wrong.."),
+          content: Text("Have you choose your seat yet!? \nヾ(≧へ≦)〃"),
+          actions: [
+            FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: Text(
+                  'Oh.. sorry',
+                  style: TextStyle(color: Utils.primaryColor),
+                ))
+          ],
+        );
+      },
+    );
+  }
+
   showDuplicatedSeatDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -57,8 +79,15 @@ class _ChooseSeatState extends State<ChooseSeat> {
             FlatButton(
                 onPressed: () {
                   Navigator.of(context).pop(true);
+                  setState(() {
+                    stateSeat = List.generate(_currentTrip.totalSeat, (index) {
+                      if (_currentTrip.seat.contains(index + 1)) return 1;
+                      return 3;
+                    });
+                  });
                 },
-                child: Text('Okay'))
+                child:
+                    Text('Okay', style: TextStyle(color: Utils.primaryColor)))
           ],
         );
       },
@@ -84,7 +113,8 @@ class _ChooseSeatState extends State<ChooseSeat> {
                   Navigator.pushNamed(this.context, UserPreviewTicketViewRoute,
                       arguments: tempMap);
                 },
-                child: Text('Okay'))
+                child:
+                    Text('Okay', style: TextStyle(color: Utils.primaryColor)))
           ],
         );
       },
@@ -92,17 +122,19 @@ class _ChooseSeatState extends State<ChooseSeat> {
   }
 
   Future<bool> checkSeatValid() async {
-    bool isValid = await TripImplement.instance
-        .checkSeatValid(_currentTrip.id, seatSelected);
-    if (isValid) {
-      await showConfirmSeatDialog(context);
-      return Future.value(true);
+    if (seatSelected.isNotEmpty) {
+      bool isValid = await TripImplement.instance
+          .checkSeatValid(_currentTrip.id, seatSelected);
+      if (isValid) {
+        await showConfirmSeatDialog(context);
+        return Future.value(true);
+      } else {
+        await showDuplicatedSeatDialog(context);
+
+        return Future.value(false);
+      }
     } else {
-      await showDuplicatedSeatDialog(context);
-      setState(() {
-        stateSeat = TripImplement.instance.getTrip(_currentTrip.id).seat;
-      });
-      return Future.value(false);
+      showEmptySeatDialog(context);
     }
   }
 
@@ -240,9 +272,7 @@ class _ChooseSeatState extends State<ChooseSeat> {
                                 onPressed: () async {
                                   print("Choose");
 
-                                  await checkSeatValid().then((isValid) {
-                                    if (isValid) {}
-                                  });
+                                  await checkSeatValid();
                                 },
                                 color: Utils.primaryColor,
                                 textColor: Colors.white,

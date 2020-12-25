@@ -73,12 +73,18 @@ class DetailTicket extends StatelessWidget {
                   height: 15,
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
                       '${ticket.time['Start Time'].day}' +
                           '/${ticket.time['Start Time'].month}' +
                           '/${ticket.time['Start Time'].year}',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    Text(
+                      '${ticket.time['Finish Time'].day}' +
+                          '/${ticket.time['Finish Time'].month}' +
+                          '/${ticket.time['Finish Time'].year}',
                       style: TextStyle(fontSize: 18),
                     ),
                     // Text(
@@ -131,8 +137,8 @@ class DetailTicket extends StatelessWidget {
                             style: TextStyle(fontSize: 16, color: Colors.grey),
                           ),
                           Text(
-                            '${ticket.time['Start Time'].hour}' +
-                                ':${ticket.time['Start Time'].minute}',
+                            '${ticket.time['Start Time'].hour < 10 ? '0' + ticket.time['Start Time'].hour.toString() : ticket.time['Start Time'].hour}' +
+                                ':${ticket.time['Start Time'].minute < 10 ? '0' + ticket.time['Start Time'].minute.toString() : ticket.time['Start Time'].minute}',
                             style: TextStyle(
                               fontSize: 18,
                             ),
@@ -160,8 +166,8 @@ class DetailTicket extends StatelessWidget {
                             style: TextStyle(fontSize: 16, color: Colors.grey),
                           ),
                           Text(
-                            '${ticket.time['Finish Time'].hour}' +
-                                ':${ticket.time['Finish Time'].minute}',
+                            '${ticket.time['Finish Time'].hour < 10 ? '0' + ticket.time['Finish Time'].hour.toString() : ticket.time['Finish Time'].hour}' +
+                                ':${ticket.time['Finish Time'].minute < 10 ? '0' + ticket.time['Finish Time'].minute.toString() : ticket.time['Finish Time'].minute}',
                             style: TextStyle(
                               fontSize: 18,
                             ),

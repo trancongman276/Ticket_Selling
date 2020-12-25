@@ -40,10 +40,16 @@ class TripImplement {
   //For all company
   Future<bool> initAll() async {
     company = Manager.instance.company;
-    await FirebaseFirestore.instance.collection('Trip').get().then((query) {
-      query.docs.forEach((doc) async {
+    await FirebaseFirestore.instance
+        .collection('Trip')
+        .get()
+        .then((query) async {
+      // query.docs.forEach((doc) async {
+      //   await _assignData(doc, false);
+      // });
+      for (var doc in query.docs) {
         await _assignData(doc, false);
-      });
+      }
     });
     return Future.value(true);
   }
@@ -52,18 +58,19 @@ class TripImplement {
   Future _assignData(QueryDocumentSnapshot doc, bool isManager) async {
     Map<String, dynamic> tempMap = doc.data()['Time'];
     Map<String, DateTime> time = {};
+    Company _company = Company.none();
+
+    if (!isManager) {
+      RouteImpl.instance
+          .addRouteAvailable(doc.data()['Source'], doc.data()['Destination']);
+      await _company.getData(doc.data()['Company']);
+      // RouteImpl.instance.addRoute(_company);
+    }
+
     tempMap.forEach((key, value) {
       time[key] = DateTime.parse(value.toDate().toString());
     });
     if (time['Start Time'].isBefore(DateTime.now())) return false;
-    Company _company = Company.none();
-
-    if (!isManager) {
-      await _company.getData(doc.data()['Company']);
-      // RouteImpl.instance.addRoute(_company);
-      RouteImpl.instance
-          .addRouteAvailable(doc.data()['Source'], doc.data()['Destination']);
-    }
 
     DocumentReference ref = doc.data()['Driver'];
     _tripLs[doc.id] = Trip(
@@ -173,13 +180,16 @@ class TripImplement {
   }
 
   Future<bool> checkSeatValid(String tripID, List<int> choosingSeat) async {
-    await refreshTripSeatInformation(tripID).then((value) async {
-      for (int seatID in choosingSeat)
-        if (_tripLs[tripID].seat.contains(seatID)) return false;
-      for (int seatID in choosingSeat) _tripLs[tripID].seat.add(seatID);
-      await this.update(tripID);
-    });
-    return Future.value(true);
+    await refreshTripSeatInformation(tripID);
+    for (int seatID in choosingSeat) {
+      if (_tripLs[tripID].seat.contains(seatID)) {
+        return false;
+      }
+    }
+
+    for (int seatID in choosingSeat) _tripLs[tripID].seat.add(seatID);
+    await this.update(tripID);
+    return true;
   }
 
   //Delete Trip

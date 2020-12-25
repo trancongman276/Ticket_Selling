@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:CoachTicketSelling/Utils/Route.dart';
 import 'package:CoachTicketSelling/classes/actor/Trip.dart';
 import 'package:flutter/cupertino.dart';
@@ -34,7 +36,7 @@ class _BookingUIState extends State<BookingUI> {
       int index,
       String source,
       String destination,
-      double rate,
+      int rate,
       String timeStart,
       String timeEnd,
       String company,
@@ -236,11 +238,11 @@ class _BookingUIState extends State<BookingUI> {
                                       index,
                                       _tripLs[index].source,
                                       _tripLs[index].destination,
-                                      3,
-                                      '${_tripLs[index].time['Start Time'].hour}' +
-                                          ':${_tripLs[index].time['Start Time'].minute}',
-                                      '${_tripLs[index].time['Finish Time'].hour}' +
-                                          ':${_tripLs[index].time['Finish Time'].minute}',
+                                      Random().nextInt(5),
+                                      '${_tripLs[index].time['Start Time'].hour < 10 ? '0' + _tripLs[index].time['Start Time'].hour.toString() : _tripLs[index].time['Start Time'].hour}' +
+                                          ':${_tripLs[index].time['Start Time'].minute < 10 ? '0' + _tripLs[index].time['Start Time'].minute.toString() : _tripLs[index].time['Start Time'].minute}',
+                                      '${_tripLs[index].time['Finish Time'].hour < 10 ? '0' + _tripLs[index].time['Finish Time'].hour.toString() : _tripLs[index].time['Finish Time'].hour}' +
+                                          ':${_tripLs[index].time['Finish Time'].minute < 10 ? '0' + _tripLs[index].time['Finish Time'].minute.toString() : _tripLs[index].time['Finish Time'].minute}',
                                       _tripLs[index].company.name,
                                       _tripLs[index].price,
                                       _tripLs[index].company.imageUrl,
@@ -314,11 +316,11 @@ Widget _iconDestination() {
   );
 }
 
-Widget _rating(double a) {
+Widget _rating(int a) {
   return SmoothStarRating(
     isReadOnly: true,
     starCount: 5,
-    rating: a,
+    rating: a.toDouble(),
     spacing: 3,
     size: 30,
     allowHalfRating: false,
