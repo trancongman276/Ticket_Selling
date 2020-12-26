@@ -34,7 +34,6 @@ const String EditTripViewRoute = '/manager/edit/trip';
 const String EditDriverViewRoute = '/manager/edit/driver';
 const String DetailBarChartViewRoute = '/manager/charts/barchart';
 const String UserViewRoute = '/user';
-const String UserProfileViewRoute = '/user/profile';
 const String UserTicketViewRoute = '/user/ticket';
 const String UserDetailTicketViewRoute = '/user/ticketList/detail';
 const String UserFindTripViewRoute = '/user/findTrip';
@@ -92,8 +91,6 @@ Route<dynamic> generateRoute(RouteSettings settings) {
 
     case UserViewRoute:
       return MaterialPageRoute(builder: (context) => UserUI());
-    case UserProfileViewRoute:
-      return MaterialPageRoute(builder: (context) => UserProfile());
     case UserTicketViewRoute:
       return MaterialPageRoute(builder: (context) => ListTicket());
     case UserDetailTicketViewRoute:

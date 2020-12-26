@@ -96,7 +96,7 @@ class _UserUIState extends State<UserUI> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xFFE8F5E9),
         body: SingleChildScrollView(
           child: SafeArea(
             child: Container(

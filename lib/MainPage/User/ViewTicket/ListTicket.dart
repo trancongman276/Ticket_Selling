@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:CoachTicketSelling/MainPage/ProfileView.dart';
 import 'package:CoachTicketSelling/Utils/GlobalValues.dart';
 import 'package:CoachTicketSelling/Utils/Route.dart';
 import 'package:CoachTicketSelling/classes/Implement/RouteImpl.dart';
@@ -90,8 +91,6 @@ class _ListTicketState extends State<ListTicket> {
             arguments: index);
       },
       child: Container(
-        width: 500,
-        height: 200,
         margin: EdgeInsets.only(bottom: 10),
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
         decoration: BoxDecoration(
@@ -102,8 +101,8 @@ class _ListTicketState extends State<ListTicket> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Stack(
+              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 // Container(
                 //   height: 30,
@@ -113,15 +112,20 @@ class _ListTicketState extends State<ListTicket> {
                 //     fit: BoxFit.fill,
                 //   ),
                 // ),
-                SizedBox(
-                  width: 15,
+                Center(
+                  child: Text(
+                    company,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                 ),
-                Text(
-                  company,
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  width: 25,
+
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Text("$seatNum",
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green)),
                 ),
                 //Icon (FontAwesomeIcons.coins, size: 20,),
                 // SizedBox(
@@ -137,7 +141,7 @@ class _ListTicketState extends State<ListTicket> {
               height: 5,
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   '${timeStart.day} - ${timeStart.month} - ${timeStart.year}',
@@ -146,13 +150,10 @@ class _ListTicketState extends State<ListTicket> {
                   ),
                 ),
                 Text(
-                  "Seat num: $seatNum",
+                  '${timeEnd.day} - ${timeEnd.month} - ${timeEnd.year}',
                   style: TextStyle(fontSize: 18),
                 )
               ],
-            ),
-            SizedBox(
-              height: 5,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -176,11 +177,13 @@ class _ListTicketState extends State<ListTicket> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  '${timeStart.hour}:${timeStart.minute}',
+                  '${timeStart.hour < 10 ? '0' + timeStart.hour.toString() : timeStart.hour}:' +
+                      '${timeStart.minute < 10 ? '0' + timeStart.minute.toString() : timeStart.minute}',
                   style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  '${timeEnd.hour}:${timeEnd.minute}',
+                  '${timeEnd.hour < 10 ? '0' + timeEnd.hour.toString() : timeEnd.hour}:' +
+                      '${timeEnd.minute < 10 ? '0' + timeEnd.minute.toString() : timeEnd.minute}',
                   style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -399,7 +402,10 @@ class _ListTicketState extends State<ListTicket> {
                 Navigator.popAndPushNamed(context, UserViewRoute);
               }
               if (currentIndex == 0) {
-                Navigator.popAndPushNamed(context, UserProfileViewRoute);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Profile(role: 'User')));
               }
               currentIndex = 2;
             });
